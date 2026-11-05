@@ -1,0 +1,12 @@
+# Archivos locales regenerables; no excluir fuentes ni HTML del sitio.
+__pycache__/
+*.py[cod]
+_revision/
+
+# Borradores privados y salida de publicación
+docs/
+BRIEF_REPLICACION_EL_VIAJE.md
+_site/
+.env
+.env.*
+*.log
