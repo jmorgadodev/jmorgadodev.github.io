@@ -1,0 +1,891 @@
+{
+  "project": "JMorgado — sistema modular de narrativa y UI",
+  "version": "0.1.0",
+  "status": "assets para evaluación; no aprobado como identidad final",
+  "artwork": {
+    "viewBox": "0 0 1200 720",
+    "transparent": true,
+    "text": "HTML externo, nunca incrustado en la ilustración",
+    "backdrops": "a cargo de CSS del sitio"
+  },
+  "themes": {
+    "day": {
+      "bg": "#F0EDE6",
+      "surface": "#FCFAF5",
+      "text": "#222327",
+      "petrol": "#23494E",
+      "petrol-deep": "#102E38",
+      "olive": "#737B69",
+      "stone": "#C9C8B7",
+      "ash": "#A5A18D",
+      "coral": "#F45A3A",
+      "amber": "#E8B769",
+      "clay": "#D99B89",
+      "edge": "#23383B",
+      "shadow": "#102E38",
+      "line": "#77796C",
+      "signal": "#F45A3A"
+    },
+    "night": {
+      "bg": "#111B20",
+      "surface": "#1A282C",
+      "text": "#F3F0E8",
+      "petrol": "#477982",
+      "petrol-deep": "#27464E",
+      "olive": "#ADB29C",
+      "stone": "#818578",
+      "ash": "#B5B19F",
+      "coral": "#FF785C",
+      "amber": "#EEC47D",
+      "clay": "#DDA294",
+      "edge": "#9FAEAA",
+      "shadow": "#070D11",
+      "line": "#8F9D99",
+      "signal": "#FF785C"
+    }
+  },
+  "pieces": [
+    {
+      "id": "P01-brazo",
+      "name": "Brazo",
+      "main": "petrol",
+      "accent": "coral",
+      "phase": "01–03",
+      "role": "fragmento original y fundación",
+      "cells": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "viewBox": [
+        140,
+        107
+      ],
+      "file": "P01-brazo.svg"
+    },
+    {
+      "id": "P02-desfase",
+      "name": "Desfase",
+      "main": "olive",
+      "accent": "amber",
+      "phase": "01–03",
+      "role": "fragmento original y fundación",
+      "cells": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "viewBox": [
+        140,
+        107
+      ],
+      "file": "P02-desfase.svg"
+    },
+    {
+      "id": "P03-cruce",
+      "name": "Cruce",
+      "main": "stone",
+      "accent": "petrol",
+      "phase": "01–03",
+      "role": "fragmento original y fundación",
+      "cells": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "viewBox": [
+        140,
+        107
+      ],
+      "file": "P03-cruce.svg"
+    },
+    {
+      "id": "P04-columna",
+      "name": "Columna",
+      "main": "petrol-deep",
+      "accent": "amber",
+      "phase": "01–03",
+      "role": "fragmento original y fundación",
+      "cells": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "viewBox": [
+        72,
+        141
+      ],
+      "file": "P04-columna.svg"
+    },
+    {
+      "id": "P05-angulo",
+      "name": "Ángulo",
+      "main": "coral",
+      "accent": "clay",
+      "phase": "01–03",
+      "role": "fragmento original y fundación",
+      "cells": [
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "viewBox": [
+        106,
+        107
+      ],
+      "file": "P05-angulo.svg"
+    },
+    {
+      "id": "P06-escalon",
+      "name": "Escalón",
+      "main": "olive",
+      "accent": "coral",
+      "phase": "01–03",
+      "role": "fragmento original y fundación",
+      "cells": [
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "viewBox": [
+        140,
+        107
+      ],
+      "file": "P06-escalon.svg"
+    },
+    {
+      "id": "P07-nucleo",
+      "name": "Núcleo",
+      "main": "ash",
+      "accent": "petrol",
+      "phase": "01–03",
+      "role": "fragmento original y fundación",
+      "cells": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "viewBox": [
+        106,
+        107
+      ],
+      "file": "P07-nucleo.svg"
+    },
+    {
+      "id": "P08-arco-lateral",
+      "name": "Arco lateral",
+      "main": "petrol",
+      "accent": "amber",
+      "phase": "04",
+      "role": "estructura lateral izquierda",
+      "cells": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "viewBox": [
+        140,
+        107
+      ],
+      "file": "P08-arco-lateral.svg"
+    },
+    {
+      "id": "P09-contrapeso",
+      "name": "Contrapeso",
+      "main": "stone",
+      "accent": "coral",
+      "phase": "04",
+      "role": "estructura lateral derecha",
+      "cells": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "viewBox": [
+        106,
+        141
+      ],
+      "file": "P09-contrapeso.svg"
+    },
+    {
+      "id": "P10-cubierta",
+      "name": "Cubierta",
+      "main": "olive",
+      "accent": "amber",
+      "phase": "05",
+      "role": "capa superior",
+      "cells": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ]
+      ],
+      "viewBox": [
+        174,
+        73
+      ],
+      "file": "P10-cubierta.svg"
+    },
+    {
+      "id": "P11-boveda",
+      "name": "Bóveda",
+      "main": "petrol",
+      "accent": "coral",
+      "phase": "05",
+      "role": "capa superior y unión",
+      "cells": [
+        [
+          0,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "viewBox": [
+        140,
+        107
+      ],
+      "file": "P11-boveda.svg"
+    },
+    {
+      "id": "P12-llave",
+      "name": "Llave",
+      "main": "amber",
+      "accent": "coral",
+      "phase": "06",
+      "role": "cierre del sistema y semilla visual",
+      "cells": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "viewBox": [
+        106,
+        107
+      ],
+      "file": "P12-llave.svg"
+    }
+  ],
+  "elements": [
+    "E01-conector-recto",
+    "E02-conector-codo",
+    "E03-guia-profundidad",
+    "E04-guia-alineacion",
+    "E05-cierre-union",
+    "E06-semilla",
+    "E07-basamento",
+    "S01-superficie-editorial",
+    "S02-banda-ensamble",
+    "S03-marco-abierto",
+    "S04-etiqueta-muesca"
+  ],
+  "scenes": [
+    {
+      "number": "01",
+      "name": "Fricción",
+      "motion": "deriva contenida, piezas separadas",
+      "pieces": [
+        {
+          "id": "P01-brazo",
+          "x": 205,
+          "y": 190,
+          "rotation": -13,
+          "scale": 1.12
+        },
+        {
+          "id": "P02-desfase",
+          "x": 445,
+          "y": 140,
+          "rotation": 11,
+          "scale": 1.05
+        },
+        {
+          "id": "P03-cruce",
+          "x": 790,
+          "y": 172,
+          "rotation": -11,
+          "scale": 1.06
+        },
+        {
+          "id": "P04-columna",
+          "x": 245,
+          "y": 460,
+          "rotation": 12,
+          "scale": 1.06
+        },
+        {
+          "id": "P05-angulo",
+          "x": 542,
+          "y": 455,
+          "rotation": -16,
+          "scale": 1.08
+        },
+        {
+          "id": "P06-escalon",
+          "x": 836,
+          "y": 454,
+          "rotation": 8,
+          "scale": 1.0
+        },
+        {
+          "id": "P07-nucleo",
+          "x": 684,
+          "y": 323,
+          "rotation": -9,
+          "scale": 0.89
+        }
+      ],
+      "extras": [
+        "E02-conector-codo",
+        "E01-conector-recto"
+      ]
+    },
+    {
+      "number": "02",
+      "name": "Claridad",
+      "motion": "la escena atraviesa desde la derecha hacia la izquierda, las formas se alinean",
+      "pieces": [
+        {
+          "id": "P01-brazo",
+          "x": 190,
+          "y": 315,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P02-desfase",
+          "x": 340,
+          "y": 315,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P03-cruce",
+          "x": 500,
+          "y": 315,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P04-columna",
+          "x": 655,
+          "y": 290,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P05-angulo",
+          "x": 762,
+          "y": 323,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P06-escalon",
+          "x": 878,
+          "y": 320,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P07-nucleo",
+          "x": 618,
+          "y": 445,
+          "rotation": 0,
+          "scale": 0.87
+        }
+      ],
+      "extras": [
+        "E04-guia-alineacion",
+        "E01-conector-recto"
+      ]
+    },
+    {
+      "number": "03",
+      "name": "Base",
+      "motion": "piezas ascienden desde el borde inferior y forman el primer suelo",
+      "pieces": [
+        {
+          "id": "P01-brazo",
+          "x": 290,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P02-desfase",
+          "x": 392,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P03-cruce",
+          "x": 494,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P04-columna",
+          "x": 596,
+          "y": 500,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P05-angulo",
+          "x": 630,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P06-escalon",
+          "x": 698,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P07-nucleo",
+          "x": 800,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        }
+      ],
+      "extras": [
+        "E01-conector-recto",
+        "E07-basamento"
+      ]
+    },
+    {
+      "number": "04",
+      "name": "Estructura",
+      "motion": "P08 y P09 entran desde lados opuestos y encajan sobre la base",
+      "pieces": [
+        {
+          "id": "P01-brazo",
+          "x": 290,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P02-desfase",
+          "x": 392,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P03-cruce",
+          "x": 494,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P04-columna",
+          "x": 596,
+          "y": 500,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P05-angulo",
+          "x": 630,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P06-escalon",
+          "x": 698,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P07-nucleo",
+          "x": 800,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P08-arco-lateral",
+          "x": 435,
+          "y": 466,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P09-contrapeso",
+          "x": 690,
+          "y": 432,
+          "rotation": 0,
+          "scale": 1.0
+        }
+      ],
+      "extras": [
+        "E02-conector-codo",
+        "E07-basamento"
+      ]
+    },
+    {
+      "number": "05",
+      "name": "Crecimiento",
+      "motion": "P10 y P11 descienden desde arriba; lo existente permanece visible",
+      "pieces": [
+        {
+          "id": "P01-brazo",
+          "x": 290,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P02-desfase",
+          "x": 392,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P03-cruce",
+          "x": 494,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P04-columna",
+          "x": 596,
+          "y": 500,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P05-angulo",
+          "x": 630,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P06-escalon",
+          "x": 698,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P07-nucleo",
+          "x": 800,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P08-arco-lateral",
+          "x": 435,
+          "y": 466,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P09-contrapeso",
+          "x": 690,
+          "y": 432,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P10-cubierta",
+          "x": 465,
+          "y": 432,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P11-boveda",
+          "x": 580,
+          "y": 364,
+          "rotation": 0,
+          "scale": 1.0
+        }
+      ],
+      "extras": [
+        "E02-conector-codo",
+        "E01-conector-recto",
+        "E07-basamento"
+      ]
+    },
+    {
+      "number": "06",
+      "name": "Completar",
+      "motion": "P12 se encaja para cerrar; sutiles guías de verificación",
+      "pieces": [
+        {
+          "id": "P01-brazo",
+          "x": 290,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P02-desfase",
+          "x": 392,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P03-cruce",
+          "x": 494,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P04-columna",
+          "x": 596,
+          "y": 500,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P05-angulo",
+          "x": 630,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P06-escalon",
+          "x": 698,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P07-nucleo",
+          "x": 800,
+          "y": 534,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P08-arco-lateral",
+          "x": 435,
+          "y": 466,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P09-contrapeso",
+          "x": 690,
+          "y": 432,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P10-cubierta",
+          "x": 465,
+          "y": 432,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P11-boveda",
+          "x": 580,
+          "y": 364,
+          "rotation": 0,
+          "scale": 1.0
+        },
+        {
+          "id": "P12-llave",
+          "x": 620,
+          "y": 296,
+          "rotation": 0,
+          "scale": 1.0
+        }
+      ],
+      "extras": [
+        "E05-cierre-union",
+        "E07-basamento"
+      ]
+    },
+    {
+      "number": "07",
+      "name": "Todo comienza con una idea",
+      "motion": "todas las piezas se apagan; solo queda la semilla gráfica y el copy como HTML",
+      "pieces": [],
+      "extras": [
+        "E06-semilla"
+      ]
+    }
+  ],
+  "continuity": {
+    "03": "piso desde abajo",
+    "04": "estructura desde laterales",
+    "05": "capas desde arriba",
+    "06": "consolidación",
+    "07": "apagado hacia la frase Todo comienza con una idea"
+  },
+  "reusability": {
+    "projects": "composición y marcos modulares",
+    "services": "piezas laterales como paneles de información",
+    "tools": "uniones y piezas de función",
+    "method": "sucesión de piezas y líneas",
+    "calculator": "encajes y estados de progreso",
+    "contact": "cierre en una sola pieza"
+  },
+  "integration_note": "Insertar source/*.svg inline para heredar variables CSS; day/ y night/ son exportaciones por tema para uso con <img>. No representar escenas como siete <img> independientes: conservar instancias DOM de las mismas piezas y animarlas entre estados."
+}

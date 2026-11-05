@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 106 107" width="106" height="107" data-jm-piece="P05-angulo" role="img" aria-label="Ángulo — pieza modular JMorgado">
+  <g data-layer="extrusion" fill="var(--jm-shadow, #102E38)" opacity="0.26" transform="translate(6 7)"><path d="M 82.00,16.60 L 79.40,14.00 L 50.60,14.00 L 48.00,16.60 L 48.00,45.40 L 45.40,48.00 L 16.60,48.00 L 14.00,50.60 L 14.00,79.40 L 16.60,82.00 L 45.40,82.00 L 50.60,82.00 L 79.40,82.00 L 82.00,79.40 L 82.00,50.60 L 82.00,45.40 Z"/></g>
+  <g data-layer="side" fill="var(--jm-edge, #23383B)" opacity="0.52" transform="translate(3 4)"><path d="M 82.00,16.60 L 79.40,14.00 L 50.60,14.00 L 48.00,16.60 L 48.00,45.40 L 45.40,48.00 L 16.60,48.00 L 14.00,50.60 L 14.00,79.40 L 16.60,82.00 L 45.40,82.00 L 50.60,82.00 L 79.40,82.00 L 82.00,79.40 L 82.00,50.60 L 82.00,45.40 Z"/></g>
+  <g data-layer="body" fill="var(--jm-coral, #F45A3A)" stroke="var(--jm-edge, #23383B)" stroke-width="1.25" stroke-linejoin="bevel"><path d="M 82.00,16.60 L 79.40,14.00 L 50.60,14.00 L 48.00,16.60 L 48.00,45.40 L 45.40,48.00 L 16.60,48.00 L 14.00,50.60 L 14.00,79.40 L 16.60,82.00 L 45.40,82.00 L 50.60,82.00 L 79.40,82.00 L 82.00,79.40 L 82.00,50.60 L 82.00,45.40 Z"/></g>
+  <g data-layer="seams"><path d="M 52 48 H 78" fill="none" stroke="var(--jm-surface, #FCFAF5)" stroke-width="0.7" stroke-opacity="0.27"/><path d="M 48 52 V 78" fill="none" stroke="var(--jm-surface, #FCFAF5)" stroke-width="0.7" stroke-opacity="0.27"/></g>
+  <g data-layer="accent" fill="var(--jm-clay, #D99B89)"><rect x="55" y="55" width="14" height="3.5" rx="0.7"/></g>
+  <g data-layer="etch" fill="none" stroke="var(--jm-surface, #FCFAF5)" stroke-opacity="0.72" stroke-width="0.8"><path d="M 20 20 h 10"/></g>
+  <circle data-layer="anchor" cx="77" cy="77" r="1.7" fill="var(--jm-clay, #D99B89)" opacity="0.76"/>
+</svg>

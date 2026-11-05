@@ -50,19 +50,22 @@ def meta(d, title, description, active="", journey=False):
 <link rel="icon" type="image/svg+xml" href="{e(local(d,'assets/favicon.svg'))}">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="{e(local(d,'assets/theme-init.js'))}"></script>
 <link rel="stylesheet" href="{e(local(d,'assets/site.css'))}">
+<link rel="stylesheet" href="{e(local(d,'assets/themes.css'))}">
 </head><body{body_class}><a class="skip-link" href="#contenido">Saltar al contenido</a>{SYMBOLS}
 <header class="site-header{header_class}"><div class="wrap header-inner">
 <a class="wordmark" href="{e(local(d))}"><span class="mark" aria-hidden="true">{monogram}</span><span>JMorgado<span class="orange">.</span></span></a>
 <div class="header-sub">{descriptor}</div>{controls}
 <button type="button" class="menu-toggle" data-menu-toggle aria-controls="main-nav" aria-expanded="false">Menú +</button>
+<button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Cambiar a modo noche">Noche</button>
 <nav class="nav" id="main-nav" data-nav aria-label="Navegación principal">{links}<a class="nav-contact" href="{e(local(d,'contacto/'))}">Conversemos ↗</a></nav>
 </div>{progress}</header>"""
     if journey:
         head=head.replace('</head>',journey_css+'</head>')
     return head
 def foot(d, journey=False):
-    extra='<script src="assets/journey.js" defer></script>' if journey else ''
+    extra='<script src="assets/vendor/gsap.min.js" defer></script><script src="assets/vendor/ScrollTrigger.min.js" defer></script><script src="assets/journey.js" defer></script>' if journey else ''
     return f"""<footer class="site-footer"><div class="wrap"><div class="footer-inner"><div>
 <div class="footer-mark">JM<span style="color:var(--signal)">/</span></div>
 <div class="footer-meta">Trabajo independiente · Soluciones digitales basadas en problemas reales.</div>
@@ -100,51 +103,8 @@ def entry(d,p,idx,mini=False):
     <p>{e(p["summary"])}</p><span class="category">{e(p["area"])}<br>{e(p["state"])}</span>
     <span class="row-link">{icon("arrow")}</span></a>"""
 def journey_markup():
-    chapters=[]
-    for i,scene in enumerate(JOURNEY_SCENES):
-        tag='h1' if i==0 else 'h2'
-        title='<br>'.join(e(line) for line in scene['title'].splitlines())
-        details=''.join(f'''<details class="journey-detail-source" id="detalle-{e(item['id'])}">
-            <summary data-detail="{e(item['id'])}">{e(item['action'])}</summary>
-            <div class="detail-content"><p class="j-label">{e(item['label'])}</p><h3>{e(item['title'])}</h3><p>{e(item['text'])}</p></div></details>''' for item in scene['details'])
-        question='<p class="j-question">¿QUÉ NECESIDAD APARECIÓ?</p>' if i==4 else ''
-        action='<a class="journey-action" href="#explorar">Abrir el portafolio ↗</a>' if i==6 else ''
-        note='<p class="journey-invitation">Sigue bajando. La historia cambia contigo <span aria-hidden="true">↓</span></p>' if i==0 else ''
-        recovery='<p class="recovery-summary">Cambio detectado → Regla corregida. El informe permanece protegido.</p>' if i==5 else ''
-        chapters.append(f'''<section class="chapter" id="escena-{i+1:02}" data-chapter="{i}" data-scene-name="{e(scene['name'])}" data-status="{e(scene['status'])}" aria-labelledby="capitulo-{i+1:02}">
-            <div class="chapter-copy"><p class="j-label"><span>{i+1:02} / 07</span> {e(scene['name'])}</p>
-            <{tag} id="capitulo-{i+1:02}">{title}</{tag}><p class="chapter-text">{e(scene['text'])}</p>
-            {question}<div class="chapter-details">{details}</div>{action}{recovery}{note}
-            <p class="chapter-status">{e(scene['status'])}</p></div></section>''')
-    documents=[]
-    for i,(name,kind,columns,rows) in enumerate([
-        ('VENTAS_01.xlsx','XLSX',['FECHA','MONTO'],[['04/11','24.500'],['05/11','—'],['06/11','18.200']]),
-        ('REPORTE_B.csv','CSV',['date','TOTAL'],[['2026-11-04','24500'],['2026-11-05','18200'],['sin fecha','9400']]),
-        ('CONTROL_C.xlsx','XLSX',['DÍA','IMPORTE'],[['04/11','$ 24.500'],['05/11','$ 18.200'],['06/11','revisar']]),
-    ]):
-        table=''.join('<tr>'+''.join(f'<td>{e(v)}</td>' for v in row)+'</tr>' for row in rows)
-        documents.append(f'''<div class="j-source j-object source-{i}" data-source="{i}" aria-hidden="true"><div class="sheet-head"><span class="sheet-icon">{kind[0]}</span><span>{e(name)}</span><span class="sheet-dots">···</span></div><table><thead><tr>{''.join(f'<th>{e(v)}</th>' for v in columns)}</tr></thead><tbody>{table}</tbody></table><div class="sheet-foot"><span>{kind}</span><span>Fuente {i+1:02}</span></div></div>''')
-    clues=''.join(f'<button type="button" class="j-clue j-object" data-clue="{i}" data-detail="{item["id"]}" aria-controls="journey-detail">{e(item["action"])} <span aria-hidden="true">↗</span></button>' for i,item in enumerate(JOURNEY_SCENES[1]['details']))
-    tech=''.join(f'<div class="tech-level" data-tech-level="{i}"><span class="j-label">0{i+1} — {name}</span><strong>{verb}</strong><span class="tech-options">{options}</span></div>' for i,(name,verb,options) in enumerate([('ORIGEN','Leer fuentes','Excel <span>o</span> Google Sheets'),('PROCESO','Transformar','Python <span>o</span> Power Query'),('SALIDA','Presentar','Power BI <span>o</span> CSV')]))
-    branches=''.join(f'<button class="j-branch j-object" type="button" data-branch="{i}" data-choice="{item["id"]}" data-detail="{item["id"]}" aria-pressed="false" aria-controls="journey-detail"><span class="j-label">+ 0{i+1}{" / PORTAL" if item["id"]=="web" else ""}</span><strong>{e(item["action"])}</strong><small>{caption}</small><span class="branch-arrow" aria-hidden="true">↗</span></button>' for i,(item,caption) in enumerate(zip(JOURNEY_SCENES[4]['details'],['Cuando hagan falta','Cuando haya que comparar','Cuando deban consultar más'])))
-    concepts=''.join(f'<span class="universe-word" data-universe-word="{i}">{word}</span>' for i,word in enumerate(['DESARROLLOS','RECURSOS','EXPERIENCIA','MÉTODO','TECNOLOGÍAS']))
-    return f'''<section class="journey" data-journey aria-label="El viaje: una forma de resolver">
-    <div class="journey-shell"><div class="stage" data-journey-stage>
-    <div class="stage-glow" aria-hidden="true"></div><div class="stage-grid" aria-hidden="true"></div>
-    <div class="stage-index" aria-hidden="true"><span>EL VIAJE / <span data-stage-name>El dolor</span></span><span data-stage-note>EJEMPLO FICTICIO</span></div>
-    <div class="stage-world" role="group" aria-label="Representación conceptual con datos ficticios">
-    <svg class="j-wires" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g class="source-wires">{''.join(f'<path data-source-wire="{i}" pathLength="1"/>' for i in range(3))}<path data-output-wire pathLength="1"/></g><g class="branch-wires">{''.join(f'<path data-branch-wire="{i}" pathLength="1"/>' for i in range(3))}</g></svg>
-    {''.join(documents)}{clues}
-    <div class="j-engine j-object" data-layer="engine" aria-hidden="true"><span class="engine-symbol">∴</span><p class="j-label">PROCESO REPETIBLE</p><strong>Ordenar · Validar · Reunir</strong><div class="engine-track"><span data-engine-bar></span></div></div>
-    <div class="j-report j-object" data-layer="report" aria-hidden="true"><div class="report-head"><span class="report-dot"></span><span class="j-label" data-report-label>INFORME CONSOLIDADO</span><span>↗</span></div><strong data-report-title>Una sola vista.</strong><p data-report-caption>Datos organizados y listos para revisar</p><div class="report-chart"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="report-foot"><span>REPRESENTACIÓN CONCEPTUAL</span><span data-report-state>LISTO PARA REVISAR</span></div></div>
-    <div class="j-techmap j-object" data-layer="techmap" aria-hidden="true"><p class="j-label">POR DEBAJO DE LA SUPERFICIE</p><h3>Arquitectura posible</h3><div class="tech-levels">{tech}</div><p class="tech-caution">Opciones posibles. La selección depende del contexto; no todas se necesitan.</p></div>
-    {branches}
-    <div class="j-resilience j-object" data-layer="resilience" aria-hidden="true"><div class="resilience-flow"><div><span class="j-label">ENTRADA</span><strong>Fuente</strong><small>✓ Estable</small></div><span class="flow-arrow">→</span><div class="rule-node" data-rule-node><span class="j-label">REGLA</span><strong>Validación</strong><small data-rule-state>! Cambio detectado</small></div><span class="flow-arrow">→</span><div><span class="j-label">SALIDA</span><strong>Informe</strong><small>✓ Protegido</small></div></div><p class="resilience-caption" data-recovery-text>Se identifica la parte afectada. El resto permanece.</p></div>
-    <div class="j-universe j-object" data-layer="universe" aria-hidden="true"><div class="universe-ring"></div><strong class="universe-monogram">JM<span>.</span></strong>{concepts}</div>
-    </div><div class="stage-bottom"><p data-stage-status>Los datos aún no cuentan una historia.</p><span>DISEÑAR PARA RESOLVER<br>NO PARA IMPRESIONAR</span></div></div>
-    <div class="chapters">{''.join(chapters)}</div></div>
-    <aside class="detail-panel" id="journey-detail" aria-labelledby="journey-detail-title" hidden><button class="detail-close" type="button" aria-label="Cerrar detalle">Cerrar <span aria-hidden="true">×</span></button><p class="j-label" data-detail-label></p><h3 id="journey-detail-title"></h3><p data-detail-text></p></aside>
-    <div class="journey-disclaimer">Un ejemplo ficticio para explicar una forma de trabajar. Sin datos ni resultados de clientes.</div></section>'''
+    from journey_view import render_journey
+    return render_journey(JOURNEY_SCENES)
 
 def home():
     d=0

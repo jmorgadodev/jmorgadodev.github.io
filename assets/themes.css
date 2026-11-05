@@ -1,0 +1,80 @@
+/* JMorgado modular kit — first-party web assets. No backgrounds are included. */
+:root, [data-jm-theme="day"] {
+  --jm-bg: #F0EDE6;
+  --jm-surface: #FCFAF5;
+  --jm-text: #222327;
+  --jm-petrol: #23494E;
+  --jm-petrol-deep: #102E38;
+  --jm-olive: #737B69;
+  --jm-stone: #C9C8B7;
+  --jm-ash: #A5A18D;
+  --jm-coral: #F45A3A;
+  --jm-amber: #E8B769;
+  --jm-clay: #D99B89;
+  --jm-edge: #23383B;
+  --jm-shadow: #102E38;
+  --jm-line: #77796C;
+  --jm-signal: #F45A3A;
+}
+
+[data-jm-theme="night"] {
+  --jm-bg: #111B20;
+  --jm-surface: #1A282C;
+  --jm-text: #F3F0E8;
+  --jm-petrol: #477982;
+  --jm-petrol-deep: #27464E;
+  --jm-olive: #ADB29C;
+  --jm-stone: #818578;
+  --jm-ash: #B5B19F;
+  --jm-coral: #FF785C;
+  --jm-amber: #EEC47D;
+  --jm-clay: #DDA294;
+  --jm-edge: #9FAEAA;
+  --jm-shadow: #070D11;
+  --jm-line: #8F9D99;
+  --jm-signal: #FF785C;
+}
+
+/* Optional: follow OS if the site has no explicit saved choice. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-jm-theme]) {
+    --jm-bg: #111B20;
+    --jm-surface: #1A282C;
+    --jm-text: #F3F0E8;
+    --jm-petrol: #477982;
+    --jm-petrol-deep: #27464E;
+    --jm-olive: #ADB29C;
+    --jm-stone: #818578;
+    --jm-ash: #B5B19F;
+    --jm-coral: #FF785C;
+    --jm-amber: #EEC47D;
+    --jm-clay: #DDA294;
+    --jm-edge: #9FAEAA;
+    --jm-shadow: #070D11;
+    --jm-line: #8F9D99;
+    --jm-signal: #FF785C;
+  }
+}
+
+/* Suggested usage with inline SVG only; the source SVGs have their own fallbacks. */
+.jm-art { color: var(--jm-text); }
+.jm-art [data-layer="body"] { will-change: transform; }
+.jm-art [data-layer="extrusion"], .jm-art [data-layer="accent"] { transform-box: fill-box; }
+
+@font-face{font-family:"Instrument Sans";src:url("fonts/instrument-sans.woff2") format("woff2");font-weight:400 700;font-display:swap}
+@font-face{font-family:"IBM Plex Mono";src:url("fonts/ibm-plex-mono.woff2") format("woff2");font-weight:600;font-display:swap}
+:root{--paper:var(--jm-bg);--paper2:var(--jm-surface);--ink:var(--jm-text);--signal:var(--jm-coral);--blue:var(--jm-petrol);--blue-soft:var(--jm-stone);--lime:var(--jm-stone);--line:var(--jm-line);--line-dark:var(--jm-line);--muted:#595A5B;--font-text:"Instrument Sans","Segoe UI",sans-serif;--font-mono:"IBM Plex Mono",Consolas,monospace;color-scheme:light}
+[data-jm-theme="night"]{--muted:#BAC6C4;--blue:var(--jm-amber);color-scheme:dark}
+.theme-toggle{display:none;min-height:44px;padding:.5rem .7rem;background:transparent;border:1px solid var(--line);color:var(--ink);font:14px var(--font-text);cursor:pointer}
+html.theme-ready .theme-toggle{display:inline-block}
+:root[data-jm-theme="night"] .ink-panel,:root[data-jm-theme="night"] .site-footer,:root[data-jm-theme="night"] .result{background:#102E38;color:var(--jm-text)}
+:root .contact-board{color:#222327}
+:root .button.dark,:root .nav .nav-contact{background:var(--jm-petrol-deep);color:#FCFAF5}
+:root .contrast{color:#222327;background:var(--jm-stone)}
+:root .button.strong{color:#222327}
+:root .chapter-text,:root .j-label{color:var(--muted)}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible{outline-color:var(--jm-petrol)}
+[data-jm-theme="night"] a:focus-visible,[data-jm-theme="night"] button:focus-visible,[data-jm-theme="night"] summary:focus-visible,[data-jm-theme="night"] input:focus-visible,[data-jm-theme="night"] select:focus-visible{outline-color:var(--jm-amber)}
+.contact-board .eyebrow{color:#222327!important}
+@media(prefers-color-scheme:dark){:root:not([data-jm-theme]){--muted:#BAC6C4;--blue:var(--jm-amber);color-scheme:dark}:root:not([data-jm-theme]) .ink-panel,:root:not([data-jm-theme]) .site-footer,:root:not([data-jm-theme]) .result{background:#102E38;color:var(--jm-text)}}
+.site-header .nav,.site-header .menu-toggle{font-family:var(--font-text)}
