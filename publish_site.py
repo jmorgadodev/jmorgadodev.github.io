@@ -3,23 +3,34 @@ from pathlib import Path
 import runpy
 import shutil
 from xml.etree.ElementTree import Element, SubElement, ElementTree
+
+from site_data import LEGACY_TOOL_SLUGS, PROJECTS, SERVICES
+
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "_site"
 runpy.run_path(str(ROOT / "build_site.py"), run_name="__main__")
 OUT.mkdir(exist_ok=True)
-routes = [ROOT / "index.html", *sorted((ROOT / "proyectos").rglob("index.html")), *sorted((ROOT / "servicios").rglob("index.html")), *(ROOT / name / "index.html" for name in ("metodo", "calculadora", "contacto", "jugar"))]
-assert len(routes) == 24, "El sitio debe conservar sus 24 rutas"
+
+canonical = [
+    "", "proyectos", "servicios", "metodo", "calculadora", "contacto", "herramientas", "jugar",
+    *(f"proyectos/{project['slug']}" for project in PROJECTS),
+    *(f"servicios/{service['slug']}" for service in SERVICES),
+]
+redirects = [f"proyectos/{slug}" for slug in LEGACY_TOOL_SLUGS]
+routes = canonical + redirects
+assert len(routes) == len(set(routes)) == 26, "El sitio debe conservar sus 26 rutas"
+
 urls = Element("urlset", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
-for source in routes:
-    relative = source.relative_to(ROOT)
+for route in routes:
+    relative = Path(route) / "index.html"
     target = OUT / relative
     target.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(source, target)
-    path = relative.parent.as_posix()
-    url = "https://jmorgadodev.github.io/" + (path + "/" if path != "." else "")
-    SubElement(SubElement(urls, "url"), "loc").text = url
+    shutil.copy2(ROOT / relative, target)
+    if route in canonical:
+        url = "https://jmorgadodev.github.io/" + (route + "/" if route else "")
+        SubElement(SubElement(urls, "url"), "loc").text = url
 shutil.copytree(ROOT / "assets", OUT / "assets", dirs_exist_ok=True)
 ElementTree(urls).write(OUT / "sitemap.xml", encoding="utf-8", xml_declaration=True)
 (OUT / "robots.txt").write_text("User-agent: *\nAllow: /\nSitemap: https://jmorgadodev.github.io/sitemap.xml\n", encoding="utf-8")
 (OUT / ".nojekyll").touch()
-print("Salida pública: _site/ (24 páginas)")
+print(f"Salida pública: _site/ ({len(canonical)} páginas, {len(redirects)} redirecciones)")

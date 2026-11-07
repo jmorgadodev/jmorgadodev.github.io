@@ -1,6 +1,8 @@
 # JMorgado
 
-Fuente de la web estática de Jorge Morgado. Python estándar genera las 23 rutas existentes; no se requiere instalar dependencias para publicar.
+**Contexto y decisiones vigentes:** [Contexto maestro del proyecto](docs/CONTEXTO_MAESTRO_JMORGADO.md). Para agentes, leer también [AGENTS.md](AGENTS.md) y el [encargo de identidad de secciones interiores](docs/ENCARGO_AGENTE_IDENTIDAD_INTERIOR_JMORGADO.md).
+
+Fuente de la web estática de Jorge Morgado. Python estándar genera 24 páginas canónicas y 2 redirecciones (26 rutas); no se requiere instalar dependencias para publicar.
 
 ## Generación
 
@@ -8,7 +10,7 @@ Fuente de la web estática de Jorge Morgado. Python estándar genera las 23 ruta
 python publish_site.py
 ```
 
-La salida pública se escribe en `_site/`, con HTML, recursos, sitemap y robots. Los borradores editoriales locales y archivos de revisión están excluidos de Git y de la salida pública.
+La salida pública se escribe en `_site/`, con HTML, recursos, sitemap y robots. Los borradores editoriales locales y archivos de revisión siguen excluidos de Git y de la salida pública. Se exceptúan únicamente los dos documentos de contexto y coordinación enlazados arriba, que deben viajar con el repositorio; no se copian a _site/.
 
 ## Publicación
 

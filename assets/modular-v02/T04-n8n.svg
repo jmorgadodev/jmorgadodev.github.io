@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 342 210" role="img" aria-label="n8n">
+<title>n8n</title>
+<desc>Recurso vectorial modular JMorgado, capas editables. Texto editorial en HTML.</desc>
+
+<g id="volume" stroke-linejoin="round">
+ <path id="base-shadow" d="M19 177 L31 194 H325 L313 177Z" fill="var(--jm-block-depth, #102E38)" opacity=".55"/>
+ <path id="lateral" d="M313 40L325 52V194L313 177Z" fill="var(--jm-block-side, #737B69)" opacity=".70"/>
+ </g>
+ <g id="shell">
+ <path id="face" d="M27 18H293L313 38V169Q313 177 305 177H27Q19 177 19 169V26Q19 18 27 18Z" fill="var(--jm-tech-fill, #D99B89)"/>
+ <path id="top-facet" d="M27 18H293L313 38H294L284 29H27Z" fill="var(--jm-tech-highlight, #FCFAF5)" fill-opacity=".19"/>
+ <path id="inner-edge" d="M35 37H281L295 50V161H35Z" fill="none" stroke="var(--jm-tech-edge, #FCFAF5)" stroke-opacity=".26" stroke-width="1.5"/>
+ <path id="notch" d="M293 18V38H313" fill="none" stroke="var(--jm-tech-edge, #FCFAF5)" stroke-width="2" stroke-opacity=".5"/>
+ </g>
+ <g id="technology-symbol"><circle cx="74" cy="90" r="12" fill="none" stroke="var(--jm-glyph, #FCFAF5)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="160" cy="54" r="12" fill="none" stroke="var(--jm-glyph, #FCFAF5)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="160" cy="123" r="12" fill="none" stroke="var(--jm-glyph, #FCFAF5)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M86 90H111 Q123 90 123 78V66Q123 54 135 54H148 M111 90Q123 90 123 102V111Q123 123 135 123H148" fill="none" stroke="var(--jm-glyph, #FCFAF5)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="111" cy="90" r="5" fill="var(--jm-glyph, #FCFAF5)"/></g>
+ <g id="details">
+ <path d="M206 61H278 M206 76H265 M206 91H254" stroke="var(--jm-tech-edge, #FCFAF5)" stroke-opacity=".50" stroke-width="2.4" stroke-linecap="round"/>
+ <rect x="205" y="128" width="72" height="6" rx="3" fill="var(--jm-tech-edge, #FCFAF5)" opacity=".28"/>
+ <rect x="205" y="143" width="46" height="6" rx="3" fill="var(--jm-tech-edge, #FCFAF5)" opacity=".22"/>
+ <circle cx="281" cy="148" r="4" fill="var(--jm-signal, #F45A3A)"/>
+ </g>
+</svg>

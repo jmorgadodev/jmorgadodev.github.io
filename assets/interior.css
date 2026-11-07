@@ -1,0 +1,455 @@
+/* JMorgado after the opening. Each surface belongs to its section. */
+.interior-art {
+  --jm-metal:var(--jm-olive);
+  --jm-fine:var(--jm-line);
+  --jm-frame:var(--jm-olive);
+  display:block;
+  pointer-events:none;
+}
+.home-page :is(#explorar,#recursos,#trabajos,#una-partida,#como-trabajo,#ahorro,.home-contact) > .wrap {
+  width:min(calc(100% - clamp(2rem,8vw,8rem)),78rem);
+}
+
+/* Capacidades — three entry points on one routed surface. */
+.home-page #explorar {
+  background:linear-gradient(to right,var(--jm-bg) 72%,var(--jm-surface) 72%);
+}
+#explorar .home-opening {
+  --capability-gap:clamp(2.8rem,8vw,7rem);
+  position:relative;
+  grid-template-columns:minmax(0,1.2fr) minmax(0,.78fr);
+  gap:var(--capability-gap);
+  align-items:center;
+}
+#explorar .home-capabilities {
+  position:relative;
+  margin-left:.6rem;
+  border-top:0;
+  border-left:1px solid var(--jm-line);
+}
+#explorar .home-capabilities a {
+  position:relative;
+  margin-left:1.1rem;
+  padding:1.05rem .85rem;
+  border-top:1px solid color-mix(in srgb,var(--jm-line) 45%,transparent);
+  transition:background .2s,transform .2s;
+}
+#explorar .home-capabilities a::before {
+  content:"";
+  position:absolute;
+  inset:50% auto auto -1.42rem;
+  width:.58rem;
+  height:.58rem;
+  background:var(--jm-bg);
+  border:1px solid var(--jm-petrol);
+  transform:translateY(-50%);
+}
+#explorar .home-capabilities a:is(:hover,:focus-visible)::before {
+  background:var(--jm-coral);
+  border-color:var(--jm-coral);
+}
+#explorar .home-capabilities a:is(:hover,:focus-visible) { background:var(--jm-surface); }
+.capability-connector {
+  position:absolute;
+  z-index:-1;
+  top:calc(50% - 1rem);
+  left:calc((100% - var(--capability-gap)) * .606 + .25rem);
+  width:calc(var(--capability-gap) - .5rem);
+  opacity:.65;
+}
+.home-opening:has(.home-capabilities a:is(:hover,:focus-visible)) .capability-connector {
+  opacity:1;
+}
+.home-page #explorar .portfolio-about {
+  isolation:isolate;
+  margin:.5rem 0;
+  border:1px solid var(--jm-line);
+  border-top:4px solid var(--jm-coral);
+  box-shadow:.65rem .65rem 0 color-mix(in srgb,var(--jm-petrol) 22%,transparent);
+  background:var(--jm-surface);
+  color:var(--ink);
+}
+.home-page #explorar .portfolio-about::before { content:none; }
+.home-page #explorar .portfolio-about .eyebrow { color:var(--muted); }
+.home-page #explorar .portfolio-about .profile-link a { border-color:var(--jm-line); }
+
+/* Herramientas — a selection rail alongside the specimen on the work surface. */
+.home-page #recursos {
+  background:color-mix(in srgb,var(--jm-stone) 13%,var(--jm-bg));
+}
+#recursos .tool-workbench {
+  --jm-body:var(--jm-petrol);
+  --jm-top:var(--jm-stone);
+  --jm-side:var(--jm-olive);
+  position:relative;
+  isolation:isolate;
+  background:var(--jm-surface);
+  border-top:3px solid var(--jm-petrol);
+  box-shadow:0 .7rem 0 color-mix(in srgb,var(--jm-petrol) 16%,var(--jm-bg));
+}
+.bench-platform {
+  position:absolute;
+  z-index:-1;
+  inset:auto 1% -1.35rem auto;
+  width:clamp(11rem,35%,31rem);
+  opacity:.54;
+}
+#recursos .tool-choices {
+  background:color-mix(in srgb,var(--jm-stone) 17%,var(--jm-bg));
+}
+#recursos .tool-choices button { border-left:3px solid transparent; }
+#recursos .tool-choices button[aria-pressed="true"] {
+  border-left-color:var(--jm-coral);
+  background:var(--jm-surface);
+  color:var(--ink);
+}
+#recursos .tool-sample img,.tools-catalog .tool-sample img {
+  padding:.35rem;
+  background:var(--jm-bg);
+  box-shadow:.35rem .35rem 0 color-mix(in srgb,var(--jm-line) 18%,transparent);
+}
+#recursos .tool-workbench .tool-card { align-items:center; }
+#recursos .section-action { margin-top:2.5rem; }
+.tools-catalog .tool-card {
+  grid-template-columns:minmax(0,.72fr) minmax(0,1fr);
+  border-bottom-color:color-mix(in srgb,var(--jm-line) 50%,transparent);
+}
+.tools-catalog .tool-card:nth-child(2n) {
+  background:color-mix(in srgb,var(--jm-stone) 10%,var(--jm-bg));
+}
+.tool-panel .tool-panel-header {
+  padding-bottom:1rem;
+  border-bottom-color:var(--jm-coral);
+}
+
+/* Portafolio — four folios of different widths, with the original marks. */
+.home-page #trabajos {
+  background:var(--jm-surface);
+}
+#trabajos .feature-list {
+  display:grid;
+  grid-template-columns:repeat(12,minmax(0,1fr));
+  gap:clamp(.8rem,2.3vw,2rem);
+  border:0;
+}
+#trabajos .feature {
+  --folio:var(--jm-petrol);
+  grid-column:span 5;
+  position:relative;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  grid-template-areas:"mark title" "contribution contribution" "read read";
+  grid-template-rows:auto 1fr auto;
+  gap:1rem clamp(.7rem,2vw,1.5rem);
+  align-items:start;
+  padding:clamp(1.05rem,3vw,2.2rem);
+  border:1px solid color-mix(in srgb,var(--jm-line) 62%,transparent);
+  border-top:3px solid var(--folio);
+  background:var(--jm-bg);
+  transition:transform .23s,background .23s,box-shadow .23s;
+}
+#trabajos :is(.feature-impulsacv,.feature-flor-de-almendro) { grid-column:span 7; }
+#trabajos .feature-el-cambiometro { --folio:var(--jm-olive); }
+#trabajos .feature-ryvolt { --folio:var(--jm-coral); }
+#trabajos .feature-flor-de-almendro { --folio:var(--jm-amber); }
+#trabajos .feature-impulsacv {
+  background:color-mix(in srgb,var(--jm-petrol) 8%,var(--jm-bg));
+}
+#trabajos .feature-el-cambiometro .case-contribution {
+  border-left:2px solid var(--folio);
+  padding-left:.85rem;
+}
+#trabajos .feature-ryvolt {
+  background:color-mix(in srgb,var(--jm-clay) 14%,var(--jm-bg));
+}
+#trabajos .feature-flor-de-almendro .case-title {
+  border-bottom:1px solid color-mix(in srgb,var(--folio) 80%,var(--jm-line));
+  padding-bottom:.6rem;
+}
+@media(min-width:1000px) {
+  #trabajos .feature-impulsacv {
+    grid-template-columns:minmax(0,.75fr) minmax(0,1fr);
+    grid-template-areas:"mark contribution" "title contribution" "read contribution";
+    grid-template-rows:auto 1fr auto;
+    column-gap:1.2rem;
+  }
+  #trabajos .feature-impulsacv .case-contribution {
+    align-self:center;
+    padding-left:1.1rem;
+    border-left:1px solid var(--jm-line);
+  }
+  #trabajos .feature-flor-de-almendro {
+    grid-template-columns:minmax(0,1fr) auto;
+    grid-template-areas:"title mark" "contribution mark" "read mark";
+  }
+}
+#trabajos .feature .project-mark {
+  width:clamp(3rem,6vw,5.25rem);
+  height:3rem;
+}
+@media(min-width:1000px) {
+  #trabajos .feature-flor-de-almendro .project-mark {
+    align-self:center;
+    width:7rem;
+    height:7rem;
+  }
+}
+#trabajos .feature h3 { font-size:clamp(1.4rem,3vw,2.7rem); }
+#trabajos .feature .case-contribution p { max-width:55ch; }
+#trabajos .feature:is(:hover,:focus-visible) {
+  box-shadow:.35rem .4rem 0 color-mix(in srgb,var(--folio) 23%,transparent);
+  background:var(--jm-surface);
+  transform:translateY(-3px);
+}
+.project-archive + .project-catalog .project-row { padding-block:clamp(1.1rem,2vw,1.65rem); }
+.project-archive + .project-catalog .project-row:is(:hover,:focus-visible) {
+  box-shadow:inset 3px 0 var(--jm-coral);
+}
+.tech-badge:has(img) {
+  display:inline-flex;
+  align-items:center;
+  gap:.35rem;
+  vertical-align:middle;
+}
+.tech-badge:has(img)::before { content:none; }
+.tech-badge img { object-fit:contain; }
+
+/* Tetris — an inset console and a physical piece for the move. */
+.home-page .home-game {
+  background:color-mix(in srgb,var(--jm-petrol) 12%,var(--jm-bg));
+}
+.home-game .game-invite-display {
+  position:relative;
+  isolation:isolate;
+  border:1px solid var(--jm-petrol);
+  border-bottom:4px solid var(--jm-amber);
+  box-shadow:.55rem .65rem 0 color-mix(in srgb,var(--jm-petrol) 28%,transparent);
+}
+.game-key-piece {
+  position:absolute;
+  z-index:-1;
+  left:8%;
+  bottom:15%;
+  width:clamp(3rem,9vw,8rem);
+  opacity:.38;
+}
+.game-invite-display[data-cleared] .game-key-piece { transform:translateY(.6rem) rotate(12deg); }
+.game-page .game-shell {
+  box-shadow:.4rem .55rem 0 color-mix(in srgb,var(--jm-petrol) 29%,transparent);
+}
+
+/* Método — trace the two source values to the manual decision. */
+.home-method,.method-example {
+  background:color-mix(in srgb,var(--jm-olive) 10%,var(--jm-bg));
+}
+:is(.home-method,.method-example) .order-example {
+  position:relative;
+  isolation:isolate;
+  padding:clamp(1.05rem,3vw,2.2rem);
+  border:1px solid var(--jm-line);
+  border-left:4px solid var(--jm-petrol);
+  background:var(--jm-surface);
+  box-shadow:.45rem .5rem 0 color-mix(in srgb,var(--jm-olive) 23%,transparent);
+}
+.order-example .order-trace {
+  position:absolute;
+  width:clamp(3.3rem,8vw,7.5rem);
+  top:12%;
+  right:4%;
+  opacity:.65;
+  z-index:-1;
+}
+.order-example figcaption strong { color:var(--ink); }
+.order-example .order-decision {
+  margin-top:1.25rem;
+  border-left:3px solid var(--jm-amber);
+  background:color-mix(in srgb,var(--jm-amber) 18%,var(--jm-surface));
+}
+
+/* Calculadora — a marked scale for the same hypothetical input. */
+.home-calculator .savings-kicker {
+  --jm-band:var(--jm-petrol-deep);
+  --jm-band-edge:var(--jm-amber);
+  position:relative;
+  isolation:isolate;
+  width:fit-content;
+  padding:.68rem 1.5rem .74rem .95rem;
+}
+.savings-band {
+  position:absolute;
+  inset:-.2rem -.3rem;
+  width:calc(100% + .6rem);
+  height:calc(100% + .4rem);
+  z-index:-1;
+}
+.home-calculator .savings-case {
+  align-items:stretch;
+  gap:clamp(1.4rem,5vw,4.8rem);
+}
+.home-calculator .savings-compare {
+  padding:.8rem 1rem 1rem;
+  border:1px solid color-mix(in srgb,var(--jm-stone) 52%,transparent);
+}
+.home-calculator .savings-compare div::after {
+  height:.55rem;
+  background:repeating-linear-gradient(to right,transparent 0 calc(20% - 1px),#102e38 calc(20% - 1px) 20%),#c8d8d3;
+}
+.home-calculator .savings-compare div + div::after {
+  background:var(--jm-amber);
+}
+.home-calculator .savings-result {
+  align-content:center;
+  padding:clamp(1.05rem,4.3vw,3.2rem);
+  border:1px solid #789993;
+  border-top:4px solid var(--jm-amber);
+  background:color-mix(in srgb,#102e38 88%,var(--jm-petrol));
+}
+.home-calculator .savings-result p:first-child > strong {
+  font-variant-numeric:tabular-nums;
+}
+.calculator-panel #calculator {
+  min-width:0;
+  padding:clamp(.9rem,3vw,2rem);
+  border:1px solid var(--jm-line);
+  border-top:3px solid var(--jm-petrol);
+  background:var(--jm-surface);
+}
+.calculator-panel .field-title {
+  padding:.55rem .65rem;
+  background:color-mix(in srgb,var(--jm-stone) 20%,var(--jm-bg));
+}
+.calculator-panel .result {
+  border-top:4px solid var(--jm-amber);
+}
+.calculator-panel .result::before { content:none; }
+
+/* Servicios — an index with a binding rail; RRSS keeps its editorial sequence. */
+:is(.service-map-hero,.service-detail-hero,.social-hero,.method-hero,.calculator-hero,.contact-hero) {
+  padding-block:clamp(2.5rem,6vw,5.6rem);
+}
+:is(.service-map-hero,.service-detail-hero,.social-hero,.method-hero,.calculator-hero,.contact-hero) h1 {
+  max-width:17ch;
+  margin-block:.75rem 1.2rem;
+  font:650 clamp(2.35rem,6.2vw,5.6rem)/.98 var(--font-text);
+  letter-spacing:-.06em;
+}
+:is(.service-map-hero,.service-detail-hero,.social-hero,.method-hero,.calculator-hero,.contact-hero) .breadcrumb {
+  margin-bottom:1.3rem;
+}
+.service-map-hero .wrap,.contact-hero .wrap { position:relative; isolation:isolate; }
+.service-map-hero .lead,.contact-hero .lead { max-width:59ch; }
+.service-map-art {
+  position:absolute;
+  z-index:-1;
+  right:2%;
+  top:9%;
+  width:min(40%,31rem);
+  opacity:.56;
+}
+.service-map .service-index {
+  padding-left:clamp(.45rem,2vw,1.45rem);
+  border-left:3px solid var(--jm-petrol);
+}
+.service-map .service-line {
+  padding-block:clamp(.85rem,2vw,1.65rem);
+  background:var(--jm-surface);
+  transition:transform .2s,background .2s;
+}
+.service-map .service-line:nth-child(2n) { background:var(--jm-bg); }
+.service-map .service-line:is(:hover,:focus-visible) {
+  transform:translateX(.25rem);
+  background:color-mix(in srgb,var(--jm-amber) 16%,var(--jm-surface));
+}
+.service-map .service-line h3 { font:650 clamp(1.15rem,2.5vw,2rem)/1.08 var(--font-text); }
+.service-detail-brief .case-layout aside {
+  padding:1.35rem;
+  border:1px solid var(--jm-line);
+  border-top:3px solid var(--jm-petrol);
+  background:var(--jm-surface);
+}
+.social-workflow .social-plan {
+  grid-template-columns:1fr;
+  border:0;
+  padding-left:clamp(.55rem,2vw,1.4rem);
+  border-left:3px solid var(--jm-clay);
+}
+.social-workflow .social-plan li {
+  display:grid;
+  grid-template-columns:2.4rem minmax(0,.6fr) minmax(0,1fr);
+  gap:.75rem;
+  align-items:baseline;
+  border:0;
+  border-bottom:1px solid var(--jm-line);
+  padding:.95rem 0;
+}
+.social-workflow .social-plan li::before { margin:0; }
+.social-workflow .social-plan h3 { margin:0; }
+
+/* Contacto — open frame with the two ways to continue. */
+.home-page .home-contact {
+  background:var(--jm-surface);
+  color:var(--ink);
+}
+.home-contact .home-contact-layout {
+  position:relative;
+  isolation:isolate;
+  padding:clamp(1.3rem,4.5vw,4rem);
+  border-top:3px solid var(--jm-coral);
+  background:color-mix(in srgb,var(--jm-petrol) 10%,var(--jm-bg));
+}
+.home-contact .home-contact-layout .eyebrow { color:var(--muted); }
+.home-contact .home-contact-layout h2 { max-width:16ch; }
+.contact-frame-art {
+  position:absolute;
+  z-index:-1;
+  right:2%;
+  bottom:6%;
+  width:min(51%,33rem);
+  opacity:.5;
+}
+.home-contact .contact-frame-art {
+  bottom:-.8rem;
+  width:min(40%,25rem);
+  opacity:.35;
+  transform:translateY(26%);
+}
+.contact-hero .contact-frame-art { bottom:0; }
+.booking-section .booking-time {
+  padding:.7rem .95rem;
+  border:1px solid var(--jm-line);
+  border-left:3px solid var(--jm-amber);
+  background:var(--jm-surface);
+}
+
+@media(max-width:800px) {
+  .home-page #explorar { background:var(--jm-bg); }
+  #explorar .home-opening { grid-template-columns:1fr; gap:.9rem; }
+  #explorar .home-opening > div { grid-row:1; }
+  .capability-connector { position:static; grid-row:2; justify-self:end; width:5rem; margin-right:1rem; }
+  .home-page #explorar .portfolio-about { grid-row:3; margin-right:.6rem; }
+  #trabajos .feature-list { grid-template-columns:1fr 1fr; }
+  #trabajos .feature { grid-column:auto; }
+  .contact-frame-art { width:min(57%,25rem); opacity:.32; }
+}
+@media(max-width:620px) {
+  #trabajos .feature-list,.tools-catalog .tool-card { grid-template-columns:1fr; }
+  #trabajos .feature { padding:1.05rem; }
+  #trabajos .feature .project-mark { height:2.65rem; }
+  .game-key-piece { left:auto; right:4%; bottom:5%; width:3.8rem; opacity:.22; }
+  .service-map-art { top:auto; bottom:0; opacity:.26; }
+  .social-workflow .social-plan li { grid-template-columns:1.9rem minmax(0,1fr); gap:.35rem .65rem; }
+  .social-workflow .social-plan p { grid-column:2; }
+}
+@media(prefers-reduced-motion:no-preference) {
+  .capability-connector,.game-key-piece { transition:transform .28s,opacity .22s; }
+  .home-opening:has(.home-capabilities a:is(:hover,:focus-visible)) .capability-connector { transform:translateX(.35rem); }
+  #recursos .tool-card:not([hidden]) .tool-sample { animation:bench-seat .26s ease-out both; }
+  @keyframes bench-seat {
+    from { transform:translateY(.45rem); opacity:.72; }
+    to { transform:translateY(0); opacity:1; }
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  #trabajos .feature:is(:hover,:focus-visible),.service-map .service-line:is(:hover,:focus-visible),
+  .game-invite-display[data-cleared] .game-key-piece { transform:none; }
+}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 190" role="img" aria-label="G07-conector-flexible">
+<title>G07-conector-flexible</title>
+<desc>Recurso vectorial modular JMorgado, capas editables. Texto editorial en HTML.</desc>
+
+<g id="trazo"><path d="M25 95H128Q150 95 150 73V56Q150 34 172 34H235Q257 34 257 56V135Q257 157 279 157H406" fill="none" stroke="var(--jm-metal,#737B69)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 95H128Q150 95 150 73V56Q150 34 172 34H235Q257 34 257 56V135Q257 157 279 157H406" fill="none" stroke="var(--jm-fine,#C9C8B7)" stroke-width="3" stroke-dasharray="10 9" stroke-linecap="round"/></g><g id="nodos" fill="var(--jm-signal,#F45A3A)"><circle cx="25" cy="95" r="10"/><circle cx="406" cy="157" r="10"/><circle cx="257" cy="95" r="7"/></g>
+</svg>

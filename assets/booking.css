@@ -1,0 +1,14 @@
+/* Google Calendar appointment schedule. */
+.booking-section{padding-top:clamp(3.5rem,7vw,6rem)}
+.booking-intro{display:flex;justify-content:space-between;align-items:flex-end;gap:2rem;margin:1.5rem 0 2rem}
+.booking-intro h2{max-width:18ch;margin:0 0 .8rem;font:600 clamp(2rem,3.5vw,3.2rem)/1.08 var(--font-text);letter-spacing:-.04em}
+.booking-intro .lead{max-width:55ch;margin:0}
+.booking-time{flex:0 0 auto;margin:0 0 .2rem;padding-left:1.25rem;border-left:2px solid var(--signal);font:500 .9rem/1.7 var(--font-mono);color:var(--ink)}
+.booking-time span{color:var(--muted);font-size:.78rem}
+.booking-portal{width:min(96vw,68rem)}
+.booking-portal-frame{background:#fff}
+@media(max-width:760px){
+ .booking-intro{display:block}
+ .booking-time{display:inline-block;margin-top:1.25rem}
+}
+@media(max-width:620px){.booking-portal{width:100vw}}

@@ -1,0 +1,152 @@
+/* JMorgado | Motion reel web — Canvas visual + HTML accesible, sin vídeos ni imágenes. */
+.home-page .home-header{position:fixed;top:0;left:0;width:100%;z-index:40;background:var(--paper);box-shadow:0 1px 0 color-mix(in srgb,var(--ink) 10%,transparent);visibility:hidden;opacity:0}
+.home-page.intro-ready:not(.intro-in-content) .home-header{visibility:hidden;opacity:0;transform:translateY(-100%);pointer-events:none}
+.home-page.intro-ready.intro-in-content .home-header{visibility:visible;opacity:1;transform:none;pointer-events:auto;transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .36s}
+.home-header .header-inner{min-height:80px;gap:1.1rem}
+.home-header .header-sub,.home-header .journey-controls{display:none}
+.home-header .wordmark{font-family:"Segoe UI",sans-serif;font-weight:600;letter-spacing:-.06em}
+.home-header .mark{background:transparent;color:var(--signal);transform:none;font:600 1.2rem "Segoe UI",sans-serif;width:auto;margin-right:.25rem}
+.home-projects{scroll-margin-top:90px}
+.portfolio-about{max-width:65ch;margin-top:5rem;padding-top:2rem;border-top:1px solid var(--line)}
+.portfolio-about h3{font-size:2rem}.portfolio-about .lead{font-size:1.1rem;line-height:1.65}
+.portfolio-situations summary{padding:.5rem 0;min-height:44px}
+
+.tech-study{--ui-color:#222327;position:relative;overflow:clip;background:var(--paper);color:var(--ink);font-family:var(--font-text);isolation:isolate}
+[data-jm-theme="night"] .tech-study{--ui-color:#F3F0E8}
+.tech-study[data-scene="2"],.tech-study[data-scene="3"],.tech-study[data-scene="6"]{--ui-color:#222327}
+.tech-study[data-scene="4"],.tech-study[data-scene="5"],.tech-study[data-scene="7"]{--ui-color:#FCFAF5}
+.study-frame{position:relative;min-height:100svh}
+.study-topline{position:relative;z-index:12;display:flex;justify-content:space-between;align-items:center;padding:1.6rem max(5vw,1.25rem);color:var(--ui-color);transition:color .18s ease}
+.study-monogram{font:700 1.24rem/1 var(--font-text);letter-spacing:-.07em}
+.study-period{color:var(--jm-coral)}
+.study-topactions{display:flex;gap:1.45rem;align-items:center}
+.study-theme,.intro-skip{font:500 .81rem/1.2 var(--font-text);letter-spacing:.01em;color:inherit;min-height:44px;display:inline-flex;align-items:center}
+.study-theme{border:0;border-bottom:1px solid currentColor;background:transparent;cursor:pointer;padding:.7rem 0}
+.intro-skip{text-underline-offset:4px;padding:.7rem 0}
+.study-stage{position:relative;height:480px;pointer-events:none}
+.study-canvas{display:block;width:100%;height:100%;pointer-events:auto;touch-action:pan-y;cursor:crosshair;-webkit-tap-highlight-color:transparent}
+.study-copy{position:relative;padding:2rem 7vw;max-width:49rem;color:var(--ink)}
+.study-copy.copy-1{color:#222327}
+.study-copy.copy-3{color:#222327}
+.study-copy.copy-4,.study-copy.copy-6{color:#FCFAF5}
+[data-jm-theme="night"] .tech-study .study-copy:not(.copy-2){color:#F3F0E8}
+.study-heading{position:relative}
+.study-heading h1,.study-heading h2{font:650 clamp(2.15rem,3.7vw,3.9rem)/1.08 var(--font-text);letter-spacing:-.044em;margin:0;max-width:100%}
+.study-mask{display:block;width:fit-content;max-width:100%;overflow:clip;padding:.08em .04em .13em;margin-left:-.04em}
+.study-mask>span{display:block}
+.copy-0 .study-key>span{color:var(--jm-coral)}
+.copy-1 .study-key>span{background:#222327;color:#FCFAF5;padding:0 .15em}
+.copy-2 .study-key>span{background:var(--jm-amber);color:#222327;padding:0 .14em}
+.copy-3 .study-key>span{color:var(--jm-petrol)}
+.copy-4 .study-key>span{color:var(--jm-coral)}
+.copy-5 .study-key>span{background:var(--jm-petrol);color:#FCFAF5;padding:0 .14em}
+.copy-6 .study-key>span{color:var(--jm-coral)}
+.study-rule{display:block;height:2px;width:70px;background:var(--jm-coral);margin-top:1rem;transform-origin:left center}
+.copy-1 .study-rule{background:#222327}
+.copy-3 .study-rule,.copy-4 .study-rule{background:var(--jm-amber)}
+.study-description{font:400 clamp(1rem,1.3vw,1.14rem)/1.55 var(--font-text);max-width:37ch;margin:1.15rem 0 0;color:inherit;opacity:.78}
+.study-invitation{display:flex;align-items:center;gap:.8rem;font:500 11px/1.4 var(--font-mono);letter-spacing:.012em;color:var(--ui-color);padding:1.2rem 5vw;margin:0;transition:color .18s}
+.study-cue-line{display:inline-block;width:36px;height:1px;background:var(--jm-coral)}
+.study-invitation span:last-child{color:var(--jm-coral)}
+.tech-study:not(.is-linked) .study-copy{color:var(--ink)!important}
+.study-copy.copy-6{text-align:center}
+.copy-6 .study-mask,.copy-6 .study-rule{margin-inline:auto}
+.study-copy.copy-6 h2{font-size:clamp(2.7rem,5.8vw,6.4rem);font-weight:670}
+.copy-6 .study-rule{display:none}
+.tech-study.is-linked{height:1140svh}
+.is-linked .study-frame{height:100svh;min-height:0;position:sticky;top:0;overflow:hidden}
+.is-linked .study-stage{position:absolute;inset:0;height:100%}
+.is-linked .study-topline{position:absolute;top:0;left:0;right:0}
+.is-linked .study-copy{position:absolute;z-index:4;padding:0;width:42%;max-width:40rem;opacity:0;visibility:hidden;pointer-events:none}
+.is-linked .copy-0{left:8%;top:12%;width:45%}
+/* Segundo capítulo: lectura horizontal, jerarquía clara y aire sobre el diagrama.
+   La orientación vertical fue descartada expresamente para esta experiencia. */
+.is-linked .copy-1{left:8%;right:8%;top:8%;width:84%;max-width:none;height:auto;text-align:center}
+.is-linked .copy-1 .study-heading{position:relative;left:auto;top:auto;width:100%;transform:none}
+.is-linked .copy-1 .study-heading h2{display:block;width:100%;max-width:none;white-space:normal;font-size:clamp(2rem,3.3vw,3.6rem)}
+.is-linked .copy-1 .study-mask{display:block;max-width:100%;white-space:normal;margin-inline:auto}
+.is-linked .copy-1 .study-mask>span{white-space:normal}
+.is-linked .copy-1 .study-rule{display:block;margin-inline:auto}
+.is-linked .copy-1 .study-description{position:relative;left:auto;top:auto;width:min(100%,34rem);max-width:34rem;margin:.75rem auto 0;text-align:center}
+.is-linked .copy-2{left:27%;top:10%;width:48%;text-align:center}
+.is-linked .copy-2 .study-mask,.is-linked .copy-2 .study-rule,.is-linked .copy-2 .study-description{margin-inline:auto}
+.is-linked .copy-2 .study-description{text-align:center}
+/* La palabra CRECER ya existe en Canvas; el HTML sólo introduce y cierra la frase. */
+.is-linked .copy-3{left:6%;right:6%;top:0;width:88%;max-width:none;height:100%;text-align:center}
+.is-linked .copy-3 .study-heading{position:absolute;left:0;top:10%;width:100%;transform:none}
+.is-linked .copy-3 .study-heading h2{font-size:clamp(2rem,4.4vw,4.8rem);white-space:normal}
+.is-linked .copy-3 .study-mask,.is-linked .copy-3 .study-rule{margin-inline:auto}
+.is-linked .copy-3 .study-rule{display:none}
+.is-linked .copy-3 .study-description{position:absolute;left:0;top:79%;width:100%;max-width:none;text-align:center;margin:0}
+.is-linked .copy-4{left:auto;right:8%;top:10%;width:39%;text-align:right}
+.is-linked .copy-4 .study-mask,.is-linked .copy-4 .study-rule,.is-linked .copy-4 .study-description{margin-left:auto}
+/* El texto recupera el primer plano; las piezas pasan por debajo sin cruzarlo. */
+.is-linked .copy-5{left:14%;top:10%;width:72%;max-width:none;text-align:center}
+.is-linked .copy-5 .study-heading h2{font-size:clamp(2.55rem,4.9vw,5.1rem)}
+.is-linked .copy-5 .study-mask,.is-linked .copy-5 .study-rule,.is-linked .copy-5 .study-description{margin-inline:auto}
+.is-linked .copy-5 .study-description{text-align:center}
+.is-linked .copy-6{left:8%;top:35%;width:84%;max-width:none}
+.is-linked .study-invitation{position:absolute;bottom:1.25rem;left:0;right:0;z-index:4;padding:0 5vw}
+.is-linked .study-invitation::after{content:"";height:1px;flex:1;background:currentColor;opacity:.15;margin-left:2rem}
+@media(max-height:720px) and (min-width:901px){
+ .is-linked .copy-1 .study-heading h2{font-size:clamp(1.1rem,1.65vw,1.52rem)}
+ .is-linked .copy-1 .study-description{top:17%}
+}
+@media(max-width:1100px){.home-header .header-inner{gap:.65rem;flex-wrap:wrap}}
+@media(max-width:900px){
+ .header-inner .theme-toggle{margin-left:auto}
+ .tech-study.is-linked{height:1140svh}
+ .is-linked .study-topline{padding:1rem 6vw}
+ .study-topactions{gap:1.1rem}
+ .study-theme,.intro-skip{font-size:12px}
+ .is-linked .study-copy{left:7%;right:auto;top:12%;width:86%;max-width:none;text-align:left}
+ .is-linked .copy-0,.is-linked .copy-2,.is-linked .copy-4{text-align:center}
+ .is-linked .copy-0 .study-mask,.is-linked .copy-0 .study-description,.is-linked .copy-0 .study-rule,
+ .is-linked .copy-2 .study-mask,.is-linked .copy-2 .study-description,.is-linked .copy-2 .study-rule,
+ .is-linked .copy-4 .study-mask,.is-linked .copy-4 .study-description,.is-linked .copy-4 .study-rule{margin-inline:auto}
+ /* Mantener la lectura horizontal y centrada también en tablet y móvil. */
+ .is-linked .copy-1{left:6%;right:6%;top:12%;width:88%;height:auto;text-align:center}
+ .is-linked .copy-1 .study-heading{position:relative;left:auto;right:auto;top:auto;width:100%;transform:none}
+ .is-linked .copy-1 .study-heading h2{font-size:clamp(1.75rem,5.4vw,2.8rem);white-space:normal}
+ .is-linked .copy-1 .study-mask,.is-linked .copy-1 .study-rule{margin-inline:auto}
+ .is-linked .copy-1 .study-description{position:relative;left:auto;right:auto;top:auto;width:100%;max-width:33ch;margin:1rem auto 0;text-align:center}
+ /* CRECER: título arriba, palabra gráfica al centro y descripción debajo sin superposiciones. */
+ .is-linked .copy-3{left:6%;top:0;width:88%;height:100%;text-align:center}
+ .is-linked .copy-3 .study-heading{position:absolute;left:0;right:0;top:12%;width:100%;transform:none}
+ .is-linked .copy-3 .study-description{position:absolute;left:0;right:0;top:78%;width:100%;max-width:33ch;margin:0 auto;text-align:center}
+ .is-linked .copy-5{left:7%;top:11%;width:86%}
+ .is-linked .copy-6{top:39%;left:6%;width:88%;text-align:center}
+ .study-heading h1,.study-heading h2{font-size:clamp(1.95rem,5.4vw,2.8rem)}
+ .study-copy.copy-6 h2{font-size:clamp(2.5rem,8vw,4rem)}
+ .study-description{font-size:15px;max-width:33ch}
+ .study-stage{height:360px}
+ .study-invitation{font-size:10px}
+}
+@media(max-width:430px){
+ .is-linked .study-copy{top:14%}
+ .is-linked .copy-3{top:0;left:6%;width:88%}
+ .is-linked .copy-6{top:41%}
+ .study-heading h1,.study-heading h2{font-size:clamp(1.83rem,7vw,2.35rem)}
+ .study-description{font-size:14px}
+ .study-topline{padding:1.1rem 5vw}
+ .home-header .header-inner{min-height:100px}
+}
+@media(max-height:620px) and (max-width:900px){
+ .is-linked .study-topline{padding:.35rem 5vw}
+ .is-linked .study-copy{top:14%;left:7%;width:86%}
+ .is-linked .copy-3{top:0;left:6%;width:88%}
+ .is-linked .copy-5{top:12%}
+ .is-linked .copy-1{top:11%;left:6%;width:88%}
+ .is-linked .copy-1 .study-heading h2{font-size:clamp(1.35rem,4vw,2rem)}
+ .is-linked .copy-1 .study-description{margin:.5rem auto 0}
+ .is-linked .copy-6{top:38%;left:6%;width:88%}
+ .study-heading h1,.study-heading h2{font-size:clamp(1.45rem,5.2vw,2rem);line-height:1.04}
+ .study-copy.copy-6 h2{font-size:clamp(2rem,7vw,3rem)}
+ .study-description{font-size:12px;line-height:1.35;margin-top:.65rem;max-width:36ch}
+ .study-rule{margin-top:.6rem;width:52px}
+ .is-linked .study-invitation{bottom:.55rem;font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}
+ .home-page.intro-ready .home-header{visibility:visible!important;opacity:1!important;transform:none!important;pointer-events:auto!important}
+ .tech-study.is-linked{height:auto}.is-linked .study-frame{position:relative;height:auto}
+}

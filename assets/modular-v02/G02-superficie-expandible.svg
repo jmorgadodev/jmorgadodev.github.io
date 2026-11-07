@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 470 180" role="img" aria-label="G02-superficie-expandible">
+<title>G02-superficie-expandible</title>
+<desc>Recurso vectorial modular JMorgado, capas editables. Texto editorial en HTML.</desc>
+
+<g id="extension"><path d="M22 25H411L448 52V144H22Z" fill="var(--jm-body,#23494E)"/><path d="M411 25L448 52H411Z" fill="var(--jm-top,#C9C8B7)"/><path d="M22 143H448V161H22Z" fill="var(--jm-side,#737B69)"/></g><g id="guias"><path d="M44 51H378 M44 67H275 M44 123H423" stroke="var(--jm-fine,#C9C8B7)" stroke-width="2" stroke-opacity=".5"/><circle cx="379" cy="51" r="5" fill="var(--jm-signal,#F45A3A)"/></g>
+</svg>

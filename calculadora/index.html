@@ -8,8 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="../assets/theme-init.js"></script>
-<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/site.css?v=4d775d258ba8">
 <link rel="stylesheet" href="../assets/themes.css">
+<link rel="stylesheet" href="../assets/interior.css?v=14d8d0228d2e">
 <link rel="canonical" href="https://jmorgadodev.github.io/calculadora/"></head><body><a class="skip-link" href="#contenido">Saltar al contenido</a><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden">
 <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 20 20 4M8 4h12v12"/></symbol>
 <symbol id="i-data" viewBox="0 0 24 24"><path d="M3 6 12 2l9 4-9 4-9-4Zm0 6 9 4 9-4M3 18l9 4 9-4M3 6v12M21 6v12"/></symbol>
@@ -21,27 +22,28 @@
 <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 5v7l5 3"/></symbol>
 <symbol id="i-scan" viewBox="0 0 24 24"><path d="M2 9V3h6M16 3h6v6M22 16v5h-6M8 21H2v-5M5 12h14M8 16h8"/></symbol>
 <symbol id="i-grid" viewBox="0 0 24 24"><path d="M2 2h8v8H2zM14 2h8v8h-8zM2 14h8v8H2zM14 14h8v8h-8z"/></symbol>
+<symbol id="i-window" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9h18"/></symbol>
 </svg>
 <header class="site-header"><div class="wrap header-inner">
 <a class="wordmark" href="../"><span class="mark" aria-hidden="true">jm</span><span>JMorgado<span class="orange">.</span></span></a>
 <div class="header-sub">Desarrollo independiente<br>Software / Datos / Procesos</div>
 <button type="button" class="menu-toggle" data-menu-toggle aria-controls="main-nav" aria-expanded="false">Menú +</button>
 <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Cambiar a modo noche">Noche</button>
-<nav class="nav" id="main-nav" data-nav aria-label="Navegación principal"><a href="../proyectos/">Proyectos</a><a href="../servicios/">Servicios</a><a href="../metodo/">Método</a><a href="../calculadora/" aria-current="page">Calculadora</a><a class="nav-contact" href="../contacto/">Conversemos ↗</a></nav>
-</div></header><main id="contenido"><section class="page-hero"><div class="wrap"><nav class="breadcrumb" aria-label="Ruta de navegación"><a href="../">Inicio</a><span aria-hidden="true">/</span><span aria-current="page">Calculadora</span></nav>
+<nav class="nav" id="main-nav" data-nav aria-label="Navegación principal"><a href="../herramientas/">Herramientas</a><a href="../proyectos/">Proyectos</a><a href="../servicios/">Servicios</a><a href="../contacto/" class="nav-contact">Contacto</a></nav>
+</div></header><main id="contenido"><section class="page-hero calculator-hero"><div class="wrap"><nav class="breadcrumb" aria-label="Ruta de navegación"><a href="../">Inicio</a><span aria-hidden="true">/</span><span aria-current="page">Calculadora</span></nav>
     <span class="eyebrow">Herramienta interactiva / Estimación de tiempo</span><h1>El tiempo también cuenta<span class="orange">.</span></h1>
-    <p class="lead">Compara cuánto trabajo activo exige una tarea con la intervención que todavía necesitaría después de automatizarse. Ajusta la frecuencia y las personas: el resultado cambia en vivo.</p></div></section>
-    <section class="section"><div class="wrap"><div class="overline"><span class="num">01 / Compara dos escenarios</span></div>
+    <p class="lead">La calculadora parte con el cierre de pedidos de la portada. Cambia los tiempos, la frecuencia y el número de personas para estimar tu propio caso.</p></div></section>
+    <section class="section calculator-panel"><div class="wrap"><div class="overline"><span class="num">01 / Compara dos escenarios</span></div>
     <div class="calc-grid"><form id="calculator" novalidate aria-label="Calculadora de tiempo recuperado">
     <div class="calc-fields">
     <div class="field-title full">A / Tiempo activo actual por ejecución</div>
-    <div class="field"><label for="before-h">Horas</label><input id="before-h" type="number" min="0" step="1" value="16" inputmode="numeric"></div>
+    <div class="field"><label for="before-h">Horas</label><input id="before-h" type="number" min="0" step="1" value="1" inputmode="numeric"></div>
     <div class="field"><label for="before-m">Minutos (0 a 59)</label><input id="before-m" type="number" min="0" max="59" step="1" value="0" inputmode="numeric"></div>
     <div class="field-title full">B / Intervención humana posterior</div>
     <div class="field"><label for="after-h">Horas</label><input id="after-h" type="number" min="0" step="1" value="0" inputmode="numeric"></div>
-    <div class="field"><label for="after-m">Minutos (0 a 59)</label><input id="after-m" type="number" min="0" max="59" step="1" value="1" inputmode="numeric"></div>
+    <div class="field"><label for="after-m">Minutos (0 a 59)</label><input id="after-m" type="number" min="0" max="59" step="1" value="12" inputmode="numeric"></div>
     <div class="field-title full">C / Frecuencia y dedicación</div>
-    <div class="field"><label for="frequency">Veces que se repite</label><input id="frequency" type="number" min=".01" step="any" value="1"></div>
+    <div class="field"><label for="frequency">Veces que se repite</label><input id="frequency" type="number" min=".01" step="any" value="5"></div>
     <div class="field"><label for="period">Frecuencia</label><select id="period"><option value="week">Por semana</option><option value="day">Por día</option><option value="month">Por mes</option></select></div>
     <div class="field" id="days-field" hidden><label for="days">Días de operación por semana</label><input id="days" type="number" min="1" max="7" step="1" value="5"></div>
     <div class="field"><label for="people">Personas con igual dedicación</label><input id="people" type="number" min="1" step="1" value="1"></div>
@@ -54,7 +56,7 @@
     <p class="hint"><svg class="icon tiny" aria-hidden="true" focusable="false"><use href="#i-scan"></use></svg> Los cálculos se realizan en este navegador. Nada se transmite ni almacena.</p>
     </form><aside class="result" aria-live="polite" aria-atomic="true">
     <div class="eyebrow">Resultado / por ejecución y persona</div>
-    <div class="result-value" id="per-run">15 h 59 min</div>
+    <div class="result-value" id="per-run">48 min</div>
     <div class="result-status" id="calc-state">Tiempo activo recuperado por ejecución</div>
     <div class="result-stats">
     <div><strong id="per-week">—</strong><span>Por semana · equipo</span></div>
@@ -66,14 +68,17 @@
     <p class="result-money" id="money-output" hidden></p><p class="result-note" id="assumptions"></p>
     <p class="result-note" id="calc-error" role="status"></p></aside></div></div></section>
     <section class="section" style="background:var(--paper2)"><div class="wrap"><div class="overline"><span class="num">02 / Cómo interpretar la cifra</span></div>
-    <div class="section-head"><h2>Una estimación no es una cotización.</h2>
-    <p>Pasar de dos jornadas de ocho horas a un minuto sería recuperar 15 h 59 min de trabajo activo por ejecución. Es un ejemplo matemático, no una medición ni una promesa para todos los procesos.</p></div>
-    <p><a class="link-arrow" href="../contacto/">Revisemos un proceso real <svg class="icon tiny" aria-hidden="true" focusable="false"><use href="#i-arrow"></use></svg></a></p></div></section></main><footer class="site-footer"><div class="wrap"><div class="footer-inner"><div>
-<div class="footer-mark">JM<span style="color:var(--signal)">/</span></div>
-<div class="footer-meta">Trabajo independiente · Soluciones digitales basadas en problemas reales.</div>
-</div><div class="footer-links mono small">
-<a href="../proyectos/">Proyectos</a><a href="../servicios/">Servicios</a>
-<a href="../metodo/">Método</a><a href="../calculadora/">Calculadora</a>
-<a href="../contacto/">Contacto</a></div></div>
-<p class="footer-meta">© JMorgado · Sin métricas ni testimonios inventados. Repositorios y documentación oficiales en GitHub.</p>
+    <div class="section-head"><h2>Cómo leer el resultado.</h2>
+    <p>El caso de pedidos supone cinco cierres por semana durante 52 semanas. Si la tarea es estacional o cambia de frecuencia, ajusta ese dato para representar mejor tu operación.</p></div>
+    <p><a class="link-arrow" href="../contacto/">Revisemos un proceso real <svg class="icon tiny" aria-hidden="true" focusable="false"><use href="#i-arrow"></use></svg></a></p></div></section></main><footer class="site-footer"><div class="wrap">
+  <nav class="footer-links" aria-label="Explorar el sitio">
+    <div><h2>Trabajo</h2>
+    <a href="../proyectos/">Proyectos</a><a href="../servicios/">Servicios</a><a href="../metodo/">Método</a></div>
+    <div><h2>Recursos</h2>
+    <a href="../herramientas/">Herramientas</a><a href="../calculadora/">Calculadora</a><a href="../jugar/">Pausa de Tetris</a></div>
+    <div><h2>Contacto</h2>
+    <a class="footer-external" href="https://wa.me/56933904330" target="_blank" rel="noopener noreferrer">WhatsApp</a><a class="footer-external" href="https://www.linkedin.com/in/jorge-morgado/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    <a href="../contacto/#agenda">Agendar una hora</a></div>
+  </nav>
+<div class="footer-base"><span>© JMorgado</span><a href="#contenido">Volver arriba ↑</a></div>
 </div></footer><script src="../assets/site.js" defer></script><script src="../assets/calculator.js" defer></script></body></html>

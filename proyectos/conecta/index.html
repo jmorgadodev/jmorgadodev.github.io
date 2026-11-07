@@ -8,8 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="../../assets/theme-init.js"></script>
-<link rel="stylesheet" href="../../assets/site.css">
+<link rel="stylesheet" href="../../assets/site.css?v=4d775d258ba8">
 <link rel="stylesheet" href="../../assets/themes.css">
+<link rel="stylesheet" href="../../assets/interior.css?v=14d8d0228d2e">
 <link rel="canonical" href="https://jmorgadodev.github.io/proyectos/conecta/"></head><body><a class="skip-link" href="#contenido">Saltar al contenido</a><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden">
 <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 20 20 4M8 4h12v12"/></symbol>
 <symbol id="i-data" viewBox="0 0 24 24"><path d="M3 6 12 2l9 4-9 4-9-4Zm0 6 9 4 9-4M3 18l9 4 9-4M3 6v12M21 6v12"/></symbol>
@@ -21,24 +22,28 @@
 <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 5v7l5 3"/></symbol>
 <symbol id="i-scan" viewBox="0 0 24 24"><path d="M2 9V3h6M16 3h6v6M22 16v5h-6M8 21H2v-5M5 12h14M8 16h8"/></symbol>
 <symbol id="i-grid" viewBox="0 0 24 24"><path d="M2 2h8v8H2zM14 2h8v8h-8zM2 14h8v8H2zM14 14h8v8h-8z"/></symbol>
+<symbol id="i-window" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9h18"/></symbol>
 </svg>
 <header class="site-header"><div class="wrap header-inner">
 <a class="wordmark" href="../../"><span class="mark" aria-hidden="true">jm</span><span>JMorgado<span class="orange">.</span></span></a>
 <div class="header-sub">Desarrollo independiente<br>Software / Datos / Procesos</div>
 <button type="button" class="menu-toggle" data-menu-toggle aria-controls="main-nav" aria-expanded="false">Menú +</button>
 <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Cambiar a modo noche">Noche</button>
-<nav class="nav" id="main-nav" data-nav aria-label="Navegación principal"><a href="../../proyectos/" aria-current="page">Proyectos</a><a href="../../servicios/">Servicios</a><a href="../../metodo/">Método</a><a href="../../calculadora/">Calculadora</a><a class="nav-contact" href="../../contacto/">Conversemos ↗</a></nav>
-</div></header><main id="contenido"><section class="page-hero tone-blue"><div class="wrap"><nav class="breadcrumb" aria-label="Ruta de navegación"><a href="../../">Inicio</a><span aria-hidden="true">/</span><a href="../../proyectos/">Proyectos</a><span aria-hidden="true">/</span><span aria-current="page">Conecta / ListoPorHoy</span></nav>
-    <div class="eyebrow">Productos y plataformas / Integraciones</div><h1>Conecta / ListoPorHoy<span class="orange">.</span></h1>
-    <p class="lead">Calendario, borradores, marcas, medios y servicios de publicación coordinados desde un mismo entorno.</p>
+<nav class="nav" id="main-nav" data-nav aria-label="Navegación principal"><a href="../../herramientas/">Herramientas</a><a href="../../proyectos/" aria-current="page">Proyectos</a><a href="../../servicios/">Servicios</a><a href="../../contacto/" class="nav-contact">Contacto</a></nav>
+</div></header><main id="contenido"><section class="page-hero project-hero tone-blue"><div class="wrap"><nav class="breadcrumb" aria-label="Ruta de navegación"><a href="../../">Inicio</a><span aria-hidden="true">/</span><a href="../../proyectos/">Proyectos</a><span aria-hidden="true">/</span><span aria-current="page">Conecta / ListoPorHoy</span></nav>
+    <div class="eyebrow">Productos y plataformas / Integraciones</div><span class="project-mark mark-conecta"><img class="mark-day" src="../../assets/project-marks/conecta.webp?v=df93c355b076" alt="" loading="lazy" decoding="async"><img class="mark-night" src="../../assets/project-marks/conecta-night.webp?v=9d8b6460ca48" alt="" loading="lazy" decoding="async"></span><h1>Conecta / ListoPorHoy<span class="orange">.</span></h1>
+    <p class="lead">Calendario, borradores, marcas, medios y servicios de publicación coordinados desde un mismo entorno.</p><a class="button dark" href="https://listoporhoy.impulsacv.cl" data-project-portal>Ver sitio <svg class="icon tiny" aria-hidden="true" focusable="false"><use href="#i-window"></use></svg></a>
     <div class="page-meta"><span>Plataforma e integraciones con límites por permisos</span><span>Estudio de caso / alcance documental</span></div></div></section>
     <section class="section"><div class="wrap"><div class="overline"><span class="num">01 / Qué se resolvió</span></div>
     <div class="case-layout"><article class="prose"><h2>Varias marcas. Un problema de coordinación.</h2><p>Operar contenido de distintas marcas obliga a manejar calendarios, archivos, cuentas y estados de publicación en sistemas separados.</p>
     <h3>Trabajo desarrollado</h3><p>Desarrollo de una plataforma web con dashboard, backend Hono, D1, biblioteca de medios y conexiones OAuth/APIs. Se organizaron entidades de marcas, usuarios, roles, calendario, publicaciones y métricas.</p>
-    <div class="tag-list"><span class="tag">Vite</span><span class="tag">Hono</span><span class="tag">Cloudflare Workers</span><span class="tag">D1</span><span class="tag">OAuth / APIs sociales</span></div></article>
+    <h3>Por qué lo construí así</h3><p>Organicé los datos por marca y rol para que los permisos de publicación no dependan de la pantalla que se esté usando. El backend centraliza el calendario y las conexiones OAuth, cada una con el alcance que concede la plataforma.</p>
+    <h3>Mi participación</h3><p>Desarrollé la plataforma, su modelo de permisos y las integraciones disponibles.</p>
+    <h3>Resultado</h3><p>Calendario, borradores y medios coordinados desde un entorno de trabajo por marca.</p>
+    <div class="tag-list"><span class="tag tech-badge" style="--tech-color:#7054b9">Vite</span><span class="tag tech-badge">Hono</span><span class="tag tech-badge" style="--tech-color:#a74915">Cloudflare Workers</span><span class="tag tech-badge">D1</span><span class="tag tech-badge" style="--tech-color:#486d66">OAuth / APIs sociales</span></div></article>
     <aside><p class="eyebrow">Ficha técnica / Referencia</p>
     <dl class="facts"><dt>Tipo</dt><dd>Integraciones</dd><dt>Estado documental</dt><dd>Plataforma e integraciones con límites por permisos</dd><dt>Área</dt><dd>Productos y plataformas</dd></dl>
-    <div style="display:grid;gap:.85rem;margin:1.7rem 0"><a class="button dark" href="https://listoporhoy.impulsacv.cl" target="_blank" rel="noopener noreferrer">Abrir proyecto <svg class="icon tiny" aria-hidden="true" focusable="false"><use href="#i-arrow"></use></svg></a></div>
+    <div style="display:grid;gap:.85rem;margin:1.7rem 0"></div>
     <p class="hint">La ficha explica el trabajo a nivel de portafolio. No sustituye la documentación técnica del repositorio.</p></aside></div></div></section>
     <section class="section" style="background:var(--paper2)"><div class="wrap"><div class="overline"><span class="num">02 / Cómo se conecta el trabajo</span></div>
     <h2>De la entrada al resultado.</h2><p class="lead">Esquema conceptual del flujo documentado. No representa una captura de producción ni un mapa exhaustivo de infraestructura.</p>
@@ -49,12 +54,28 @@
     <a class="link-arrow" href="../../servicios/integraciones/">Explorar este servicio <svg class="icon tiny" aria-hidden="true" focusable="false"><use href="#i-arrow"></use></svg></a></aside></div>
     <div class="related" style="margin-top:4rem"><p class="eyebrow" style="padding-top:1rem">Seguir explorando</p>
     <a href="../../proyectos/"><span>Volver al archivo de proyectos</span><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-arrow"></use></svg></a>
-    <a href="../../contacto/"><span>Conversar sobre un problema parecido</span><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-arrow"></use></svg></a></div></div></section></main><footer class="site-footer"><div class="wrap"><div class="footer-inner"><div>
-<div class="footer-mark">JM<span style="color:var(--signal)">/</span></div>
-<div class="footer-meta">Trabajo independiente · Soluciones digitales basadas en problemas reales.</div>
-</div><div class="footer-links mono small">
-<a href="../../proyectos/">Proyectos</a><a href="../../servicios/">Servicios</a>
-<a href="../../metodo/">Método</a><a href="../../calculadora/">Calculadora</a>
-<a href="../../contacto/">Contacto</a></div></div>
-<p class="footer-meta">© JMorgado · Sin métricas ni testimonios inventados. Repositorios y documentación oficiales en GitHub.</p>
+    <a href="../../contacto/"><span>Conversar sobre un problema parecido</span><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-arrow"></use></svg></a></div></div></section><dialog class="project-portal project-portal-pages" aria-labelledby="project-portal-title">
+    <header class="project-portal-bar">
+      <div class="project-portal-identity"><p>listoporhoy.impulsacv.cl</p><h2 id="project-portal-title">Conecta / ListoPorHoy</h2></div>
+      <div class="project-portal-actions"><button type="button" class="button" data-portal-filter aria-pressed="false">Filtro noche</button>
+        <a class="button" href="https://listoporhoy.impulsacv.cl" target="_blank" rel="noopener noreferrer">Abrir en otra pestaña <svg class="icon tiny" aria-hidden="true" focusable="false"><use href="#i-arrow"></use></svg></a>
+        <form method="dialog"><button class="button" autofocus>Cerrar</button></form>
+      </div>
+    </header><div class="portal-pages" data-portal-pages>
+    <div class="portal-pages-nav" role="group" aria-label="Páginas públicas" hidden><button type="button" class="button" data-portal-choice="inicio" aria-pressed="true">Inicio</button></div>
+    <div class="project-portal-frame" data-portal-frame></div>
+    <p class="project-portal-note portal-unavailable" data-portal-unavailable hidden>Abre el sitio en otra pestaña para visitarlo desde esta dirección.</p>
+    <template data-portal-page="inicio"><iframe title="Conecta / ListoPorHoy · Inicio"
+        src="https://listoporhoy.impulsacv.cl/?jmorgado=1" sandbox="" referrerpolicy="origin"></iframe></template></div></dialog>
+    <script src="../../assets/project-portal.js?v=5c8e31aeb65e" defer></script></main><footer class="site-footer"><div class="wrap">
+  <nav class="footer-links" aria-label="Explorar el sitio">
+    <div><h2>Trabajo</h2>
+    <a href="../../proyectos/">Proyectos</a><a href="../../servicios/">Servicios</a><a href="../../metodo/">Método</a></div>
+    <div><h2>Recursos</h2>
+    <a href="../../herramientas/">Herramientas</a><a href="../../calculadora/">Calculadora</a><a href="../../jugar/">Pausa de Tetris</a></div>
+    <div><h2>Contacto</h2>
+    <a class="footer-external" href="https://wa.me/56933904330" target="_blank" rel="noopener noreferrer">WhatsApp</a><a class="footer-external" href="https://www.linkedin.com/in/jorge-morgado/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    <a href="../../contacto/#agenda">Agendar una hora</a></div>
+  </nav>
+<div class="footer-base"><span>© JMorgado</span><a href="#contenido">Volver arriba ↑</a></div>
 </div></footer><script src="../../assets/site.js" defer></script></body></html>

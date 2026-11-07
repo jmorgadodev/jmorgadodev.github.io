@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 470 110" role="img" aria-label="K01-banda-revelado">
+<title>K01-banda-revelado</title>
+<desc>Recurso vectorial modular JMorgado, capas editables. Texto editorial en HTML.</desc>
+
+<g id="cuerpo"><path d="M20 20H429L453 44V90H20Z" fill="var(--jm-band,#F45A3A)"/><path d="M429 20L453 44H429Z" fill="var(--jm-band-edge,#E8B769)"/></g><g id="acento"><path d="M38 96H428" stroke="var(--jm-band-edge,#E8B769)" stroke-width="3"/></g>
+</svg>

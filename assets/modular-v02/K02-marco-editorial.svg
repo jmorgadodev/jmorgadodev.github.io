@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 210" role="img" aria-label="K02-marco-editorial">
+<title>K02-marco-editorial</title>
+<desc>Recurso vectorial modular JMorgado, capas editables. Texto editorial en HTML.</desc>
+
+<g id="trazos"><path d="M20 175V30H140 M380 30H498V175H391 M20 175H142 M390 175H498" fill="none" stroke="var(--jm-frame,#23494E)" stroke-width="6" stroke-linejoin="round"/><path d="M24 185H496" stroke="var(--jm-fine,#737B69)" stroke-width="1.5" stroke-dasharray="7 12"/></g><g id="vertices"><circle cx="20" cy="30" r="7" fill="var(--jm-signal,#F45A3A)"/><circle cx="498" cy="175" r="7" fill="var(--jm-signal,#F45A3A)"/></g>
+</svg>
