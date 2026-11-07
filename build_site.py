@@ -4,6 +4,7 @@ Sólo escribe HTML dentro de landing/ y sus subdirectorios.
 No modifica proyectos de clientes, repositorios ni DatosDemoCL.
 """
 from __future__ import annotations
+from hashlib import sha256
 from html import escape
 from pathlib import Path
 import re
@@ -15,6 +16,9 @@ SERV = {s["slug"]: s for s in SERVICES}
 LINKEDIN = "https://www.linkedin.com/in/jorge-morgado/"
 def e(value): return escape(str(value), quote=True)
 def local(d, p=""): return "../"*d + p
+def game_asset(d, path):
+    version = sha256((ROOT / path).read_bytes()).hexdigest()[:12]
+    return e(local(d, path) + "?v=" + version)
 def a(d,path,text,cls="link-arrow"): return f'<a class="{cls}" href="{e(local(d,path))}">{text}</a>'
 def external(url, text, cls="link-arrow"): return f'<a class="{cls}" href="{e(url)}" target="_blank" rel="noopener noreferrer">{text}</a>'
 def icon(name="arrow", tiny=False):
@@ -81,7 +85,11 @@ def page(where,title,description,content,active="",journey=False):
     depth=len(Path(where).parts) if where else 0
     canonical="https://jmorgadodev.github.io/"+(where.strip("/")+"/" if where else "")
     head=meta(depth,title,description,active,journey).replace("</head>",f'<link rel="canonical" href="{canonical}"></head>')
-    target.write_text(head+f'<main id="contenido">{content}</main>'+foot(depth,journey),encoding="utf-8")
+    footer = foot(depth, journey)
+    if where == "jugar":
+        head = head.replace("</head>", f'<link rel="stylesheet" href="{game_asset(depth,"assets/tetris.css")}"></head>')
+        footer = footer.replace("</body>", f'<script src="{game_asset(depth,"assets/tetris.js")}" defer></script></body>')
+    target.write_text(head+f'<main id="contenido">{content}</main>'+footer,encoding="utf-8")
     print("PAGE",target.relative_to(ROOT))
 def overline(number,caption):
     return f'<div class="overline"><span class="num">{e(number)} / {e(caption)}</span></div>'
@@ -143,6 +151,10 @@ def home():
     <section class="ink-panel"><div class="wrap">{overline("05","Tiempo recuperado")}
     <div class="statement"><div><h2>¿Cuánto tiempo te ocupa esa tarea que siempre vuelve?</h2><p class="lead">La calculadora permite contrastar tiempo activo, frecuencia, personas e intervención humana posterior. El ejemplo es hipotético; los resultados reales dependen de cada proceso.</p></div>
     <div>{a(d,"calculadora/","Abrir calculadora "+icon("arrow",True),"button")}</div></div></div></section>
+    <section class="section" id="una-partida" aria-labelledby="game-invite-title"><div class="wrap">
+    <div class="section-head"><h2 id="game-invite-title">Pausa de Tetris<span class="orange">.</span></h2>
+    <p>Me gusta pensar qué espacio dejar para la próxima pieza. Te invito a una partida para probar tu mejor puntaje.</p></div>
+    {a(d,"jugar/","Probar una partida "+icon("arrow",True),"button")}</div></section>
     <section class="section"><div class="wrap"><div class="contact-board"><div><span class="eyebrow" style="color:var(--ink)">06 / Conversación inicial</span>
     <h2>Descríbeme el problema como lo contarías en tu trabajo.</h2></div><div><p>No hace falta que sepas si necesitas una app, un flujo de Make o una fórmula en Excel. La primera conversación es gratuita; el trabajo técnico se acuerda aparte.</p>
     {a(d,"contacto/","Hablemos "+icon("arrow",True),"button dark")}</div></div></div></section>"""
@@ -328,9 +340,13 @@ def contact():
     <div class="statement"><h2>Una pregunta es suficiente para comenzar.</h2>
     <p class="lead">¿Qué parte de tu trabajo requiere tiempo que podría dedicarse a algo más útil? Si no lo tienes claro, también podemos revisarlo.</p></div></div></section>"""
     page("contacto","Contacto y diagnóstico inicial gratuito","Conversa directamente con JMorgado sobre automatización, sitios web, datos, IA, integraciones o soporte técnico. Primer diagnóstico orientativo gratuito.",body,"contacto")
+def game_page():
+    from tetris_game import render_game
+    page("jugar", "Pausa de Tetris", "Una pausa en el portafolio. Tetris con teclado configurable, controles táctiles y récord personal en este navegador.", render_game(), "jugar")
+
 if __name__=="__main__":
     home();portfolio()
     for p in PROJECTS:project_detail(p)
     services_index()
     for s in SERVICES:service_detail(s)
-    method();calc();contact()
+    method();calc();contact();game_page()

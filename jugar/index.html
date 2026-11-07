@@ -1,0 +1,103 @@
+<!doctype html><html lang="es"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pausa de Tetris | JMorgado</title><meta name="description" content="Una pausa en el portafolio. Tetris con teclado configurable, controles táctiles y récord personal en este navegador.">
+<meta name="robots" content="index,follow"><meta name="theme-color" content="#F0EDE5">
+<meta property="og:type" content="website"><meta property="og:locale" content="es_CL">
+<meta property="og:title" content="Pausa de Tetris | JMorgado"><meta property="og:description" content="Una pausa en el portafolio. Tetris con teclado configurable, controles táctiles y récord personal en este navegador.">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="../assets/theme-init.js"></script>
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/themes.css">
+<link rel="canonical" href="https://jmorgadodev.github.io/jugar/"><link rel="stylesheet" href="../assets/tetris.css?v=73241eda98ee"></head><body><a class="skip-link" href="#contenido">Saltar al contenido</a><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden">
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 20 20 4M8 4h12v12"/></symbol>
+<symbol id="i-data" viewBox="0 0 24 24"><path d="M3 6 12 2l9 4-9 4-9-4Zm0 6 9 4 9-4M3 18l9 4 9-4M3 6v12M21 6v12"/></symbol>
+<symbol id="i-branch" viewBox="0 0 24 24"><path d="M4 4v16M4 7h8m0 0v10m0-10h8M12 17h8M20 4v6m0 4v6"/><circle cx="4" cy="4" r="2"/><circle cx="20" cy="4" r="2"/><circle cx="20" cy="20" r="2"/></symbol>
+<symbol id="i-code" viewBox="0 0 24 24"><path d="m8 5-6 7 6 7m8-14 6 7-6 7M14 3 10 21"/></symbol>
+<symbol id="i-gear" viewBox="0 0 24 24"><path d="M3 7h18M3 17h18M7 3v8m10 2v8"/><circle cx="7" cy="7" r="3"/><circle cx="17" cy="17" r="3"/></symbol>
+<symbol id="i-network" viewBox="0 0 24 24"><rect x="2" y="2" width="7" height="7"/><rect x="15" y="2" width="7" height="7"/><rect x="8.5" y="15" width="7" height="7"/><path d="M5.5 9v3h13V9M12 12v3"/></symbol>
+<symbol id="i-support" viewBox="0 0 24 24"><path d="M3 13v-2a9 9 0 0 1 18 0v2M3 13h4v7H5a2 2 0 0 1-2-2v-5Zm18 0h-4v7h2a2 2 0 0 0 2-2v-5ZM17 20c0 2-3 2-5 2"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 5v7l5 3"/></symbol>
+<symbol id="i-scan" viewBox="0 0 24 24"><path d="M2 9V3h6M16 3h6v6M22 16v5h-6M8 21H2v-5M5 12h14M8 16h8"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><path d="M2 2h8v8H2zM14 2h8v8h-8zM2 14h8v8H2zM14 14h8v8h-8z"/></symbol>
+</svg>
+<header class="site-header"><div class="wrap header-inner">
+<a class="wordmark" href="../"><span class="mark" aria-hidden="true">jm</span><span>JMorgado<span class="orange">.</span></span></a>
+<div class="header-sub">Desarrollo independiente<br>Software / Datos / Procesos</div>
+<button type="button" class="menu-toggle" data-menu-toggle aria-controls="main-nav" aria-expanded="false">Menú +</button>
+<button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Cambiar a modo noche">Noche</button>
+<nav class="nav" id="main-nav" data-nav aria-label="Navegación principal"><a href="../proyectos/">Proyectos</a><a href="../servicios/">Servicios</a><a href="../metodo/">Método</a><a href="../calculadora/">Calculadora</a><a class="nav-contact" href="../contacto/">Conversemos ↗</a></nav>
+</div></header><main id="contenido"><section class="game-page" data-tetris>
+    <svg class="game-backdrop" viewBox="0 0 1440 880" aria-hidden="true" focusable="false">
+      <g class="game-backdrop-outline">
+        <path d="M-44 252H140V344H232V436H-44ZM48 252V436M140 344H-44M140 344V436"/>
+        <path d="M1120 105H1396V197H1304V289H1212V197H1120ZM1212 105V197M1304 105V197M1212 197H1304"/>
+      </g>
+      <g class="game-backdrop-pieces">
+        <path class="game-backdrop-coral" d="M88 558H160V630H232V702H88Z"/>
+        <path class="game-backdrop-amber" d="M1280 460H1424V604H1280Z"/>
+        <path class="game-backdrop-petrol" d="M1140 690H1356V762H1284V834H1212V762H1140Z"/>
+      </g>
+      <path class="game-backdrop-guides" d="M24 510H255M255 510V770M1180 362H1416M1180 362V622"/>
+    </svg>
+    <div class="wrap game-wrap">
+    <nav class="breadcrumb" aria-label="Ruta de navegación"><a href="../#una-partida">Inicio</a><span aria-hidden="true">/</span><span aria-current="page">Pausa de Tetris</span></nav>
+    <div class="game-heading"><div><p class="eyebrow">Entre proyectos</p><h1>Pausa de Tetris<span class="orange">.</span></h1></div>
+    <div class="game-intro"><p>Me gusta que el tablero guarde las decisiones anteriores. Puedes arreglar una mala jugada con las siguientes piezas. Aquí tienes una partida para probarlo y mejorar tu marca.</p>
+    <p class="game-record-note">Tu récord se guarda en este navegador.</p></div></div>
+    <noscript><p>Activa JavaScript para jugar en el navegador.</p></noscript>
+    <div class="game-shell" hidden>
+      <dl class="game-score">
+        <div><dt>Puntos</dt><dd data-stat="score">0</dd></div>
+        <div><dt>Récord</dt><dd data-stat="best">0</dd></div>
+        <div><dt>Líneas</dt><dd data-stat="lines">0</dd></div>
+        <div><dt>Nivel</dt><dd data-stat="level">1</dd></div>
+      </dl>
+      <div class="game-grid">
+        <aside class="game-hold"><h2>Reserva</h2><canvas data-hold width="144" height="104" aria-label="Reserva vacía"></canvas></aside>
+        <div class="game-board" tabindex="0" role="group" aria-label="Tablero de Tetris" aria-describedby="game-key-hint">
+          <canvas data-board width="300" height="600" aria-label="Tablero de diez columnas y veinte filas">Tablero de Tetris.</canvas>
+          <div class="game-tetris-callout" hidden aria-hidden="true">
+            <strong data-celebration-title></strong>
+            <span data-celebration-detail></span>
+          </div>
+          <div class="game-overlay">
+            <h2 data-game-title>Partida individual</h2>
+            <p data-game-message>Completa filas y supera tu mejor puntaje.</p>
+            <button type="button" class="button strong" data-game-primary>Empezar</button>
+          </div>
+        </div>
+        <aside class="game-next"><h2>Próximas</h2><canvas data-next width="144" height="300" aria-label="Próximas tres piezas"></canvas></aside>
+      </div>
+      <div class="game-touch" hidden aria-label="Controles táctiles"><button type="button" data-touch="left" aria-label="Mover a la izquierda">←</button><button type="button" data-touch="right" aria-label="Mover a la derecha">→</button><button type="button" data-touch="soft" aria-label="Caída lenta">↓</button><button type="button" data-touch="hard" aria-label="Caída rápida">⇊</button><button type="button" data-touch="ccw" aria-label="Rotar a la izquierda">↶</button><button type="button" data-touch="cw" aria-label="Rotar a la derecha">↷</button><button type="button" data-touch="hold" aria-label="Reservar pieza">C</button></div>
+      <div class="game-actions">
+        <button type="button" class="button" data-game-pause disabled>Pausar</button>
+        <button type="button" class="button" data-game-restart disabled>Reiniciar</button>
+        <button type="button" class="button" data-game-settings>Configurar controles</button>
+      </div>
+      <label class="game-touch-option"><input type="checkbox" data-touch-option> Habilitar controles táctiles</label>
+      <p class="game-hint" id="game-key-hint">Con el tablero enfocado, usa tus teclas asignadas. Escape pausa o reanuda la partida.</p>
+      <p class="game-hint">Completa filas con piezas consecutivas. Desde el combo ×2, cada pieza de la racha suma un bono.</p>
+      <p class="game-status" role="status"></p>
+    </div>
+    <dialog class="game-dialog" aria-labelledby="game-dialog-title">
+      <form method="dialog">
+        <h2 id="game-dialog-title">Configurar controles</h2>
+        <p>Elige un campo y presiona una tecla. Escape cancela la asignación.</p>
+        <div class="game-bindings"><div class="game-binding"><label for="key-left">Mover a la izquierda</label><button id="key-left" type="button" data-bind="left" aria-label="Mover a la izquierda: ←">←</button></div><div class="game-binding"><label for="key-right">Mover a la derecha</label><button id="key-right" type="button" data-bind="right" aria-label="Mover a la derecha: →">→</button></div><div class="game-binding"><label for="key-soft">Caída lenta</label><button id="key-soft" type="button" data-bind="soft" aria-label="Caída lenta: ↓">↓</button></div><div class="game-binding"><label for="key-hard">Caída rápida</label><button id="key-hard" type="button" data-bind="hard" aria-label="Caída rápida: Espacio">Espacio</button></div><div class="game-binding"><label for="key-ccw">Rotar a la izquierda</label><button id="key-ccw" type="button" data-bind="ccw" aria-label="Rotar a la izquierda: V">V</button></div><div class="game-binding"><label for="key-cw">Rotar a la derecha</label><button id="key-cw" type="button" data-bind="cw" aria-label="Rotar a la derecha: ↑">↑</button></div><div class="game-binding"><label for="key-half">Rotar 180°</label><button id="key-half" type="button" data-bind="half" aria-label="Rotar 180°: X">X</button></div><div class="game-binding"><label for="key-hold">Reservar pieza</label><button id="key-hold" type="button" data-bind="hold" aria-label="Reservar pieza: C">C</button></div></div>
+        <p class="game-binding-status" role="status"></p>
+        <div class="game-dialog-actions">
+          <button type="button" class="button" data-game-reset>Restablecer controles</button>
+          <button class="button strong" value="save">Guardar y cerrar</button>
+        </div>
+      </form>
+    </dialog></div></section></main><footer class="site-footer"><div class="wrap"><div class="footer-inner"><div>
+<div class="footer-mark">JM<span style="color:var(--signal)">/</span></div>
+<div class="footer-meta">Trabajo independiente · Soluciones digitales basadas en problemas reales.</div>
+</div><div class="footer-links mono small">
+<a href="../proyectos/">Proyectos</a><a href="../servicios/">Servicios</a>
+<a href="../metodo/">Método</a><a href="../calculadora/">Calculadora</a>
+<a href="../contacto/">Contacto</a></div></div>
+<p class="footer-meta">© JMorgado · Sin métricas ni testimonios inventados. Repositorios y documentación oficiales en GitHub.</p>
+</div></footer><script src="../assets/site.js" defer></script><script src="../assets/tetris.js?v=5f050bd78ae7" defer></script></body></html>

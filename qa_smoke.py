@@ -42,11 +42,11 @@ try:
   page=browser.new_page(reduced_motion='reduce',color_scheme='dark');page.goto(base);assert page.locator('html').get_attribute('data-jm-theme')=='night';assert page.locator('.is-enhanced').count()==0;assert page.locator('[data-chapter]:visible').count()==7;page.close()
   page=browser.new_page(java_script_enabled=False);page.goto(base);assert page.locator('[data-chapter]:visible').count()==7;assert page.get_by_role('heading',name='Todo comienza con una idea.').is_visible();page.close()
   page=browser.new_page()
-  files=[ROOT/'index.html',*list((ROOT/'proyectos').rglob('index.html')),*list((ROOT/'servicios').rglob('index.html')),*(ROOT/x/'index.html' for x in ['metodo','calculadora','contacto'])]
-  assert len(files)==23
+  files=[ROOT/'index.html',*list((ROOT/'proyectos').rglob('index.html')),*list((ROOT/'servicios').rglob('index.html')),*(ROOT/x/'index.html' for x in ['metodo','calculadora','contacto','jugar'])]
+  assert len(files)==24
   for file in files:
    path=file.relative_to(ROOT).as_posix();r=page.goto(base+path);assert r.status==200
    assert page.locator('[data-theme-toggle]').is_visible()
    html=BeautifulSoup(file.read_text(encoding='utf-8'),'html.parser');ids=[x['id'] for x in html.select('[id]')];assert len(ids)==len(set(ids))
-  page.close();browser.close();print('23 rutas, tema global, movimiento reducido y sin JS: OK')
+  page.close();browser.close();print('24 rutas, tema global, movimiento reducido y sin JS: OK')
 finally: server.shutdown()
