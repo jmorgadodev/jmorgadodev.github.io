@@ -4,10 +4,11 @@ __pycache__/
 _revision/
 
 # Borradores privados y salida de publicación
-# Conservar en Git SOLO el contexto canónico y el encargo del agente.
+# Conservar en Git el contexto canónico, el plan vigente del inicio y el encargo del agente.
 !docs/
 docs/*
 !docs/CONTEXTO_MAESTRO_JMORGADO.md
+!docs/PLAN_MEJORA_ESCENAS_INICIO_JMORGADO.md
 !docs/ENCARGO_AGENTE_IDENTIDAD_INTERIOR_JMORGADO.md
 BRIEF_REPLICACION_EL_VIAJE.md
 _site/

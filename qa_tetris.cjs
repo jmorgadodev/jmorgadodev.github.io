@@ -69,15 +69,19 @@ const clear = (count, existingLines = 0) => {
   const game = fresh();
   game.lines = existingLines;
   game.level = 1 + Math.floor(existingLines / 10);
+  const interval = game.gravity();
+  clearRows(game, count);
+  return {game, interval};
+};
+function clearRows(game, count) {
+  for (const row of game.board) row.fill(null);
   game.active = {type:"I", x:2, y:TOTAL - 4, rotation:1};
   for (let y = TOTAL - count; y < TOTAL; y++) {
     game.board[y] = Array(COLS).fill("J");
     game.board[y][4] = null;
   }
-  const interval = game.gravity();
   game.act("hard");
-  return {game, interval};
-};
+}
 for (const [lines, score] of [[1,100], [2,300], [3,500], [4,800]]) {
   const {game} = clear(lines);
   assert.equal(game.lines, lines);
@@ -95,9 +99,10 @@ for (const [lines, score] of [[1,100], [2,300], [3,500], [4,800]]) {
 {
   const game = fresh();
   let previousGravity = Infinity, previousDelay = Infinity;
-  for (const level of [1, 5, 10, 15, 30, 57]) {
+  for (const [level, maxInterval] of [[1,700], [5,220], [10,90], [15,55], [30,26], [57,20]]) {
     game.level = level;
     assert(game.gravity() < previousGravity);
+    assert(game.gravity() <= maxInterval);
     assert(game.lockDelay() < previousDelay);
     previousGravity = game.gravity();
     previousDelay = game.lockDelay();
@@ -113,8 +118,8 @@ for (const [lines, score] of [[1,100], [2,300], [3,500], [4,800]]) {
 
 {
   const clears = [];
-  const game = new Tetris(() => .63, (event, rows, streak) => {
-    if (event === "clear") clears.push({lines: rows.length, ...streak});
+  const game = new Tetris(() => .63, (event, rows, {combo, bonus} = {}) => {
+    if (event === "clear") clears.push({lines: rows.length, combo, bonus});
   });
   game.start();
   game.lines = 9;
@@ -141,6 +146,83 @@ for (const [lines, score] of [[1,100], [2,300], [3,500], [4,800]]) {
   assert.equal(game.score, 1000);
   game.start();
   assert.equal(game.combo, 0);
+}
+
+function prepareSpin(game, count, mini = false) {
+  for (const row of game.board) row.fill(null);
+  const x = 3, y = TOTAL - 3;
+  game.board[y][x] = "J";
+  game.board[y + 2][x] = "J";
+  game.board[mini ? y + 2 : y][x + 2] = "J";
+  if (count >= 1) {
+    game.board[y + 1].fill("J");
+    game.board[y + 1].fill(null, x, x + 3);
+  }
+  if (count === 2) {
+    game.board[y].fill("J");
+    game.board[y][x + 1] = null;
+  }
+  game.active = {type:"T", x, y, rotation:1};
+}
+
+for (const [lines, mini, score] of [[0,false,400], [1,false,800], [2,false,1200], [0,true,100], [1,true,200]]) {
+  const game = fresh();
+  prepareSpin(game, lines, mini);
+  assert(game.act("ccw"));
+  assert.equal(game.ghostY(), game.active.y);
+  assert(game.act("hard"));
+  assert.equal(game.lines, lines);
+  assert.equal(game.score, score);
+}
+
+{
+  const game = fresh();
+  const x = 3, y = TOTAL - 3;
+  for (let row = y; row < TOTAL; row++) game.board[row].fill("J");
+  for (const [dx, dy] of CELLS.T[1]) game.board[y + dy][x + dx] = null;
+  game.board[y - 2][x + 1] = "J"; // Forces the fifth 0→1 kick into the triple slot.
+  game.active = {type:"T", x:x+1, y:y-2, rotation:0};
+  assert(game.act("cw"));
+  assert.deepEqual(game.active, {type:"T", x, y, rotation:1});
+  game.act("hard");
+  assert.equal(game.lines, 3);
+  assert.equal(game.score, 1600);
+}
+
+{
+  const game = fresh();
+  prepareSpin(game, 1);
+  game.active.rotation = 0;
+  game.act("hard");
+  assert.equal(game.score, 100, "a T in the slot needs an actual rotation");
+  game.start();
+  game.active = {type:"T", x:3, y:6, rotation:1};
+  game.act("ccw");
+  game.act("hard");
+  assert(game.score < 100, "a hard drop through open space is not a spin");
+}
+
+{
+  const game = fresh();
+  clearRows(game, 4);
+  clearRows(game, 4);
+  assert.equal(game.score, 800 + 1200 + 50);
+  prepareSpin(game, 0);
+  game.act("ccw");
+  game.act("hard");
+  assert.equal(game.combo, 0);
+  assert.equal(game.score, 2450);
+  prepareSpin(game, 2);
+  game.act("ccw");
+  game.act("hard");
+  assert.equal(game.score, 4250, "no-line placements preserve back-to-back, without a combo");
+  clearRows(game, 1);
+  assert.equal(game.backToBack, false);
+  const score = game.score;
+  clearRows(game, 4);
+  assert.equal(game.score - score, 1600 + 200, "a normal clear breaks back-to-back but keeps the combo");
+  game.start();
+  assert.equal(game.backToBack, false);
 }
 
 {
@@ -182,4 +264,4 @@ for (const [lines, score] of [[1,100], [2,300], [3,500], [4,800]]) {
 assert.deepEqual(cleanKeys({left:"F5"}), DEFAULT_KEYS);
 assert.deepEqual(cleanKeys({...DEFAULT_KEYS, left:DEFAULT_KEYS.right}), DEFAULT_KEYS);
 assert.equal(cleanKeys({...DEFAULT_KEYS, left:"KeyA"}).left, "KeyA");
-console.log("Motor: bolsa, vista previa, colisiones, giros, reserva, caídas, 1–4 líneas, combos, nivel, tiempo, pausa y fin OK");
+console.log("Motor: bolsa, giros, reserva, caídas, líneas, T-Spins, combos, B2B, nivel, pausa y fin OK");

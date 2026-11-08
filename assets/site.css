@@ -640,6 +640,8 @@ html:has(.project-portal[open]) { overflow:hidden; }
 .project-portal-actions .button { min-height:44px; padding:.4rem .65rem; gap:.4rem; font:600 .86rem var(--font-text); }
 .project-portal-actions .button:hover { color:var(--paper); transform:none; }
 .project-portal-actions form { margin:0; }
+.project-portal-status { flex-basis:100%; margin:0; color:var(--muted); font:.85rem/1.35 var(--font-text); }
+.project-portal-status:empty { display:none; }
 .project-portal-frame { min-width:0; min-height:0; background:var(--paper); }
 .project-portal-frame iframe { display:block; width:100%; height:100%; border:0; }
 .project-portal[data-filter-night] iframe { filter:invert(.91) hue-rotate(180deg) saturate(.85); }
@@ -655,6 +657,22 @@ html:has(.project-portal[open]) { overflow:hidden; }
 .project-portal-live > .project-portal-note { max-width:none; padding:.45rem .85rem; border-top:1px solid var(--line); }
 @media(max-width:620px) {
   :is(.project-portal-live,.project-portal-pages) { width:100vw; height:100dvh; max-height:none; border:0; }
+}
+
+.missing-actions { display:flex; flex-wrap:wrap; gap:.65rem; }
+.whatsapp-fab {
+  position:fixed; z-index:12; inset:auto max(1rem,env(safe-area-inset-right)) max(1rem,env(safe-area-inset-bottom)) auto;
+  display:grid; place-items:center; width:48px; height:48px;
+  border:1px solid #fff8; border-radius:50%; box-shadow:0 3px 12px #102e3840;
+  background:#176348; color:#fff; text-decoration:none;
+}
+.whatsapp-fab:hover { background:#104d39; color:#fff; }
+.whatsapp-fab:focus-visible { outline:2px solid var(--ink); outline-offset:3px; }
+.whatsapp-fab .icon { width:23px; height:23px; }
+.whatsapp-fab[hidden] { display:none; }
+@media(max-width:620px) {
+  .whatsapp-fab { inset-inline-end:max(.65rem,env(safe-area-inset-right)); }
+  body:has([data-tetris][data-game-state]:not([data-game-state="idle"])) .whatsapp-fab { display:none; }
 }
 
 .social-hero{border-top:5px solid var(--jm-clay);background:linear-gradient(110deg,var(--paper2),color-mix(in srgb,var(--jm-clay) 19%,var(--paper)))}

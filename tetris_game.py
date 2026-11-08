@@ -36,10 +36,11 @@ def render_game():
         f'<button id="key-{action}" type="button" data-bind="{action}" aria-label="{escape(label)}: {key}">{key}</button></div>'
         for action, label, key in ACTIONS
     )
-    touch_symbols = {"left": "←", "right": "→", "soft": "↓", "hard": "⇊", "ccw": "↶", "cw": "↷", "hold": "C"}
+    touch_symbols = {"hold": "▣", "left": "←", "right": "→", "soft": "↓", "ccw": "↶", "cw": "↷", "hard": "⇊"}
+    touch_labels = {action: label for action, label, _ in ACTIONS}
     touch = "".join(
-        f'<button type="button" data-touch="{action}" aria-label="{escape(label)}">{touch_symbols[action]}</button>'
-        for action, label, _ in ACTIONS if action in touch_symbols
+        f'<button type="button" data-touch="{action}" aria-label="{escape(touch_labels[action])}">{symbol}</button>'
+        for action, symbol in touch_symbols.items()
     )
     return f"""<section class="game-page" data-tetris>
     <svg class="game-backdrop" viewBox="0 0 1440 880" aria-hidden="true" focusable="false">
@@ -57,8 +58,7 @@ def render_game():
     <div class="wrap game-wrap">
     <nav class="breadcrumb" aria-label="Ruta de navegación"><a href="../#una-partida">Inicio</a><span aria-hidden="true">/</span><span aria-current="page">Pausa de Tetris</span></nav>
     <div class="game-heading"><div><p class="eyebrow">Entre proyectos</p><h1>Pausa de Tetris<span class="orange">.</span></h1></div>
-    <div class="game-intro"><p>Me gusta que el tablero guarde las decisiones anteriores. Puedes arreglar una mala jugada con las siguientes piezas. Aquí tienes una partida para probarlo y mejorar tu marca.</p>
-    <p class="game-record-note">El puntaje y el tiempo de juego se guardan en este navegador.</p></div></div>
+    <div class="game-intro"><p>Siempre vuelvo al Tetris por ese momento en que guardas un hueco y, justo a tiempo, llega la pieza que esperabas. Si te apetece una pausa, te invito a intentar superar tu propia marca.</p></div></div>
     <noscript><p>Activa JavaScript para jugar en el navegador.</p></noscript>
     <div class="game-shell" hidden>
       <dl class="game-score">
@@ -70,7 +70,7 @@ def render_game():
       </dl>
       <div class="game-grid">
         <aside class="game-hold"><h2>Reserva</h2><canvas data-hold width="144" height="104" aria-label="Reserva vacía"></canvas></aside>
-        <div class="game-board" tabindex="0" role="group" aria-label="Tablero de Tetris" aria-describedby="game-key-hint">
+        <div class="game-board" tabindex="0" role="group" aria-label="Tablero de Tetris">
           <canvas data-board width="300" height="600" aria-label="Tablero de diez columnas y veinte filas">Tablero de Tetris.</canvas>
           <div class="game-tetris-callout" hidden aria-hidden="true">
             <strong data-celebration-title></strong>
@@ -80,11 +80,20 @@ def render_game():
             <h2 data-game-title>Partida individual</h2>
             <p data-game-message>Completa filas y supera tu mejor puntaje.</p>
             <button type="button" class="button strong" data-game-primary>Empezar</button>
+            <button type="button" class="button game-rank-open" data-ranking-open hidden>Publicar marca</button>
           </div>
         </div>
         <aside class="game-next"><h2>Próximas</h2><canvas data-next width="144" height="300" aria-label="Próximas tres piezas"></canvas></aside>
       </div>
-      <div class="game-touch" hidden aria-label="Controles táctiles">{touch}</div>
+      <div class="game-touch-panel" hidden>
+        <div class="game-touch" role="group" aria-label="Controles táctiles">{touch}</div>
+        <button type="button" class="button touch-edit" data-touch-edit aria-expanded="false" aria-controls="touch-edit-tools">Ordenar botones</button>
+        <div id="touch-edit-tools" hidden>
+          <p class="game-touch-instructions">Arrastra un botón a su nueva posición o toca un botón y luego el lugar donde quieres moverlo.</p>
+          <button type="button" class="button touch-edit" data-touch-reset>Restaurar orden</button>
+        </div>
+        <p class="game-touch-status" data-touch-status role="status"></p>
+      </div>
       <div class="game-actions">
         <button type="button" class="button" data-game-pause aria-keyshortcuts="Enter" disabled>Pausar</button>
         <button type="button" class="button" data-game-restart disabled>Reiniciar</button>
@@ -92,10 +101,38 @@ def render_game():
       </div>
       <label class="game-touch-option"><input type="checkbox" data-touch-option> Habilitar controles táctiles</label>
       <p class="game-last-result" data-last-result hidden></p>
-      <p class="game-hint" id="game-key-hint">Con el tablero enfocado, usa tus teclas asignadas. Enter pausa o reanuda la partida.</p>
-      <p class="game-hint">Completa filas con piezas consecutivas. Desde el combo ×2, cada pieza de la racha suma un bono.</p>
       <p class="game-status" role="status"></p>
     </div>
+    <details class="game-ranking" hidden>
+      <summary>Ranking <span>Top 10</span></summary>
+      <div class="game-ranking-body">
+        <p data-ranking-status role="status"></p>
+        <button type="button" class="button" data-ranking-retry hidden>Reintentar</button>
+        <ol data-ranking-list hidden></ol>
+      </div>
+    </details>
+    <dialog class="game-rank-dialog" aria-labelledby="rank-ticket-title">
+      <form data-ranking-form>
+        <p class="rank-ticket-kicker">Pausa de Tetris</p>
+        <h2 id="rank-ticket-title">Tu marca<span class="orange">.</span></h2>
+        <dl class="rank-ticket-results">
+          <div><dt>Puntos</dt><dd data-ranking-score>0</dd></div>
+          <div><dt>Tiempo</dt><dd data-ranking-time>00:00</dd></div>
+        </dl>
+        <div class="rank-ticket-alias">
+          <label for="tetris-alias">Alias público</label><span data-ranking-count aria-hidden="true">0/10</span>
+          <input id="tetris-alias" name="alias" maxlength="10" required autocomplete="off" spellcheck="false" placeholder="Tu alias" aria-describedby="tetris-alias-hint" autofocus>
+          <span class="rank-ticket-meter" data-ranking-meter aria-hidden="true"></span>
+          <span class="game-status" id="tetris-alias-hint">Hasta 10 caracteres. El alias, el puntaje y el tiempo se publican juntos.</span>
+        </div>
+        <p class="rank-ticket-feedback" data-ranking-feedback role="status"></p>
+        <div class="rank-ticket-actions">
+          <button type="button" class="button" data-ranking-dismiss>Ahora no</button>
+          <button type="submit" class="button strong" data-ranking-submit>Publicar marca</button>
+          <button type="button" class="button strong" data-ranking-view hidden>Ver Top 10</button>
+        </div>
+      </form>
+    </dialog>
     <dialog class="game-dialog" aria-labelledby="game-dialog-title">
       <form method="dialog">
         <h2 id="game-dialog-title">Configurar controles</h2>

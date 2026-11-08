@@ -1,0 +1,187 @@
+/* JMorgado ? theme quality pass. Homepage sections only; the approved intro is untouched. */
+
+.home-page {
+  --home-contact-ink:#071A20;
+}
+
+/* Project names stay editorial and legible; the original marks carry brand colour. */
+.home-page #trabajos .feature-identity h3 {
+  color:var(--art-ink)!important;
+}
+.home-page #trabajos .project-ledger > .feature {
+  transition:background-color .26s ease,border-color .26s ease;
+}
+.home-page #trabajos .project-ledger > .feature:is(:hover,:focus-visible) {
+  background:color-mix(in srgb,var(--jm-petrol) 5%,var(--jm-bg))!important;
+}
+
+/* Amber is a signal colour, not a small-text colour on pale paper. */
+.home-page .home-tools .section-head h2 em {
+  color:#8D5E20!important;
+}
+[data-jm-theme="night"] .home-page .home-tools .section-head h2 em {
+  color:var(--jm-amber)!important;
+}
+
+/* Give the personal chapter and the Tetris invitation their own quiet surfaces. */
+.home-page main > .home-persona {
+  background:color-mix(in srgb,var(--jm-olive) 12%,var(--jm-bg))!important;
+}
+[data-jm-theme="night"] .home-page main > .home-persona {
+  background:color-mix(in srgb,var(--jm-olive) 14%,var(--jm-surface))!important;
+}
+.home-page main > .home-game {
+  background:color-mix(in srgb,var(--jm-petrol) 7%,var(--jm-surface))!important;
+}
+
+/* Coral contact panel: use one deep ink that passes contrast in both themes. */
+.home-page .home-contact-cta .contact-board {
+  background:var(--jm-coral)!important;
+  border-color:var(--home-contact-ink)!important;
+  box-shadow:.55rem .6rem 0 color-mix(in srgb,var(--jm-petrol-deep) 22%,transparent)!important;
+}
+.home-page .home-contact-cta .contact-board h2,
+.home-page .home-contact-cta .contact-board .eyebrow,
+.home-page .home-contact-cta .contact-board-copy > p,
+.home-page .home-contact-cta .contact-caveat {
+  color:var(--home-contact-ink)!important;
+}
+.home-page .home-contact-cta .contact-board .eyebrow {
+  font-size:.68rem!important;
+  letter-spacing:.075em!important;
+}
+.home-page .home-contact-cta .contact-board-copy > p:not(.contact-caveat) {
+  font-size:1rem!important;
+  line-height:1.65!important;
+}
+.home-page .home-contact-cta .contact-caveat {
+  font-size:.74rem!important;
+  line-height:1.5!important;
+}
+.home-page .home-contact-cta .button.outline {
+  color:var(--home-contact-ink)!important;
+  border-color:var(--home-contact-ink)!important;
+  background:transparent!important;
+}
+.home-page .home-contact-cta .button.outline:is(:hover,:focus-visible) {
+  color:var(--jm-surface)!important;
+  border-color:var(--home-contact-ink)!important;
+  background:var(--home-contact-ink)!important;
+}
+.home-page .nav .nav-contact {
+  color:var(--home-contact-ink)!important;
+}
+.home-page .nav .nav-contact:is(:hover,:focus-visible) {
+  color:var(--jm-surface)!important;
+  background:var(--home-contact-ink)!important;
+  border-color:var(--home-contact-ink)!important;
+}
+
+/* The footer stays compact, but its navigation and legal line are no longer microtype. */
+.home-page .home-footer .footer-nav {
+  gap:1rem clamp(1rem,2vw,1.8rem)!important;
+}
+.home-page .home-footer .footer-nav a {
+  font-size:.75rem!important;
+  line-height:1.45!important;
+}
+.home-page .home-footer .footer-base {
+  font-size:.72rem!important;
+  line-height:1.45!important;
+}
+@media(max-width:640px) {
+  .home-page .home-footer .footer-nav {gap:.75rem 1rem!important}
+  .home-page .home-footer .footer-nav a {font-size:.72rem!important}
+  .home-page .home-footer .footer-base {font-size:.68rem!important}
+}
+@media(prefers-reduced-motion:reduce) {
+  .home-page #trabajos .project-ledger > .feature {transition:none!important}
+}
+
+
+/* Contrast refinements found in the rendered day/night audit. */
+:root[data-jm-theme="day"] .home-page .home-problem .home-offer:nth-child(3) h3 {
+  color:#B8412B!important;
+}
+:root[data-jm-theme="night"] .home-page .home-problem .home-offer:nth-child(3) h3 {
+  color:var(--jm-coral)!important;
+}
+:root[data-jm-theme="day"] .home-page .home-calculator .eyebrow {
+  color:#FF8064!important;
+}
+:root[data-jm-theme="night"] .home-page .home-calculator .eyebrow {
+  color:var(--jm-coral)!important;
+}
+:root[data-jm-theme="day"] .home-page .home-game .tetris-play-cta small {
+  color:#B8412B!important;
+}
+:root[data-jm-theme="night"] .home-page .home-game .tetris-play-cta small {
+  color:var(--jm-coral)!important;
+}
+.home-page .home-game .tetris-play-cta small {
+  font-size:.68rem!important;
+  font-weight:650!important;
+  letter-spacing:.075em!important;
+}
+
+/* Brand marks retain their own colour; all project names share the text role. */
+:root[data-jm-theme] .home-page #trabajos .project-ledger > .feature:nth-child(n) .feature-identity h3 {
+  color:var(--art-ink)!important;
+}
+
+/* Night surfaces are intentionally distinct from adjacent sections. */
+:root[data-jm-theme="night"] .home-page main > .home-persona {
+  background:color-mix(in srgb,var(--jm-olive) 14%,var(--jm-surface))!important;
+}
+:root[data-jm-theme="night"] .home-page main > .home-game {
+  background:color-mix(in srgb,var(--jm-petrol) 7%,var(--jm-surface))!important;
+}
+
+/* Higher-specificity theme override replaces the legacy muted coral treatment. */
+:root[data-jm-theme="night"] .home-page .home-contact-cta .contact-board {
+  background:var(--jm-coral)!important;
+  border-color:var(--home-contact-ink)!important;
+  box-shadow:.55rem .6rem 0 color-mix(in srgb,var(--jm-petrol-deep) 22%,transparent)!important;
+}
+:root[data-jm-theme] .home-page .home-contact-cta .contact-board h2,
+:root[data-jm-theme] .home-page .home-contact-cta .contact-board h2 em,
+:root[data-jm-theme] .home-page .home-contact-cta .contact-board .eyebrow,
+:root[data-jm-theme] .home-page .home-contact-cta .contact-board-copy > p,
+:root[data-jm-theme] .home-page .home-contact-cta .contact-board .contact-caveat,
+:root[data-jm-theme] .home-page .home-contact-cta .contact-board .button.outline {
+  color:var(--home-contact-ink)!important;
+}
+:root[data-jm-theme] .home-page .home-contact-cta .contact-board .button.outline {
+  border-color:var(--home-contact-ink)!important;
+  background:transparent!important;
+}
+:root[data-jm-theme] .home-page .home-contact-cta .contact-board .button.outline:is(:hover,:focus-visible) {
+  color:var(--jm-surface)!important;
+  border-color:var(--home-contact-ink)!important;
+  background:var(--home-contact-ink)!important;
+}
+
+
+/* Mobile project names keep their words intact beside the original marks. */
+@media(max-width:640px) {
+  .home-page #trabajos .project-ledger > .feature .feature-identity {
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:center!important;
+    gap:.65rem!important;
+  }
+  .home-page #trabajos .project-ledger > .feature .feature-identity h3 {
+    min-width:0!important;
+    font-size:clamp(1.4rem,6vw,1.7rem)!important;
+    line-height:1.04!important;
+    overflow-wrap:normal!important;
+    word-break:normal!important;
+    hyphens:none!important;
+  }
+  .home-page #trabajos .project-ledger > .feature .project-mark {
+    width:3rem!important;height:3rem!important;
+  }
+  .home-page #trabajos .project-ledger > .feature.feature-ryvolt .project-mark {
+    width:5.25rem!important;height:2.5rem!important;
+  }
+}

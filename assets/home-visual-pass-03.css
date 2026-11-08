@@ -1,0 +1,1054 @@
+/* JMorgado / visual pass 03 — legibilidad, marca y una pausa con personalidad. */
+
+/* Tiempo: una idea, dos barras y una cifra que se entiende de inmediato. */
+.home-page main > .home-calculator {
+  background:#102E38!important;
+  color:#F3F0E8!important;
+  padding-block:clamp(3.8rem,6.5vw,6rem)!important;
+}
+:root[data-jm-theme="night"] .home-page main > .home-calculator {
+  background:#0B2028!important;
+}
+.home-page .home-calculator .wrap {max-width:1240px}
+.home-page .impact-heading {
+  display:grid;
+  grid-template-columns:minmax(0,1.12fr) minmax(16rem,.72fr);
+  align-items:end;
+  gap:clamp(2rem,6vw,6rem);
+  margin:0 0 clamp(2rem,4.5vw,4rem)!important;
+}
+.home-page .impact-heading .eyebrow {
+  margin:0 0 1rem;
+  color:var(--jm-coral)!important;
+  font:650 .67rem var(--font-mono);
+  letter-spacing:.09em;
+}
+.home-page .impact-heading h2 {
+  max-width:13ch;
+  margin:0;
+  color:#F3F0E8!important;
+  font:700 clamp(2.8rem,5.3vw,5.4rem)/.96 var(--font-display)!important;
+  letter-spacing:-.075em!important;
+  text-wrap:balance;
+}
+.home-page .impact-heading h2 em {
+  color:var(--jm-amber)!important;
+  font-style:normal;
+}
+.home-page .impact-heading>p {
+  max-width:39ch;
+  margin:0 0 .25rem;
+  color:#C8D7D2!important;
+  font-size:clamp(.96rem,1.15vw,1.08rem);
+  line-height:1.7;
+}
+.home-page .impact-visual {
+  display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(17rem,.78fr);
+  align-items:center;
+  gap:clamp(2rem,5vw,5rem);
+}
+.home-page .impact-comparison {
+  min-width:0;
+  padding:1.1rem 0 1.35rem;
+  border:0!important;
+  border-top:2px solid var(--jm-coral)!important;
+  border-bottom:1px solid #557278!important;
+  background:transparent!important;
+}
+.home-page .impact-panel-kicker {
+  margin:0 0 1.5rem;
+  color:#AFC3BF!important;
+  font:600 .63rem var(--font-mono);
+  letter-spacing:.08em;
+}
+.home-page .impact-bar-row {margin:0 0 1.5rem}
+.home-page .impact-bar-row:last-child {margin-bottom:0}
+.home-page .impact-bar-label {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:1rem;
+  margin:0 0 .6rem;
+  color:#F3F0E8!important;
+  font-size:.9rem;
+  line-height:1.4;
+}
+.home-page .impact-bar-label strong {
+  flex:0 0 auto;
+  color:#F3F0E8!important;
+  font:650 .88rem var(--font-mono);
+  white-space:nowrap;
+}
+.home-page .impact-track {
+  display:block;
+  width:100%;
+  height:13px;
+  overflow:hidden;
+  border:0!important;
+  border-radius:1px;
+  background:#29474D!important;
+}
+.home-page .impact-track span {
+  display:block;
+  width:var(--bar-width);
+  height:100%;
+  transform:scaleX(1);
+  transform-origin:left;
+}
+.home-page .impact-fill-before {background:var(--jm-coral)!important}
+.home-page .impact-fill-after {background:var(--jm-amber)!important}
+.home-page .impact-metrics {
+  min-width:0;
+  padding:0 0 0 clamp(1.5rem,3vw,3rem)!important;
+  border:0!important;
+  border-left:1px solid #557278!important;
+  background:transparent!important;
+}
+.home-page .impact-metric-label {
+  margin:0 0 1.1rem;
+  color:#AFC3BF!important;
+  font:600 .63rem var(--font-mono);
+  letter-spacing:.08em;
+}
+.home-page .impact-per-run {
+  display:flex;
+  align-items:baseline;
+  gap:.8rem;
+  padding:0 0 1.2rem;
+  border:0!important;
+  border-bottom:1px solid #557278!important;
+}
+.home-page .impact-per-run strong {
+  display:block;
+  flex:0 0 auto;
+  min-width:0;
+  color:var(--jm-amber)!important;
+  font:700 clamp(5.4rem,8vw,7.7rem)/.86 var(--font-display)!important;
+  letter-spacing:-.09em!important;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.home-page .impact-per-run>span {
+  flex:0 0 auto;
+  color:#F3F0E8!important;
+  font-size:1rem;
+  line-height:1.3;
+}
+.home-page .impact-periods {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1rem;
+  padding-top:1rem;
+}
+.home-page .impact-periods>div {
+  display:flex;
+  flex-direction:column-reverse;
+  align-items:flex-start;
+  gap:.35rem;
+  min-width:0;
+}
+.home-page .impact-periods>div+div {
+  padding-left:1rem;
+  border-left:1px solid #557278;
+}
+.home-page .impact-periods strong {
+  color:#F3F0E8!important;
+  font:700 clamp(1.7rem,2.8vw,2.35rem)/1 var(--font-display);
+  letter-spacing:-.055em;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.home-page .impact-periods>div:last-child strong {color:var(--jm-amber)!important}
+.home-page .impact-periods span {
+  color:#AFC3BF!important;
+  font:600 .59rem var(--font-mono);
+  letter-spacing:.07em;
+}
+.home-page .impact-footer {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:2rem;
+  padding-top:1.3rem;
+}
+.home-page .impact-footer>p {
+  max-width:55ch;
+  margin:0;
+  color:#BFCFCB!important;
+  font-size:.76rem;
+  line-height:1.55;
+}
+.home-page .impact-footer .savings-launch {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.65rem;
+  min-height:48px;
+  padding:.8rem 1.05rem;
+  border:1px solid var(--jm-amber)!important;
+  background:var(--jm-amber)!important;
+  color:#102E38!important;
+  font:700 .72rem var(--font-mono)!important;
+  white-space:nowrap;
+}
+.home-page .impact-footer .savings-launch:hover {
+  border-color:#F3F0E8!important;
+  background:#F3F0E8!important;
+}
+
+/* Noche: conservar el petróleo, levantar los acentos y separar las superficies. */
+:root[data-jm-theme="night"] .home-page .impact-heading>p,
+:root[data-jm-theme="night"] .home-page .impact-footer>p {color:#D2DEDA!important}
+:root[data-jm-theme="night"] .home-page .impact-track {background:#203A42!important}
+:root[data-jm-theme="night"] .home-page .impact-comparison,
+:root[data-jm-theme="night"] .home-page .impact-metrics {border-color:#45636A!important}
+:root[data-jm-theme="night"] .home-page .impact-periods>div+div {border-color:#45636A!important}
+
+/* Tetris: un tetrominó de verdad en 3D, girando y enlazado a la partida. */
+.home-page main > .home-game {
+  background:var(--jm-surface)!important;
+  color:var(--jm-text)!important;
+}
+:root[data-jm-theme="night"] .home-page main > .home-game {
+  background:#18282E!important;
+  color:#F3F0E8!important;
+}
+.home-page .home-game .pause-layout {
+  display:grid!important;
+  grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr)!important;
+  align-items:center!important;
+  gap:clamp(2rem,6vw,6rem)!important;
+}
+.home-page .home-game .pause-copy {max-width:38rem}
+.home-page .home-game .pause-rule {
+  margin:0 0 1rem!important;
+  color:var(--jm-coral)!important;
+  font:650 .66rem var(--font-mono)!important;
+  letter-spacing:.09em!important;
+}
+.home-page .home-game .pause-copy h2 {
+  max-width:11ch!important;
+  margin:0 0 1.1rem!important;
+  color:var(--jm-text)!important;
+  font:700 clamp(2.8rem,5vw,5rem)/.96 var(--font-display)!important;
+  letter-spacing:-.075em!important;
+}
+.home-page .home-game .pause-copy h2 em {
+  color:var(--jm-coral)!important;
+  font-style:normal;
+}
+.home-page .home-game .pause-copy>p:not(.pause-rule) {
+  max-width:37ch;
+  color:var(--muted)!important;
+  font-size:1rem;
+  line-height:1.7;
+}
+:root[data-jm-theme="night"] .home-page .home-game .pause-copy h2 {color:#F3F0E8!important}
+.home-page .home-game .pause-figure {
+  width:100%;
+  min-width:0;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.home-page .tetris-piece-link {
+  --cube-size:clamp(49px,5.4vw,68px);
+  --cube-gap:8px;
+  --cube-step:calc(var(--cube-size) + var(--cube-gap));
+  --cube-half:calc(var(--cube-size) / 2);
+  position:relative;
+  isolation:isolate;
+  display:grid;
+  grid-template-rows:auto minmax(230px,1fr) auto;
+  min-height:370px;
+  width:100%;
+  padding:1.15rem clamp(1rem,2.2vw,1.7rem) 1rem;
+  overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--jm-line) 65%,transparent)!important;
+  border-top:2px solid var(--jm-coral)!important;
+  background:var(--jm-bg)!important;
+  color:var(--jm-text)!important;
+  text-decoration:none!important;
+  transition:border-color .25s ease,background .25s ease;
+}
+:root[data-jm-theme="night"] .home-page .tetris-piece-link {
+  background:#111E23!important;
+  border-color:#3C5960!important;
+  border-top-color:var(--jm-coral)!important;
+  color:#F3F0E8!important;
+}
+.home-page .tetris-piece-topline,
+.home-page .tetris-piece-bottomline {
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+}
+.home-page .tetris-piece-topline {
+  color:var(--jm-olive);
+  font:600 .61rem var(--font-mono);
+  letter-spacing:.09em;
+}
+:root[data-jm-theme="night"] .home-page .tetris-piece-topline {color:#AFC3BF}
+.home-page .tetris-piece-topline span:last-child {color:var(--jm-coral)}
+.home-page .tetris-piece-scene {
+  position:relative;
+  display:grid;
+  place-items:center;
+  min-height:260px;
+  perspective:1000px;
+  perspective-origin:50% 47%;
+  overflow:visible;
+}
+.home-page .tetris-piece-light {
+  position:absolute;
+  z-index:-1;
+  width:min(78%,330px);
+  aspect-ratio:1.5;
+  border-radius:50%;
+  background:radial-gradient(ellipse,color-mix(in srgb,var(--jm-amber) 17%,transparent),transparent 68%);
+  filter:blur(7px);
+}
+.home-page .tetris-piece-shadow {
+  position:absolute;
+  left:50%;
+  bottom:24px;
+  width:min(62%,250px);
+  height:25px;
+  border-radius:50%;
+  background:color-mix(in srgb,var(--jm-petrol-deep) 35%,transparent);
+  filter:blur(13px);
+  transform:translateX(-50%) rotate(-5deg);
+}
+.home-page .tetris-piece-float {
+  position:relative;
+  display:block;
+  width:calc(var(--cube-step) + var(--cube-step) + var(--cube-size));
+  height:calc(var(--cube-step) + var(--cube-size));
+  transform-style:preserve-3d;
+  animation:tetris-float-03 4.8s ease-in-out infinite;
+}
+.home-page .tetris-tetromino {
+  position:absolute;
+  inset:0;
+  transform-style:preserve-3d;
+  transform-origin:50% 50%;
+  animation:tetris-turn-03 9s ease-in-out infinite;
+}
+.home-page .tetris-cube {
+  position:absolute;
+  display:block;
+  width:var(--cube-size);
+  height:var(--cube-size);
+  transform-style:preserve-3d;
+}
+.home-page .tetris-cube--a {left:0;top:0}
+.home-page .tetris-cube--b {left:var(--cube-step);top:0}
+.home-page .tetris-cube--c {left:calc(var(--cube-step) + var(--cube-step));top:0}
+.home-page .tetris-cube--d {left:var(--cube-step);top:var(--cube-step)}
+.home-page .tetris-face {
+  position:absolute;
+  inset:0;
+  display:block;
+  border:1px solid color-mix(in srgb,var(--jm-petrol-deep) 38%,transparent);
+  border-radius:3px;
+  backface-visibility:hidden;
+  box-shadow:inset 0 1px 0 #FFFFFF42,inset 0 -1px 0 #102E3830;
+}
+.home-page .tetris-face--front {
+  background:var(--jm-coral);
+  transform:translateZ(var(--cube-half));
+}
+.home-page .tetris-face--back {
+  background:color-mix(in srgb,var(--jm-coral) 68%,#102E38);
+  transform:rotateY(180deg) translateZ(var(--cube-half));
+}
+.home-page .tetris-face--right {
+  background:color-mix(in srgb,var(--jm-coral) 68%,#102E38);
+  transform:rotateY(90deg) translateZ(var(--cube-half));
+}
+.home-page .tetris-face--left {
+  background:color-mix(in srgb,var(--jm-coral) 82%,#102E38);
+  transform:rotateY(-90deg) translateZ(var(--cube-half));
+}
+.home-page .tetris-face--top {
+  background:color-mix(in srgb,var(--jm-coral) 45%,#FFFFFF);
+  transform:rotateX(90deg) translateZ(var(--cube-half));
+}
+.home-page .tetris-face--bottom {
+  background:color-mix(in srgb,var(--jm-coral) 56%,#102E38);
+  transform:rotateX(-90deg) translateZ(var(--cube-half));
+}
+.home-page .tetris-piece-bottomline {
+  padding-top:.8rem;
+  border-top:1px solid var(--jm-line);
+  color:var(--jm-text);
+}
+.home-page .tetris-piece-bottomline strong {
+  color:var(--jm-text)!important;
+  font:650 .78rem var(--font-mono);
+  letter-spacing:.02em;
+}
+.home-page .tetris-piece-bottomline>span {
+  display:grid;
+  place-items:center;
+  width:2rem;
+  height:2rem;
+  border:1px solid var(--jm-coral);
+  color:var(--jm-coral);
+  transition:transform .25s ease,background .25s ease,color .25s ease;
+}
+.home-page .tetris-piece-bottomline svg {width:1rem;height:1rem}
+.home-page .tetris-piece-link:is(:hover,:focus-visible) {
+  border-color:var(--jm-coral)!important;
+  background:color-mix(in srgb,var(--jm-coral) 5%,var(--jm-bg))!important;
+}
+.home-page .tetris-piece-link:is(:hover,:focus-visible) .tetris-piece-bottomline>span {
+  transform:translate(2px,-2px);
+  background:var(--jm-coral);
+  color:#102E38;
+}
+.home-page .tetris-piece-link:focus-visible {outline:3px solid var(--jm-amber);outline-offset:4px}
+.home-page .tetris-piece-link:hover .tetris-tetromino {animation-duration:8s}
+@keyframes tetris-turn-03 {
+  0%,100% {transform:rotateX(-23deg) rotateY(-28deg) rotateZ(-3deg)}
+  50% {transform:rotateX(-17deg) rotateY(28deg) rotateZ(3deg)}
+}
+@keyframes tetris-float-03 {
+  0%,100% {transform:translateY(5px)}
+  50% {transform:translateY(-9px)}
+}
+
+/* Projects: the whole case is the link. Logos stay faithful to each project's identity. */
+.home-page #trabajos .project-ledger {
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:0 clamp(1.4rem,4vw,3.5rem)!important;
+  width:100%;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+}
+.home-page #trabajos .project-ledger .feature {
+  --project-accent:var(--jm-petrol);
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 2.3rem!important;
+  grid-template-rows:auto auto!important;
+  align-items:center!important;
+  column-gap:1rem!important;
+  min-width:0!important;
+  min-height:150px!important;
+  margin:0!important;
+  padding:1.35rem .2rem!important;
+  border:0!important;
+  border-top:1px solid var(--art-line)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:var(--art-ink)!important;
+  box-shadow:none!important;
+  text-decoration:none!important;
+  transform:none!important;
+  transition:background .22s ease,padding .22s ease;
+}
+.home-page #trabajos .project-ledger .feature:nth-child(even) {background:transparent!important}
+.home-page #trabajos .project-ledger .feature::before,
+.home-page #trabajos .project-ledger .feature::after {display:none!important}
+.home-page #trabajos .feature-identity {
+  grid-column:1;
+  grid-row:1;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:1rem!important;
+  min-width:0;
+  margin:0 0 .65rem!important;
+}
+.home-page #trabajos .feature-identity h3 {
+  order:0!important;
+  min-width:0;
+  margin:0!important;
+  color:var(--art-ink)!important;
+  font:700 clamp(1.8rem,3vw,2.8rem)/.98 var(--font-display)!important;
+  letter-spacing:-.075em!important;
+  overflow-wrap:anywhere;
+}
+.home-page #trabajos .feature .project-mark {
+  order:1!important;
+  flex:0 0 auto!important;
+  display:grid!important;
+  place-items:center!important;
+  width:clamp(4.3rem,6.2vw,6.3rem)!important;
+  height:clamp(3.3rem,4.6vw,4.6rem)!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.home-page #trabajos .feature .project-mark img {
+  display:block;
+  width:100%;
+  height:100%;
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+}
+.home-page #trabajos .feature .project-mark .mark-night {display:none}
+:root[data-jm-theme="night"] .home-page #trabajos .feature .project-mark .mark-day {display:none}
+:root[data-jm-theme="night"] .home-page #trabajos .feature .project-mark .mark-night {display:block}
+.home-page #trabajos .feature-summary {
+  grid-column:1;
+  grid-row:2;
+  max-width:46ch;
+  margin:0!important;
+  color:var(--art-muted)!important;
+  font-size:.9rem;
+  line-height:1.6;
+}
+.home-page #trabajos .feature-arrow {
+  grid-column:2;
+  grid-row:1 / span 2;
+  justify-self:end;
+  align-self:center;
+  display:grid;
+  place-items:center;
+  width:2.25rem;
+  height:2.25rem;
+  border:1px solid var(--project-accent);
+  color:var(--project-accent);
+  transition:background .22s ease,color .22s ease,transform .22s ease;
+}
+.home-page #trabajos .feature-arrow svg {width:1rem;height:1rem}
+.home-page #trabajos .feature:is(:hover,:focus-visible) {
+  background:color-mix(in srgb,var(--project-accent) 6%,var(--jm-surface))!important;
+}
+.home-page #trabajos .feature:is(:hover,:focus-visible) .feature-arrow {
+  background:var(--project-accent);
+  color:var(--jm-surface);
+  transform:translate(2px,-2px);
+}
+.home-page #trabajos .feature:focus-visible {outline:2px solid var(--jm-amber);outline-offset:4px}
+.home-page #trabajos .feature.feature-ryvolt {--project-accent:#0098A9}
+.home-page #trabajos .feature.feature-ryvolt .feature-identity h3 {color:#0098A9!important}
+:root[data-jm-theme="night"] .home-page #trabajos .feature.feature-ryvolt {--project-accent:#50C7D1}
+:root[data-jm-theme="night"] .home-page #trabajos .feature.feature-ryvolt .feature-identity h3 {color:#50C7D1!important}
+.home-page #trabajos .feature.feature-ryvolt .project-mark {
+  width:clamp(7rem,10vw,9rem)!important;
+  height:4.1rem!important;
+}
+:root[data-jm-theme="night"] .home-page #trabajos .feature {border-top-color:#3D555A!important}
+:root[data-jm-theme="night"] .home-page #trabajos .feature-summary {color:#BFCBC7!important}
+:root[data-jm-theme="night"] .home-page #trabajos .feature-arrow {border-color:var(--project-accent)}
+
+/* Small screens keep the object and every project comfortably tappable. */
+@media(max-width:850px) {
+  .home-page .impact-heading {grid-template-columns:1fr;gap:1rem}
+  .home-page .impact-heading h2 {max-width:15ch}
+  .home-page .impact-visual {grid-template-columns:1fr;gap:1.5rem}
+  .home-page .impact-metrics {
+    padding:1.25rem 0 0!important;
+    border-left:0!important;
+    border-top:1px solid #557278!important;
+  }
+  .home-page .home-game .pause-layout {grid-template-columns:1fr!important;gap:1.5rem!important}
+  .home-page .home-game .pause-copy {max-width:42rem}
+  .home-page .tetris-piece-link {min-height:350px}
+  .home-page #trabajos .project-ledger {grid-template-columns:1fr!important}
+  .home-page #trabajos .project-ledger .feature {min-height:130px!important}
+}
+@media(max-width:640px) {
+  .home-page main > .home-calculator {padding-block:3.2rem!important}
+  .home-page .impact-heading h2 {font-size:clamp(2.55rem,10.8vw,4rem)!important}
+  .home-page .impact-bar-label {font-size:.8rem}
+  .home-page .impact-bar-label strong {font-size:.78rem}
+  .home-page .impact-per-run strong {font-size:5.7rem!important}
+  .home-page .impact-periods strong {font-size:1.8rem!important}
+  .home-page .impact-footer {align-items:stretch;flex-direction:column;gap:1rem}
+  .home-page .impact-footer .savings-launch {width:100%;white-space:normal}
+  .home-page .home-game .pause-copy h2 {font-size:clamp(2.6rem,10.5vw,3.8rem)!important}
+  .home-page .tetris-piece-link {min-height:340px;padding-inline:1rem}
+  .home-page .tetris-piece-scene {min-height:245px}
+  .home-page .tetris-piece-link {--cube-size:54px;--cube-gap:7px}
+  .home-page #trabajos .project-ledger .feature {min-height:125px!important;padding:1.15rem .1rem!important}
+  .home-page #trabajos .feature-identity h3 {font-size:clamp(1.8rem,8vw,2.5rem)!important}
+  .home-page #trabajos .feature .project-mark {width:4.6rem!important;height:3.4rem!important}
+  .home-page #trabajos .feature.feature-ryvolt .project-mark {width:6.5rem!important;height:3.6rem!important}
+}
+@media(prefers-reduced-motion:reduce) {
+  .home-page .tetris-piece-float,
+  .home-page .tetris-tetromino {animation:none!important}
+  .home-page .tetris-tetromino {transform:rotateX(-23deg) rotateY(-28deg)!important}
+  .home-page #trabajos .feature,
+  .home-page .tetris-piece-link,
+  .home-page .tetris-piece-bottomline>span {transition:none!important}
+}
+
+
+/* Revisión específica de noche: más contraste sin perder los colores de marca. */
+:root[data-jm-theme="night"] .home-page .home-offer:nth-child(1) h3,
+:root[data-jm-theme="night"] .home-page .method-step:nth-child(1) h3 {
+  color:#8DBFC6!important;
+}
+:root[data-jm-theme="night"] .home-page .method-step:nth-child(2) h3 {
+  color:#C0C7B2!important;
+}
+:root[data-jm-theme="night"] .home-page #trabajos .section-head>p {
+  color:#C2CECA!important;
+}
+:root[data-jm-theme="night"] .home-page #trabajos .project-ledger>.feature:nth-child(1) {
+  --project-accent:#8DBFC6;
+}
+:root[data-jm-theme="night"] .home-page #trabajos .project-ledger>.feature:nth-child(1) .feature-identity h3 {
+  color:#8DBFC6!important;
+}
+:root[data-jm-theme="night"] .home-page #trabajos .project-ledger>.feature:nth-child(2) {
+  --project-accent:#C0C7B2;
+}
+:root[data-jm-theme="night"] .home-page #trabajos .project-ledger>.feature:nth-child(2) .feature-identity h3 {
+  color:#C0C7B2!important;
+}
+:root[data-jm-theme="night"] .home-page #trabajos .project-ledger>.feature:nth-child(4) {
+  --project-accent:#EEC47D;
+}
+:root[data-jm-theme="night"] .home-page #trabajos .project-ledger>.feature:nth-child(4) .feature-identity h3 {
+  color:#EEC47D!important;
+}
+.home-page #trabajos .project-ledger>.feature:nth-child(n) {
+  grid-column:auto!important;
+}
+.home-page #trabajos .feature.feature-flor-de-almendro .project-mark {
+  padding:.28rem!important;
+  border-radius:50%;
+  background:#FCFAF5!important;
+}
+.home-page #trabajos .feature.feature-flor-de-almendro .project-mark img {
+  border-radius:50%;
+}
+:root[data-jm-theme="night"] .home-page .home-contact-cta .contact-board {
+  background:#D45F4A!important;
+  border-color:#102E38!important;
+  box-shadow:.55rem .6rem 0 #29474D!important;
+}
+:root[data-jm-theme="night"] .home-page .home-contact-cta .contact-board h2,
+:root[data-jm-theme="night"] .home-page .home-contact-cta .contact-board .eyebrow {
+  color:#102E38!important;
+}
+:root[data-jm-theme="night"] .home-page .home-contact-cta .contact-caveat {
+  color:#17373C!important;
+}
+.home-page .home-game .pause-copy h2 {max-width:14ch!important}
+@media(max-width:850px) {
+  .home-page main > #ahorro {scroll-margin-top:155px!important}
+}
+@media(max-width:640px) {
+  .home-page main > #ahorro {scroll-margin-top:145px!important}
+}
+
+/* El titular informa sin ocupar toda la escena. */
+.home-page .impact-heading h2 {
+  max-width:15ch;
+  font-size:clamp(2.8rem,5.1vw,5.2rem)!important;
+}
+/* Visual pass 04 — Tetris sin tarjeta: una pieza viva y siete transformaciones. */
+.home-page .home-game .pause-copy h2 {max-width:12ch!important}
+.home-page .home-game .pause-copy h2 em {color:var(--jm-amber)!important}
+.home-page .home-game .pause-rule {color:var(--jm-coral)!important}
+.home-page .tetris-play-stage {
+  display:grid;
+  justify-items:center;
+  align-content:center;
+  min-width:0;
+  width:100%;
+  padding:0;
+  background:transparent!important;
+}
+.home-page .tetris-piece-link {
+  display:block;
+  position:relative;
+  width:100%;
+  min-height:0;
+  margin:0;
+  padding:0;
+  overflow:visible!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:inherit;
+  text-decoration:none!important;
+  cursor:pointer;
+}
+.home-page .tetris-piece-scene {
+  position:relative;
+  display:grid;
+  place-items:center;
+  width:100%;
+  min-height:330px;
+  overflow:visible;
+  perspective:1100px;
+  perspective-origin:50% 48%;
+  transform-style:preserve-3d;
+  transition:transform .42s cubic-bezier(.2,.7,.2,1),filter .42s ease;
+}.home-page .tetris-piece-orbit {
+  position:absolute;
+  display:block;
+  pointer-events:none;
+  border:1px solid color-mix(in srgb,var(--jm-petrol) 24%,transparent);
+  border-radius:50%;
+  transform-style:preserve-3d;
+}
+.home-page .tetris-piece-orbit--a {
+  width:min(82%,430px);
+  height:116px;
+  transform:rotateX(68deg) rotateZ(-13deg);
+  opacity:.7;
+}
+.home-page .tetris-piece-orbit--b {
+  width:min(58%,300px);
+  height:190px;
+  border-color:color-mix(in srgb,var(--jm-coral) 22%,transparent);
+  transform:rotateY(62deg) rotateZ(15deg);
+  opacity:.48;
+}
+.home-page .tetris-piece-shadow {
+  position:absolute;
+  left:50%;
+  bottom:39px;
+  width:min(48%,220px);
+  height:15px;
+  border-radius:50%;
+  background:color-mix(in srgb,var(--jm-petrol-deep) 32%,transparent);
+  filter:blur(13px);
+  transform:translateX(-50%) rotateX(68deg);
+  pointer-events:none;
+}
+.home-page .tetris-piece-float {
+  position:relative;
+  display:block;
+  width:calc(var(--cube-step) + var(--cube-step) + var(--cube-step) + var(--cube-size));
+  height:calc(var(--cube-step) + var(--cube-size));
+  transform-style:preserve-3d;
+  animation:tetris-float-04 5.2s ease-in-out infinite;
+}
+.home-page .tetris-shape-wheel {
+  position:absolute;
+  inset:0;
+  transform-style:preserve-3d;
+  animation:tetris-wheel-rotate-04 12s linear infinite;
+}.home-page .tetris-shape {
+  position:absolute;
+  inset:0;
+  display:block;
+  opacity:0;
+  transform-style:preserve-3d;
+  animation:tetris-shape-cycle-04 16.8s linear infinite;
+  will-change:opacity,transform;
+}
+.home-page .tetris-shape--i {--tetromino-color:var(--jm-coral);animation-delay:0s}
+.home-page .tetris-shape--o {--tetromino-color:var(--jm-amber);animation-delay:-14.4s}
+.home-page .tetris-shape--t {--tetromino-color:var(--jm-olive);animation-delay:-12s}
+.home-page .tetris-shape--s {--tetromino-color:var(--jm-petrol);animation-delay:-9.6s}
+.home-page .tetris-shape--z {--tetromino-color:var(--jm-clay);animation-delay:-7.2s}
+.home-page .tetris-shape--j {--tetromino-color:var(--jm-stone);animation-delay:-4.8s}
+.home-page .tetris-shape--l {--tetromino-color:var(--jm-ash);animation-delay:-2.4s}
+.home-page .tetris-cube {
+  position:absolute;
+  left:var(--block-left);
+  top:var(--block-top);
+  display:block;
+  width:var(--cube-size);
+  height:var(--cube-size);
+  transform-style:preserve-3d;
+}
+.home-page .tetris-face {
+  position:absolute;
+  inset:0;
+  display:block;
+  border:1px solid color-mix(in srgb,var(--jm-petrol-deep) 38%,transparent);
+  border-radius:5px;
+  backface-visibility:hidden;
+  box-shadow:inset 0 1px 0 #FFFFFF55,inset 0 -2px 0 #102E3838;
+}.home-page .tetris-face--front {background:var(--tetromino-color);transform:translateZ(var(--cube-half))}
+.home-page .tetris-face--back {background:color-mix(in srgb,var(--tetromino-color) 65%,#102E38);transform:rotateY(180deg) translateZ(var(--cube-half))}
+.home-page .tetris-face--right {background:color-mix(in srgb,var(--tetromino-color) 72%,#102E38);transform:rotateY(90deg) translateZ(var(--cube-half))}
+.home-page .tetris-face--left {background:color-mix(in srgb,var(--tetromino-color) 82%,#102E38);transform:rotateY(-90deg) translateZ(var(--cube-half))}
+.home-page .tetris-face--top {background:color-mix(in srgb,var(--tetromino-color) 72%,#FFFFFF);transform:rotateX(90deg) translateZ(var(--cube-half))}
+.home-page .tetris-face--bottom {background:color-mix(in srgb,var(--tetromino-color) 58%,#102E38);transform:rotateX(-90deg) translateZ(var(--cube-half))}
+.home-page .tetris-piece-signal {
+  position:absolute;
+  top:22%;
+  right:17%;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--jm-coral);
+  box-shadow:0 0 0 6px color-mix(in srgb,var(--jm-coral) 13%,transparent);
+  animation:tetris-signal-04 2.8s ease-in-out infinite;
+}
+.home-page .tetris-play-cta {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  width:min(100%,430px);
+  margin:.1rem auto 0;
+  padding:1rem 0;
+  border-top:1px solid var(--jm-line);
+  border-bottom:1px solid var(--jm-line);
+  background:transparent!important;
+  color:var(--jm-text)!important;
+  text-decoration:none!important;
+  transition:border-color .25s ease,color .25s ease;
+}
+.home-page .tetris-play-cta-copy {display:grid;gap:.35rem}.home-page .tetris-play-cta-copy small {
+  color:var(--jm-coral);
+  font:600 .61rem var(--font-mono);
+  letter-spacing:.09em;
+}
+.home-page .tetris-play-cta-copy strong {
+  color:var(--jm-text);
+  font:650 clamp(1.15rem,1.8vw,1.45rem)/1.15 var(--font-display);
+  letter-spacing:-.035em;
+}
+.home-page .tetris-play-cta-arrow {
+  display:grid;
+  place-items:center;
+  flex:0 0 2.5rem;
+  width:2.5rem;
+  height:2.5rem;
+  border:1px solid var(--jm-coral);
+  color:var(--jm-coral);
+  transition:transform .28s ease,background .28s ease,color .28s ease;
+}
+.home-page .tetris-play-cta-arrow svg {width:1rem;height:1rem}
+.home-page .tetris-play-note {
+  width:min(100%,430px);
+  margin:.7rem auto 0;
+  color:var(--muted);
+  font:500 .62rem/1.5 var(--font-mono);
+  letter-spacing:.025em;
+}
+.home-page .tetris-piece-link:hover .tetris-piece-scene,
+.home-page .tetris-piece-link:focus-visible .tetris-piece-scene {
+  transform:translateY(-5px) scale(1.035);
+  filter:drop-shadow(0 12px 18px color-mix(in srgb,var(--jm-petrol-deep) 13%,transparent));
+}
+.home-page .tetris-piece-link:hover .tetris-piece-orbit--a {opacity:.95}
+.home-page .tetris-piece-link:hover .tetris-piece-orbit--b {opacity:.78}
+.home-page .tetris-piece-link:focus-visible {outline:2px solid var(--jm-amber);outline-offset:5px}
+.home-page .tetris-play-cta:hover {border-color:var(--jm-coral);color:var(--jm-coral)!important}
+.home-page .tetris-play-cta:hover .tetris-play-cta-arrow {
+  transform:translate(3px,-3px);
+  background:var(--jm-coral);
+  color:var(--jm-petrol-deep);
+}
+.home-page .tetris-play-cta:focus-visible {outline:2px solid var(--jm-amber);outline-offset:4px}@keyframes tetris-float-04 {
+  0%,100% {transform:translateY(5px) rotateZ(-1deg)}
+  50% {transform:translateY(-10px) rotateZ(1deg)}
+}
+@keyframes tetris-wheel-rotate-04 {
+  0% {transform:rotateX(-20deg) rotateY(0deg) rotateZ(-5deg)}
+  50% {transform:rotateX(-13deg) rotateY(180deg) rotateZ(3deg)}
+  100% {transform:rotateX(-20deg) rotateY(360deg) rotateZ(-5deg)}
+}
+@keyframes tetris-shape-cycle-04 {
+  0%,1% {opacity:1;transform:scale(1)}
+  12% {opacity:1;transform:scale(1)}
+  14.285% {opacity:0;transform:scale(.86)}
+  100% {opacity:0;transform:scale(.86)}
+}
+@keyframes tetris-signal-04 {
+  0%,100% {transform:scale(.85);opacity:.65}
+  50% {transform:scale(1.2);opacity:1}
+}
+/* Fine guide lines add depth without turning the sections into a grid. */
+.home-page main > .home-method,
+.home-page main > .home-work,
+.home-page main > .home-tools {
+  position:relative;
+  isolation:isolate;
+}
+.home-page main > .home-method > .wrap,
+.home-page main > .home-work > .wrap,
+.home-page main > .home-tools > .wrap {
+  position:relative;
+  z-index:1;
+}.home-page main > .home-method::before,
+.home-page main > .home-tools::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  opacity:.58;
+  background:
+    linear-gradient(90deg,transparent 7.4%,color-mix(in srgb,var(--jm-petrol) 12%,transparent) calc(7.4% + 1px),transparent calc(7.4% + 2px)),
+    linear-gradient(90deg,transparent 92.5%,color-mix(in srgb,var(--jm-petrol) 12%,transparent) calc(92.5% + 1px),transparent calc(92.5% + 2px));
+}
+.home-page main > .home-method::after {
+  content:"";
+  position:absolute;
+  top:16%;
+  right:7.5%;
+  width:clamp(64px,10vw,142px);
+  height:1px;
+  background:color-mix(in srgb,var(--jm-coral) 42%,transparent);
+  pointer-events:none;
+}
+.home-page main > .home-work::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  opacity:.5;
+  background:linear-gradient(90deg,transparent calc(50% - .5px),color-mix(in srgb,var(--jm-petrol) 12%,transparent) 50%,transparent calc(50% + .5px));
+}
+.home-page main > .home-work::after {
+  content:"";
+  position:absolute;
+  top:12%;
+  right:7.5%;
+  width:86px;
+  height:1px;
+  background:color-mix(in srgb,var(--jm-amber) 65%,transparent);
+  pointer-events:none;
+}:root[data-jm-theme="night"] .home-page main > .home-method::before,
+:root[data-jm-theme="night"] .home-page main > .home-tools::before,
+:root[data-jm-theme="night"] .home-page main > .home-work::before {
+  opacity:.42;
+  background-image:
+    linear-gradient(90deg,transparent 7.4%,color-mix(in srgb,var(--jm-amber) 13%,transparent) calc(7.4% + 1px),transparent calc(7.4% + 2px)),
+    linear-gradient(90deg,transparent 92.5%,color-mix(in srgb,var(--jm-amber) 13%,transparent) calc(92.5% + 1px),transparent calc(92.5% + 2px));
+}
+:root[data-jm-theme="night"] .home-page main > .home-work::before {
+  background-image:linear-gradient(90deg,transparent calc(50% - .5px),color-mix(in srgb,var(--jm-amber) 12%,transparent) 50%,transparent calc(50% + .5px));
+}
+:root[data-jm-theme="night"] .home-page .tetris-piece-orbit {border-color:color-mix(in srgb,var(--jm-amber) 24%,transparent)}
+:root[data-jm-theme="night"] .home-page .tetris-piece-shadow {background:color-mix(in srgb,#000 48%,transparent)}
+:root[data-jm-theme="night"] .home-page .tetris-play-note {color:#C2CECA!important}
+@media(max-width:850px) {
+  .home-page .tetris-piece-scene {min-height:300px}
+  .home-page .home-game .pause-layout {grid-template-columns:1fr!important}
+  .home-page .tetris-play-stage {max-width:620px;margin-inline:auto}
+  .home-page main > .home-work::before {background:linear-gradient(90deg,transparent 7.4%,color-mix(in srgb,var(--jm-petrol) 10%,transparent) calc(7.4% + 1px),transparent calc(7.4% + 2px))}
+}@media(max-width:640px) {
+  .home-page .tetris-piece-scene {min-height:260px}
+  .home-page .tetris-piece-float {--cube-size:46px;--cube-gap:7px}
+  .home-page .tetris-play-cta {width:100%;padding:.9rem 0}
+  .home-page .tetris-play-note {width:100%}
+  .home-page main > .home-method::after,
+  .home-page main > .home-work::after {right:5%;width:54px}
+  .home-page main > .home-method::before,
+  .home-page main > .home-tools::before {opacity:.35}
+}
+@media(prefers-reduced-motion:reduce) {
+  .home-page .tetris-piece-float,
+  .home-page .tetris-shape-wheel,
+  .home-page .tetris-piece-signal {animation:none!important}
+  .home-page .tetris-shape {animation:none!important;opacity:0}
+  .home-page .tetris-shape--t {opacity:1}
+  .home-page .tetris-piece-link,
+  .home-page .tetris-piece-scene,
+  .home-page .tetris-play-cta-arrow {transition:none!important}
+}
+
+/* Final pass 04 corrections: transparent in both themes and visible guide strokes. */
+.home-page .tetris-piece-link {
+  --cube-size:clamp(56px,6vw,76px);
+  --cube-gap:9px;
+  --cube-step:calc(var(--cube-size) + var(--cube-gap));
+  --cube-half:calc(var(--cube-size) / 2);
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+:root[data-jm-theme="night"] .home-page .tetris-piece-link {
+  background:transparent!important;
+  border:0!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+}
+.home-page main > .home-method::before,
+.home-page main > .home-tools::before {
+  background-image:
+    linear-gradient(90deg,transparent 7.4%,color-mix(in srgb,var(--jm-petrol) 12%,transparent) calc(7.4% + 1px),transparent calc(7.4% + 2px)),
+    linear-gradient(90deg,transparent 92.5%,color-mix(in srgb,var(--jm-petrol) 12%,transparent) calc(92.5% + 1px),transparent calc(92.5% + 2px))!important;
+}
+.home-page main > .home-work::before {
+  background-image:linear-gradient(90deg,transparent calc(50% - .5px),color-mix(in srgb,var(--jm-petrol) 12%,transparent) 50%,transparent calc(50% + .5px))!important;
+}
+:root[data-jm-theme="night"] .home-page main > .home-method::before,
+:root[data-jm-theme="night"] .home-page main > .home-tools::before {
+  background-image:
+    linear-gradient(90deg,transparent 7.4%,color-mix(in srgb,var(--jm-amber) 13%,transparent) calc(7.4% + 1px),transparent calc(7.4% + 2px)),
+    linear-gradient(90deg,transparent 92.5%,color-mix(in srgb,var(--jm-amber) 13%,transparent) calc(92.5% + 1px),transparent calc(92.5% + 2px))!important;
+}
+:root[data-jm-theme="night"] .home-page main > .home-work::before {
+  background-image:linear-gradient(90deg,transparent calc(50% - .5px),color-mix(in srgb,var(--jm-amber) 12%,transparent) 50%,transparent calc(50% + .5px))!important;
+}
+@media(max-width:640px) {
+  .home-page .tetris-piece-link {
+    --cube-size:46px;
+    --cube-gap:7px;
+    --cube-step:calc(var(--cube-size) + var(--cube-gap));
+    --cube-half:calc(var(--cube-size) / 2);
+  }
+}
+
+/* Hover only lifts the object; it never paints a card or touches the rotation timeline. */
+.home-page .tetris-piece-link:is(:hover,:focus-visible) {
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+:root[data-jm-theme="night"] .home-page .tetris-piece-link:is(:hover,:focus-visible) {
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+.home-page .tetris-piece-link {touch-action:manipulation}
+
+/* A little more camera angle makes the block depth legible at a glance. */
+.home-page .tetris-piece-scene {perspective:900px}
+@keyframes tetris-wheel-rotate-04 {
+  0% {transform:rotateX(-29deg) rotateY(0deg) rotateZ(-5deg)}
+  50% {transform:rotateX(-23deg) rotateY(180deg) rotateZ(3deg)}
+  100% {transform:rotateX(-29deg) rotateY(360deg) rotateZ(-5deg)}
+}
+
+/* Isometric starting angle: the first frame already reads as a solid 3D block. */
+.home-page .tetris-piece-scene {perspective:780px}
+@keyframes tetris-wheel-rotate-04 {
+  0% {transform:rotateX(-34deg) rotateY(35deg) rotateZ(-5deg)}
+  50% {transform:rotateX(-27deg) rotateY(215deg) rotateZ(3deg)}
+  100% {transform:rotateX(-34deg) rotateY(395deg) rotateZ(-5deg)}
+}
+
+/* Balanced isometric angle: show the top and side planes without turning edge-on too soon. */
+.home-page .tetris-piece-scene {perspective:900px}
+.home-page .tetris-shape-wheel {animation-duration:14s}
+@keyframes tetris-wheel-rotate-04 {
+  0% {transform:rotateX(-34deg) rotateY(-5deg) rotateZ(-5deg)}
+  50% {transform:rotateX(-28deg) rotateY(175deg) rotateZ(3deg)}
+  100% {transform:rotateX(-34deg) rotateY(355deg) rotateZ(-5deg)}
+}
+
+/* Stronger light planes make the cube volume readable even in the first rotation. */
+.home-page .tetris-face--front {
+  box-shadow:inset 0 2px 0 #FFFFFF72,inset 0 -3px 0 #102E3840,0 2px 4px #102E3818!important;
+}
+.home-page .tetris-face--top {
+  background:color-mix(in srgb,var(--tetromino-color) 42%,#FFFFFF)!important;
+}
+.home-page .tetris-face--right {
+  background:color-mix(in srgb,var(--tetromino-color) 58%,#102E38)!important;
+}
+.home-page .tetris-face--left {
+  background:color-mix(in srgb,var(--tetromino-color) 72%,#102E38)!important;
+}

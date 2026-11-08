@@ -7,7 +7,9 @@
   const template = portal.querySelector("[data-portal-template]");
   const filter = portal.querySelector("[data-portal-filter]");
   const pages = portal.querySelector("[data-portal-pages]");
+  const status = portal.querySelector("[data-portal-status]");
   let selectedPage = template;
+  let loadTimeout;
   trigger.setAttribute("aria-haspopup", "dialog");
 
   filter?.addEventListener("click", () => {
@@ -16,7 +18,26 @@
   });
 
   function loadPage() {
-    if (selectedPage) frame.replaceChildren(selectedPage.content.cloneNode(true));
+    clearTimeout(loadTimeout);
+    if (!selectedPage) return;
+    const content = selectedPage.content.cloneNode(true);
+    const iframe = content.querySelector("iframe");
+    const setStatus = message => {
+      if (portal.open && frame.contains(iframe)) status.textContent = message;
+    };
+    iframe.addEventListener("load", () => {
+      if (!frame.contains(iframe)) return;
+      clearTimeout(loadTimeout);
+      setStatus("");
+    }, {once: true});
+    iframe.addEventListener("error", () => {
+      if (!frame.contains(iframe)) return;
+      clearTimeout(loadTimeout);
+      setStatus("No se pudo cargar la vista. Puedes abrirla en otra pestaña.");
+    }, {once: true});
+    status.textContent = "Cargando la vista…";
+    loadTimeout = setTimeout(() => setStatus("La vista está tardando. Puedes abrirla en otra pestaña."), 8000);
+    frame.replaceChildren(content);
   }
 
   if (pages) {
@@ -50,6 +71,8 @@
 
   portal.addEventListener("close", () => {
     if (portal.open) return;
+    clearTimeout(loadTimeout);
+    status.textContent = "";
     frame?.replaceChildren();
     trigger.focus({preventScroll: true});
   });

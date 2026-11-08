@@ -18,9 +18,12 @@ TOOL = {tool["slug"]: tool for tool in TOOLS}
 SERV = {s["slug"]: s for s in SERVICES}
 LINKEDIN = "https://www.linkedin.com/in/jorge-morgado/"
 WHATSAPP = "https://wa.me/56933904330"
+BOOKING_URL = "https://calendar.google.com/calendar/appointments/schedules/AcZssZ3nJEkpRw3rSiFc6ldUwwIPkAhPsU7OYKU8sa3XNiW_B1-6MrMRT9YLVTwZir0YJCvPp57moGoW"
+SITE_URL = "https://jmorgadodev.github.io/"
+SOCIAL_IMAGE = "assets/social-preview.png"
 ORDER_CASE = {"before": 60, "after": 12, "runs_per_week": 5}
 def e(value): return escape(str(value), quote=True)
-def local(d, p=""): return "../"*d + p
+def local(d, p=""): return "/" + p if d is None else "../"*d + p
 def asset(d, path):
     """Cambiar la URL cuando cambie el recurso evita mezclar HTML y código en caché."""
     version = sha256((ROOT / path).read_bytes()).hexdigest()[:12]
@@ -41,25 +44,43 @@ SYMBOLS = """<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="0
 <symbol id="i-scan" viewBox="0 0 24 24"><path d="M2 9V3h6M16 3h6v6M22 16v5h-6M8 21H2v-5M5 12h14M8 16h8"/></symbol>
 <symbol id="i-grid" viewBox="0 0 24 24"><path d="M2 2h8v8H2zM14 2h8v8h-8zM2 14h8v8H2zM14 14h8v8h-8z"/></symbol>
 <symbol id="i-window" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9h18"/></symbol>
+<symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M21 11.6a9 9 0 0 1-13.2 8L3 21l1.3-4.7A9 9 0 1 1 21 11.6Z"/><path d="M9.7 7.6c-.4-.7-1-.8-1.5-.2-.9 1-.6 2.6 1 4.5 1.8 2 3.8 3 5.2 2.8.9-.1 1.5-.7 1.5-1.4l-2.2-1.1-.9.9c-1.4-.6-2.4-1.5-3-2.9l.9-.8Z"/></symbol>
 </svg>"""
-def meta(d, title, description, active="", journey=False):
-    nav_items=[("herramientas/","Herramientas","herramientas"),("proyectos/","Proyectos","proyectos"),("servicios/","Servicios","servicios"),("contacto/","Contacto","contacto")]
+def meta(d, title, description, active="", journey=False, *, canonical=None):
+    nav_items=([("#explorar","Servicios","servicios"),("#trabajos","Proyectos","proyectos"),("#quien-soy","Sobre mí","persona"),("#contacto","Contacto","contacto")] if journey else [("herramientas/","Herramientas","herramientas"),("proyectos/","Proyectos","proyectos"),("servicios/","Servicios","servicios"),("contacto/","Contacto","contacto")])
     links="".join(f'<a href="{e(local(d,u))}"' + (' class="nav-contact"' if section=="contacto" else '')+(' aria-current="page"' if section==active else '')+f'>{e(t)}</a>' for u,t,section in nav_items)
-    journey_css=f'<link rel="stylesheet" href="{e(asset(d,"assets/journey-study.css"))}">' if journey else ''
+    journey_css=(f'<link rel="stylesheet" href="{e(asset(d,"assets/journey-study.css"))}">'
+                 f'<link rel="stylesheet" href="{e(asset(d,"assets/booking.css"))}">'
+                 f'<link rel="stylesheet" href="{e(asset(d,"assets/home-narrative.css"))}">'
+                 f'<link rel="stylesheet" href="{e(asset(d,"assets/home-refinement.css"))}">'
+                 f'<link rel="stylesheet" href="{e(asset(d,"assets/home-art-direction.css"))}">'
+                 f'<link rel="stylesheet" href="{e(asset(d,"assets/home-editorial-pass.css"))}">'
+                 f'<link rel="stylesheet" href="{e(asset(d,"assets/home-identity-system.css"))}">'
+                 f'<link rel="stylesheet" href="{e(asset(d,"assets/home-visual-pass-03.css"))}">'
+                 f'<link rel="stylesheet" href="{e(asset(d,"assets/home-visual-pass-05.css"))}">'
+                 f'<link rel="stylesheet" href="{e(asset(d,"assets/home-visual-pass-06.css"))}">'
+                 f'<link rel="stylesheet" href="{e(asset(d,"assets/home-theme-quality.css"))}">') if journey else ""
     body_class=' class="home-page"' if journey else ''
     header_class=' home-header' if journey else ''
-    descriptor='Una forma de resolver' if journey else 'Desarrollo independiente<br>Software / Datos / Procesos'
+    descriptor='Una forma de resolver' if journey else 'Desarrollo independiente<br>Software, datos y procesos'
     monogram='JM' if journey else 'jm'
+    home_target=local(d) + "#home-start"
     controls=''
     progress='' if journey else ''
     fonts = '' if active=="jugar" else """<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">"""
+    robots = "index,follow" if canonical else "noindex,follow"
+    canonical_meta = f'<link rel="canonical" href="{e(canonical)}"><meta property="og:url" content="{e(canonical)}">' if canonical else ""
     head = f"""<!doctype html><html lang="es"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{e(title)} | JMorgado</title><meta name="description" content="{e(description)}">
-<meta name="robots" content="index,follow"><meta name="theme-color" content="#F0EDE5">
+<meta name="robots" content="{robots}"><meta name="theme-color" content="#F0EDE5">
 <meta property="og:type" content="website"><meta property="og:locale" content="es_CL">
 <meta property="og:title" content="{e(title)} | JMorgado"><meta property="og:description" content="{e(description)}">
+<meta property="og:image" content="{e(SITE_URL + SOCIAL_IMAGE)}">
+<meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Jorge Morgado · Desarrollo web, datos y automatización. Composición con piezas modulares de JMorgado.">
+{canonical_meta}
 <link rel="icon" type="image/svg+xml" href="{e(local(d,'assets/favicon.svg'))}">
 {fonts}
 <script src="{e(local(d,'assets/theme-init.js'))}"></script>
@@ -68,7 +89,7 @@ def meta(d, title, description, active="", journey=False):
 <link rel="stylesheet" href="{e(asset(d,'assets/interior.css'))}">
 </head><body{body_class}><a class="skip-link" href="#contenido">Saltar al contenido</a>{SYMBOLS}
 <header class="site-header{header_class}"><div class="wrap header-inner">
-<a class="wordmark" href="{e(local(d))}"><span class="mark" aria-hidden="true">{monogram}</span><span>JMorgado<span class="orange">.</span></span></a>
+<a class="wordmark" href="{e(home_target)}" data-home-return aria-label="Volver a la portada JMorgado"><span class="mark" aria-hidden="true">{monogram}</span><span>JMorgado<span class="orange">.</span></span></a>
 <div class="header-sub">{descriptor}</div>{controls}
 <button type="button" class="menu-toggle" data-menu-toggle aria-controls="main-nav" aria-expanded="false">Menú +</button>
 <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Cambiar a modo noche">Noche</button>
@@ -89,7 +110,22 @@ def foot(d, journey=False, active=""):
     if journey or active=="herramientas":
         extra += f'<script src="{e(asset(d,"assets/tool-panel.js"))}" defer></script>'
     if journey:
-        extra += f'<script src="{e(asset(d,"assets/tetris-preview.js"))}" defer></script>'
+        extra += f'<script src="{e(asset(d,"assets/calculator.js"))}" defer></script>'
+        extra += f'<script src="{e(asset(d,"assets/home-narrative.js"))}" defer></script>'
+    fab_hidden = " hidden" if journey else ""
+    if journey:
+        footer_html=f"""<footer class="site-footer home-footer"><div class="wrap">
+          <nav class="footer-nav" aria-label="Explorar el sitio">
+            <a href="#explorar">Servicios</a>
+            <a href="#trabajos">Proyectos</a>
+            <a href="#recursos">Herramientas propias</a>
+            <a href="#quien-soy">Sobre mí</a>
+          </nav>
+          <div class="footer-base"><span>© 2026 Jorge Morgado</span><a href="#home-start" data-home-return>Volver al inicio ↑</a></div>
+        </div></footer>"""
+        return footer_html+f"""
+        <a class="whatsapp-fab" href="{e(WHATSAPP)}" target="_blank" rel="noopener noreferrer" aria-label="Escribirme por WhatsApp" hidden>{icon("whatsapp")}</a>
+        <script src="{e(asset(d,'assets/site.js'))}" defer></script>{extra}</body></html>"""
     return f"""<footer class="site-footer"><div class="wrap">
   <nav class="footer-links" aria-label="Explorar el sitio">
     <div><h2>Trabajo</h2>
@@ -101,17 +137,30 @@ def foot(d, journey=False, active=""):
     <a href="{e(local(d,'contacto/#agenda'))}">Agendar una hora</a></div>
   </nav>
 <div class="footer-base"><span>© JMorgado</span><a href="#contenido">Volver arriba ↑</a></div>
-</div></footer><script src="{e(local(d,'assets/site.js'))}" defer></script>{extra}</body></html>"""
+</div></footer>
+<a class="whatsapp-fab" href="{e(WHATSAPP)}" target="_blank" rel="noopener noreferrer" aria-label="Escribirme por WhatsApp"{fab_hidden}>{icon("whatsapp")}</a>
+<script src="{e(asset(d,'assets/site.js'))}" defer></script>{extra}</body></html>"""
 def page(where,title,description,content,active="",journey=False):
     target=ROOT / where / "index.html" if where else ROOT / "index.html"
     target.parent.mkdir(parents=True, exist_ok=True)
     depth=len(Path(where).parts) if where else 0
-    canonical="https://jmorgadodev.github.io/"+(where.strip("/")+"/" if where else "")
-    head=meta(depth,title,description,active,journey).replace("</head>",f'<link rel="canonical" href="{canonical}"></head>')
+    canonical=SITE_URL+(where.strip("/")+"/" if where else "")
+    head=meta(depth,title,description,active,journey,canonical=canonical)
     target.write_text(head+f'<main id="contenido">{content}</main>'+foot(depth,journey,active),encoding="utf-8")
     print("PAGE",target.relative_to(ROOT))
+
+def not_found():
+    title = "Página no encontrada"
+    description = "La página que buscas ya no está en esta dirección. Vuelve al inicio o explora los proyectos de JMorgado."
+    body = f"""<main id="contenido"><section class="page-hero"><div class="wrap">
+    <p class="eyebrow">Error 404</p><h1>{title}<span class="orange">.</span></h1>
+    <p class="lead">{description}</p>
+    <p class="missing-actions">{a(None,"","Volver al inicio","button strong")} {a(None,"proyectos/","Ver proyectos","button")}</p>
+    </div></section></main>"""
+    (ROOT / "404.html").write_text(meta(None, title, description) + body + foot(None), encoding="utf-8")
+
 def overline(number,caption):
-    return f'<div class="overline"><span class="num">{e(number)} / {e(caption)}</span></div>'
+    return f'<div class="overline"><span class="num">{e(number)} · {e(caption)}</span></div>'
 def interior_art(path, class_name):
     svg = (ROOT / "assets" / path).read_text(encoding="utf-8")
     return svg.replace("<svg ", f'<svg class="interior-art {class_name}" aria-hidden="true" focusable="false" ', 1)
@@ -123,13 +172,20 @@ def crumb(d, parts):
         else:out.append(f'<span aria-current="page">{e(title)}</span>')
     return "".join(out)+"</nav>"
 def featured_case(d, p):
-    slug = p["slug"]
-    url = local(d, "proyectos/" + slug + "/")
-    participation, result = PROJECT_CONTEXT[slug]
-    return f"""<a class="feature feature-{e(slug)}" href="{e(url)}">
-    {project_mark(d,p)}<div class="case-title"><span class="feature-type">{e(p["label"])}</span><h3>{e(p["title"])}</h3></div>
-    <div class="case-contribution"><p>{e(participation)}</p><p>{e(result)}</p></div>
-    <span class="case-read">Ver caso {icon("arrow", True)}</span></a>"""
+    slug=p["slug"]
+    detail=local(d, "proyectos/"+slug+"/")
+    summaries={
+        "impulsacv":"Una plataforma para crear, revisar y mejorar currículums.",
+        "el-cambiometro":"Información pública reunida para consultar y comparar su evolución.",
+        "ryvolt":"Un sitio bilingüe para presentar los servicios de la marca.",
+        "flor-de-almendro":"Un catálogo digital que el negocio puede mantener actualizado."
+    }
+    summary=summaries.get(slug, PROJECT_CONTEXT[slug][1])
+    return f"""<a class="feature feature-{e(slug)}" href="{e(detail)}" aria-label="Abrir el proyecto {e(p['title'])}">
+      <div class="feature-identity">{project_mark(d,p)}<h3>{e(p['title'])}</h3></div>
+      <p class="feature-summary">{e(summary)}</p>
+      <span class="feature-arrow" aria-hidden="true">{icon("arrow",True)}</span>
+    </a>"""
 
 def entry(d,p,idx):
     url=local(d,"proyectos/"+p["slug"]+"/")
@@ -249,6 +305,8 @@ def redirect_legacy_tools():
         target.write_text(f"""<!doctype html><html lang="es"><head><meta charset="utf-8">
 <meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url={destination}">
 <link rel="canonical" href="https://jmorgadodev.github.io/herramientas/">
+<meta name="description" content="{e('Consulta ' + TOOL[slug]['title'] + ' en Herramientas y recursos de JMorgado.')}">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 <title>{e(TOOL[slug]["title"])} | Herramientas de JMorgado</title></head>
 <body><p>La ficha está en <a href="{destination}">Herramientas y recursos</a>.</p></body></html>
 """, encoding="utf-8")
@@ -263,75 +321,365 @@ def order_example():
     <dl><div><dt>Planilla de ventas</dt><dd>$24.990</dd></div><div><dt>Exportación de la tienda</dt><dd>$29.990</dd></div></dl>
     <p class="order-decision"><strong>Revisar monto.</strong> Las dos fuentes quedan a la vista.</p></figure>"""
 
+def calculator_widget():
+    before_h, before_m = divmod(ORDER_CASE["before"], 60)
+    after_h, after_m = divmod(ORDER_CASE["after"], 60)
+    return f"""<div class="calc-grid"><form id="calculator" novalidate aria-label="Calculadora de tiempo recuperado">
+    <div class="calc-fields">
+    <div class="field-title full">Tiempo activo actual por ejecución</div>
+    <div class="field"><label for="before-h">Horas</label><input id="before-h" type="number" min="0" step="1" value="{before_h}" inputmode="numeric"></div>
+    <div class="field"><label for="before-m">Minutos (0 a 59)</label><input id="before-m" type="number" min="0" max="59" step="1" value="{before_m}" inputmode="numeric"></div>
+    <div class="field-title full">Intervención humana posterior</div>
+    <div class="field"><label for="after-h">Horas</label><input id="after-h" type="number" min="0" step="1" value="{after_h}" inputmode="numeric"></div>
+    <div class="field"><label for="after-m">Minutos (0 a 59)</label><input id="after-m" type="number" min="0" max="59" step="1" value="{after_m}" inputmode="numeric"></div>
+    <div class="field-title full">Frecuencia y dedicación</div>
+    <div class="field"><label for="frequency">Veces que se repite</label><input id="frequency" type="number" min=".01" step="any" value="{ORDER_CASE["runs_per_week"]}"></div>
+    <div class="field"><label for="period">Frecuencia</label><select id="period"><option value="week">Por semana</option><option value="day">Por día</option><option value="month">Por mes</option></select></div>
+    <div class="field" id="days-field" hidden><label for="days">Días de operación por semana</label><input id="days" type="number" min="1" max="7" step="1" value="5"></div>
+    <div class="field"><label for="people">Personas con igual dedicación</label><input id="people" type="number" min="1" step="1" value="1"></div>
+    <div class="field"><label for="workday">Horas por jornada</label><input id="workday" type="number" min=".1" step="any" value="8"></div></div>
+    <p class="hint">Si ingresas el tiempo total del equipo, deja Personas = 1. Cuenta sólo trabajo activo, incluyendo revisión posterior, correcciones y excepciones.</p>
+    <details><summary>Estimación económica opcional</summary><div class="calc-fields">
+    <div class="field full"><label for="hour-cost">Valor del tiempo por hora (CLP)</label><input id="hour-cost" type="number" min="0" step="any" placeholder="Opcional"></div>
+    <div class="field"><label for="initial-cost">Costo inicial de implementación (CLP)</label><input id="initial-cost" type="number" min="0" step="any" placeholder="Opcional"></div>
+    <div class="field"><label for="monthly-cost">Costo mensual de operación (CLP)</label><input id="monthly-cost" type="number" min="0" step="any" placeholder="Opcional"></div></div></details>
+    <p class="hint">{icon("scan",True)} Los cálculos se realizan en este navegador. Nada se transmite ni almacena.</p>
+    </form><aside class="result" aria-live="polite" aria-atomic="true">
+    <div class="eyebrow">Tiempo recuperado por persona</div>
+    <div class="result-value" id="per-run">{ORDER_CASE["before"] - ORDER_CASE["after"]} min</div>
+    <div class="result-status" id="calc-state">Tiempo activo recuperado por ejecución</div>
+    <div class="result-stats">
+    <div><strong id="per-week">—</strong><span>Por semana · equipo</span></div>
+    <div><strong id="per-month">—</strong><span>Por mes · equipo</span></div>
+    <div><strong id="per-year">—</strong><span>Por año · equipo</span></div>
+    <div><strong id="reduction">—</strong><span>Variación del tiempo activo</span></div>
+    <div><strong id="workdays">—</strong><span>Jornadas equivalentes al mes</span></div>
+    <div><strong id="execs">—</strong><span>Ejecuciones mensuales</span></div></div>
+    <p class="result-money" id="money-output" hidden></p><p class="result-note" id="assumptions"></p>
+    <p class="result-note" id="calc-error" role="status"></p></aside></div>"""
+
+def home_problem_visual():
+    return """<figure class="problem-schematic" aria-label="Tres fuentes de trabajo convergen en un mapa del proceso">
+      <figcaption class="problem-schematic-head"><span>FUENTES DE INFORMACIÓN</span><span>01—03 · ENTRADAS</span></figcaption>
+      <svg class="problem-flow-wide" viewBox="0 0 740 420" role="img" aria-labelledby="problem-flow-title problem-flow-desc">
+        <title id="problem-flow-title">De tres fuentes a una lectura común</title>
+        <desc id="problem-flow-desc">Una planilla, dos sistemas y un proceso manual se analizan para construir un mapa de datos, reglas y excepciones.</desc>
+        <g fill="none" stroke="#737B69" stroke-width="2">
+          <path d="M266 76H316V208H374"/><path d="M266 207H374"/><path d="M266 338H316V208"/>
+          <path d="M356 208H390" stroke="#F45A3A" stroke-width="3"/>
+        </g>
+        <g fill="#F45A3A"><circle cx="266" cy="76" r="4"/><circle cx="266" cy="207" r="4"/><circle cx="266" cy="338" r="4"/><path d="m384 201 9 7-9 7z"/></g>
+
+        <g>
+          <rect x="25" y="38" width="244" height="84" fill="#C9C8B7"/>
+          <rect x="18" y="31" width="244" height="84" fill="#FCFAF5" stroke="#23494E" stroke-width="1.5"/>
+          <rect x="18" y="31" width="244" height="22" fill="#23494E"/>
+          <text x="30" y="46" fill="#FCFAF5" font-size="12" font-family="monospace" letter-spacing="1">PLANILLA · VENTAS.XLSX</text>
+          <path d="M30 66H250M30 82H250M30 98H250M90 58V108M165 58V108" stroke="#B8B9AE" stroke-width="1"/>
+          <path d="M30 66H90M90 82H165M165 98H250" stroke="#737B69" stroke-width="2"/>
+
+          <rect x="25" y="169" width="244" height="84" fill="#C9C8B7"/>
+          <rect x="18" y="162" width="244" height="84" fill="#FCFAF5" stroke="#23494E" stroke-width="1.5"/>
+          <rect x="18" y="162" width="244" height="22" fill="#23494E"/>
+          <text x="30" y="177" fill="#FCFAF5" font-size="12" font-family="monospace" letter-spacing="1">SISTEMAS · APP A + APP B</text>
+          <rect x="31" y="193" width="91" height="40" fill="#F0EDE6" stroke="#737B69"/>
+          <rect x="157" y="193" width="91" height="40" fill="#F0EDE6" stroke="#737B69"/>
+          <path d="M41 204H108M41 212H91M41 220H101M167 204H234M167 212H216M167 220H226" stroke="#737B69" stroke-width="2"/>
+          <path d="M125 212H154m-6-5 6 5-6 5" fill="none" stroke="#F45A3A" stroke-width="2"/>
+
+          <rect x="25" y="300" width="244" height="84" fill="#C9C8B7"/>
+          <rect x="18" y="293" width="244" height="84" fill="#FCFAF5" stroke="#23494E" stroke-width="1.5"/>
+          <rect x="18" y="293" width="244" height="22" fill="#23494E"/>
+          <text x="30" y="308" fill="#FCFAF5" font-size="12" font-family="monospace" letter-spacing="1">PROCESO · TAREA MANUAL</text>
+          <path d="M48 346H220" stroke="#737B69" stroke-width="2"/>
+          <g fill="#E8B769" stroke="#23494E" stroke-width="1.5"><circle cx="54" cy="346" r="8"/><circle cx="134" cy="346" r="8"/><circle cx="214" cy="346" r="8"/></g>
+          <g fill="#222327" font-size="9" font-family="monospace" text-anchor="middle"><text x="54" y="365">01</text><text x="134" y="365">02</text><text x="214" y="365">03</text></g>
+        </g>
+
+        <g>
+          <rect x="399" y="122" width="302" height="180" fill="#C9C8B7"/>
+          <path d="M390 113H692V293H390Z" fill="#102E38" stroke="#23494E" stroke-width="1.5"/>
+          <path d="M390 113H692" stroke="#F45A3A" stroke-width="4"/>
+          <text x="414" y="143" fill="#E8B769" font-size="12" font-family="monospace" letter-spacing="1.3">LECTURA INICIAL</text>
+          <text x="414" y="180" fill="#FCFAF5" font-size="28" font-family="sans-serif" font-weight="600">Mapa del proceso</text>
+          <path d="M414 198H668" stroke="#5C797B" stroke-width="1"/>
+          <g font-family="monospace" font-size="12">
+            <circle cx="423" cy="222" r="4" fill="#F45A3A"/><text x="438" y="226" fill="#FCFAF5">DATOS</text>
+            <circle cx="423" cy="248" r="4" fill="#E8B769"/><text x="438" y="252" fill="#FCFAF5">REGLAS</text>
+            <circle cx="423" cy="274" r="4" fill="#AAB9A6"/><text x="438" y="278" fill="#FCFAF5">EXCEPCIONES</text>
+          </g>
+          <path d="M615 222h42m-42 26h42m-42 26h42" stroke="#5C797B" stroke-width="2"/>
+          <path d="M650 217l7 5-7 5m0 21 7 5-7 5m0 21 7 5-7 5" fill="none" stroke="#E8B769" stroke-width="1.5"/>
+        </g>
+      </svg>
+      <svg class="problem-flow-tall" viewBox="0 0 360 590" role="img" aria-labelledby="problem-flow-mobile-title problem-flow-mobile-desc">
+        <title id="problem-flow-mobile-title">Fuentes de trabajo que se reúnen</title>
+        <desc id="problem-flow-mobile-desc">Planillas, sistemas y procesos se conectan con un mapa de datos, reglas y excepciones.</desc>
+        <g fill="none" stroke="#737B69" stroke-width="2"><path d="M180 110V130M180 235V255M180 360V405"/><path d="M174 397l6 9 6-9" stroke="#F45A3A" stroke-width="3"/></g>
+        <g>
+          <rect x="31" y="31" width="306" height="86" fill="#C9C8B7"/><rect x="24" y="24" width="306" height="86" fill="#FCFAF5" stroke="#23494E"/>
+          <rect x="24" y="24" width="306" height="22" fill="#23494E"/><text x="38" y="39" fill="#FCFAF5" font-size="12" font-family="monospace">01 ? PLANILLA · VENTAS.XLSX</text>
+          <path d="M38 62H315M38 78H315M38 94H315M118 54V102M216 54V102" stroke="#B8B9AE"/>
+          <rect x="31" y="156" width="306" height="86" fill="#C9C8B7"/><rect x="24" y="149" width="306" height="86" fill="#FCFAF5" stroke="#23494E"/>
+          <rect x="24" y="149" width="306" height="22" fill="#23494E"/><text x="38" y="164" fill="#FCFAF5" font-size="12" font-family="monospace">02 ? SISTEMAS · APP A + APP B</text>
+          <rect x="40" y="184" width="110" height="37" fill="#F0EDE6" stroke="#737B69"/><rect x="204" y="184" width="110" height="37" fill="#F0EDE6" stroke="#737B69"/>
+          <path d="M50 195h90m-90 8h72m92-8h90m-90 8h70M152 202h49m-6-5 6 5-6 5" stroke="#737B69" stroke-width="2" fill="none"/>
+          <rect x="31" y="281" width="306" height="86" fill="#C9C8B7"/><rect x="24" y="274" width="306" height="86" fill="#FCFAF5" stroke="#23494E"/>
+          <rect x="24" y="274" width="306" height="22" fill="#23494E"/><text x="38" y="289" fill="#FCFAF5" font-size="12" font-family="monospace">03 ? PROCESO · TAREA MANUAL</text>
+          <path d="M66 328H288" stroke="#737B69" stroke-width="2"/><g fill="#E8B769" stroke="#23494E"><circle cx="72" cy="328" r="8"/><circle cx="177" cy="328" r="8"/><circle cx="282" cy="328" r="8"/></g>
+          <g fill="#222327" font-size="9" font-family="monospace" text-anchor="middle"><text x="72" y="350">01</text><text x="177" y="350">02</text><text x="282" y="350">03</text></g>
+          <rect x="31" y="423" width="306" height="145" fill="#C9C8B7"/>
+          <path d="M24 416H330V561H24Z" fill="#102E38" stroke="#23494E"/>
+          <path d="M24 416H330" stroke="#F45A3A" stroke-width="4"/>
+          <text x="42" y="446" fill="#E8B769" font-size="12" font-family="monospace" letter-spacing="1">LECTURA INICIAL</text>
+          <text x="42" y="480" fill="#FCFAF5" font-size="23" font-family="sans-serif" font-weight="600">Mapa del proceso</text>
+          <path d="M42 494H312" stroke="#5C797B"/>
+          <g font-family="monospace" font-size="12" fill="#FCFAF5"><text x="42" y="519">●  DATOS</text><text x="142" y="519">●  REGLAS</text><text x="42" y="541">●  EXCEPCIONES</text></g>
+        </g>
+      </svg>
+      <figcaption class="problem-schematic-foot"><span>PLANILLAS</span><i></i><span>SISTEMAS</span><i></i><span>PROCESOS</span><i></i><strong>MAPA COMÚN</strong></figcaption>
+    </figure>"""
+
+
+def home_method_visual():
+    stages = [
+        ("Entender", "Escuchar lo que necesitas y revisar cómo se hace hoy."),
+        ("Proponer", "Elegir una solución realista, sin sumar herramientas innecesarias."),
+        ("Acompañar", "Desarrollar, probar y dejar todo listo para que puedas usarlo."),
+    ]
+    items = "".join(
+        f"""<div class="method-step"><h3>{title}</h3><p>{description}</p></div>"""
+        for title, description in stages
+    )
+    return f"""<div class="method-steps" aria-label="Cómo trabajo">
+      {items}
+    </div>"""
+
+
+def home_tetris_visual(d):
+    # Una sola ficha T: cuatro bloques, una silueta y una rotación continua.
+    blocks = (("coral",0,0),("amber",1,0),("olive",2,0),("petrol",1,1))
+    faces=("front","back","right","left","top","bottom")
+
+    def offset(units):
+        return "0px" if units == 0 else "calc(" + " + ".join(["var(--cube-step)"] * units) + ")"
+
+    cubes=[]
+    for color,x,y in blocks:
+        cube_faces="".join(f'<i class="tetris-face tetris-face--{face}"></i>' for face in faces)
+        cubes.append(
+            f'<span class="tetris-cube tetris-cube--{color}" '
+            f'style="--block-left:{offset(x)};--block-top:{offset(y)}">{cube_faces}</span>'
+        )
+
+    return f"""<div class="tetris-play-stage">
+      <a class="tetris-piece-link" href="{e(local(d,'jugar/'))}" aria-label="Jugar Tetris: entrar a una partida individual">
+        <span class="tetris-piece-scene" aria-hidden="true">
+          <span class="tetris-piece-orbit tetris-piece-orbit--a"></span>
+          <span class="tetris-piece-orbit tetris-piece-orbit--b"></span>
+          <span class="tetris-piece-shadow"></span>
+          <span class="tetris-piece-float">
+            <span class="tetris-tetromino" data-tetris-piece="T">{"".join(cubes)}</span>
+          </span>
+          <span class="tetris-piece-signal" aria-hidden="true"></span>
+        </span>
+      </a>
+      <a class="tetris-play-cta" href="{e(local(d,'jugar/'))}">
+        <span class="tetris-play-cta-copy"><small>PARTIDA INDIVIDUAL</small><strong>Entrar al tablero</strong></span>
+        <span class="tetris-play-cta-arrow">{icon("arrow",True)}</span>
+      </a>
+    </div>"""
+
+def home_tool_card(d, tool):
+    summaries={
+        "auditapc":"Organiza la información de equipos y genera informes para cada visita técnica.",
+        "nokto":"Reúne controles del escritorio y rutinas que puedes automatizar.",
+        "datosdemocl":"Genera datos ficticios con formatos chilenos para probar formularios y sistemas."
+    }
+    name=e(tool["title"])
+    summary=e(summaries.get(tool["slug"],tool["summary"]))
+    detail=local(d, "herramientas/#" + tool["slug"])
+    return f"""<article class="home-tool-card" id="home-{e(tool["slug"])}">
+      <a class="home-tool-link" href="{e(detail)}" aria-label="Conocer {name}">
+        <span class="home-tool-name">{name}</span>
+        <span class="home-tool-summary">{summary}</span>
+        <span class="home-tool-action">Conocer herramienta {icon("arrow",True)}</span>
+      </a>
+    </article>"""
+
+
+def home_tools_showcase(d):
+    cards = "".join(home_tool_card(d, tool) for tool in TOOLS)
+    return f"""<div class="home-tool-list">{cards}</div>"""
+
+
 def home_savings(d):
     before, after, runs = (ORDER_CASE[key] for key in ("before", "after", "runs_per_week"))
-    saved_week = (before - after) * runs // 60
-    saved_year = saved_week * 52
-    return f"""<section class="ink-panel home-calculator" id="ahorro"><div class="wrap">
-    <p class="savings-kicker">{interior_art("modular-v02/K01-banda-revelado.svg","savings-band")}<span>Calculadora · Caso hipotético</span></p><div class="savings-case"><div class="savings-copy">
-    <h2>Una hora diaria cerrando pedidos.</h2>
-    <p>Una persona cruza dos planillas cada tarde. Si el sistema reúne los pedidos y sólo quedan las excepciones por revisar, el cierre baja de {before} a {after} minutos.</p>
-    <dl class="savings-compare"><div><dt>Conciliar a mano</dt><dd>{before} min</dd></div>
-    <div style="--share:{after / before:.2%}"><dt>Revisar excepciones</dt><dd>{after} min</dd></div></dl>
-    {a(d,"calculadora/","Probar este ejemplo "+icon("arrow",True),"button")}</div>
-    <div class="savings-result"><p><strong>{saved_week}<span> h</span></strong> recuperadas cada semana</p>
-    <p><strong>{saved_year} horas</strong> al año. Equivalen a {saved_year // 8} jornadas de 8 horas.</p>
-    <small>Supuesto: {runs} cierres por semana durante 52 semanas.</small></div>
-    </div></div></section>"""
+    recovered=before-after
+    weekly_hours=recovered*runs/60
+    annual_hours=weekly_hours*52
+    return f"""<section class="ink-panel home-calculator" id="ahorro" aria-labelledby="impact-title"><div class="wrap">
+      <div class="impact-heading">
+        <div>
+          <p class="eyebrow">EL COSTO INVISIBLE DE REPETIR</p>
+          <h2 id="impact-title">Una hora de trabajo puede reducirse a <em>{after} minutos.</em></h2>
+        </div>
+        <p>Una tarea repetida consume tiempo cada vez que vuelve a empezar. Automatizar parte del proceso puede liberar esos minutos para otras prioridades.</p>
+      </div>
+      <div class="impact-visual">
+        <div class="impact-comparison">
+          <p class="impact-panel-kicker">TIEMPO POR EJECUCIÓN</p>
+          <div class="impact-bar-row">
+            <div class="impact-bar-label"><span>Antes de automatizar</span><strong>{before} min</strong></div>
+            <div class="impact-track"><span class="impact-fill-before" style="--bar-width:100%"></span></div>
+          </div>
+          <div class="impact-bar-row">
+            <div class="impact-bar-label"><span>Con automatización y revisión</span><strong>{after} min</strong></div>
+            <div class="impact-track"><span class="impact-fill-after" style="--bar-width:{after/before*100:.1f}%"></span></div>
+          </div>
+        </div>
+        <aside class="impact-metrics" aria-label="Tiempo recuperado estimado">
+          <p class="impact-metric-label">TIEMPO QUE RECUPERAS</p>
+          <div class="impact-per-run"><strong>{recovered}</strong><span>minutos<br>por ejecución</span></div>
+          <div class="impact-periods">
+            <div><strong>{weekly_hours:g} h</strong><span>POR SEMANA</span></div>
+            <div><strong>{annual_hours:g} h</strong><span>POR AÑO</span></div>
+          </div>
+        </aside>
+      </div>
+      <div class="impact-footer">
+        <p>Ejemplo ilustrativo: {runs:g} repeticiones por semana. El resultado real depende de cada proceso.</p>
+        <button class="button savings-launch" type="button" data-open-calculator aria-haspopup="dialog" aria-controls="calculator-drawer">Calcular mi caso {icon("arrow",True)}</button>
+      </div>
+    </div></section>"""
+
+def home_calculator_drawer():
+    return f"""<dialog class="calculator-drawer" id="calculator-drawer" aria-labelledby="calculator-drawer-title">
+      <div class="calculator-drawer-shell">
+        <header class="calculator-drawer-header"><div><p class="eyebrow">Calcula el tiempo que puedes recuperar</p>
+        <h2 id="calculator-drawer-title">Calcula tu caso.</h2></div>
+        <button class="calculator-drawer-close" type="button" data-close-calculator aria-label="Cerrar calculadora">×</button></header>
+        <p class="calculator-drawer-lead">Ajusta los tiempos, la frecuencia y las personas. El resultado se actualiza mientras escribes.</p>
+        <div class="calculator-quick" aria-label="Resumen de tiempo recuperado">
+          <div><span>Horas semanales del equipo</span><strong data-preview-week>4 h</strong></div>
+          <div><span>Horas anuales del equipo</span><strong data-preview-year>208 h</strong></div>
+        </div>
+        {calculator_widget()}
+        <div class="calculator-drawer-end"><a href="calculadora/">Abrir calculadora completa {icon("arrow",True)}</a>
+        <p>Estimaciones orientativas; no implican ahorros económicos garantizados.</p></div>
+      </div></dialog>"""
+
+def home_booking_dialog():
+    embed=BOOKING_URL+"?gv=true"
+    panel=f"""<div class="project-portal-frame booking-portal-frame" data-portal-frame></div>
+    <template data-portal-template><iframe title="Horarios de Google Calendar"
+    src="{e(embed)}" referrerpolicy="strict-origin-when-cross-origin"></iframe></template>
+    <p class="project-portal-note">Si no ves los horarios, puedes abrir la agenda de Google en otra pestaña.</p>"""
+    return portal_dialog(0,title="Elige un horario",subtitle="Google Calendar · 45 minutos",
+                         url=BOOKING_URL,mode="live booking-portal",panel=panel,filter_available=True)
 
 def home():
     d=0
-    from tetris_game import game_art
-    featured_projects = [PROJ[slug] for slug in ("impulsacv", "el-cambiometro", "ryvolt", "flor-de-almendro")]
-    main=f"""    <section class="section home-projects" id="explorar" tabindex="-1" aria-labelledby="resolve-title"><div class="wrap">{overline("01","Capacidades")}
-    <div class="section-head"><h2 id="resolve-title">¿Qué necesitas resolver?</h2>
-    <p>Una planilla que toma toda la mañana, dos aplicaciones que no se hablan o una web que necesitas poner en marcha. Podemos partir por ahí.</p></div>
-    <div class="home-opening">
-    {interior_art("modular-v02/G07-conector-flexible.svg","capability-connector")}
-    <div>
-      <div class="home-capabilities">
-        <a href="servicios/datos-y-bi/">{icon("data")}<div><h3>Ordenar datos y reportes</h3><p>Reunir planillas, revisar errores y preparar informes que puedas actualizar.</p></div>{icon("arrow",True)}</a>
-        <a href="servicios/integraciones/">{icon("network")}<div><h3>Conectar herramientas</h3><p>Pasar información entre los sistemas que ya usas y reducir pasos manuales.</p></div>{icon("arrow",True)}</a>
-        <a href="servicios/desarrollo-web/">{icon("code")}<div><h3>Desarrollar una web o aplicación</h3><p>Crear un catálogo, un panel o un sistema para un proceso que necesita su propio espacio.</p></div>{icon("arrow",True)}</a>
+    featured_projects=[PROJ[slug] for slug in ("impulsacv","el-cambiometro","ryvolt","flor-de-almendro")]
+    main=f"""\n    <section class="section home-problem" id="explorar" tabindex="-1" aria-labelledby="resolve-title"><div class="wrap">
+      <div class="section-head">
+        <h2 id="resolve-title">¿Qué te gustaría <em>mejorar?</em></h2>
+        <p>Puedo ayudarte a ordenar información, conectar herramientas y crear soluciones que hagan más simple tu trabajo.</p>
       </div>
-      <p class="section-action">{a(d,"servicios/","Ver todos los servicios "+icon("arrow",True))}</p>
-    </div>
-    <aside class="portfolio-about"><p class="eyebrow">Quién está detrás</p><h3>Soy Jorge Morgado.</h3>
-    <p>Trabajo de forma independiente en desarrollo, datos y automatización. Para empezar, me sirve ver cómo haces hoy la tarea y qué resultado esperas.</p>
-    <p class="profile-link">{external(LINKEDIN,"Mi perfil en LinkedIn "+icon("arrow",True))}</p>
-    </aside></div></div></section>
+      <div class="home-offer-grid">
+        <article class="home-offer">
+          <h3>Automatizar y conectar</h3>
+          <p>Reducir tareas repetidas y hacer que las aplicaciones que ya utilizas trabajen juntas.</p>
+        </article>
+        <article class="home-offer">
+          <h3>Datos y paneles</h3>
+          <p>Ordenar planillas e información para entender lo importante y tomar mejores decisiones.</p>
+        </article>
+        <article class="home-offer">
+          <h3>Web y herramientas</h3>
+          <p>Crear sitios, catálogos y sistemas a medida, además de soporte cuando lo necesites.</p>
+        </article>
+      </div>
+      <p class="section-action">{a(d,"servicios/","Conocer los servicios "+icon("arrow",True))}</p>
+    </div></section>
 
-    <section class="section home-tools" id="recursos"><div class="wrap">{overline("02","Software propio")}
-    <div class="section-head"><h2>Software de mi banco de trabajo.</h2><p>Tres utilidades que hice para tareas que se repiten. Puedes revisar cómo funcionan y abrir su código.</p></div>
-    {tool_workbench(d)}
-    <p class="section-action">{a(d,"herramientas/","Ver todas las herramientas "+icon("arrow",True),"button")}</p></div></section>
-    <section class="section home-work" id="trabajos"><div class="wrap">{overline("03","Portafolio")}
-    <div class="section-head"><h2>Proyectos realizados.</h2><p>Cuatro trabajos de producto, datos y web. En cada ficha cuento qué hice y las decisiones que dieron forma al resultado.</p></div>
-    <div class="feature-list">{"".join(featured_case(d,p) for p in featured_projects)}</div>
-    <p class="section-action">{a(d,"proyectos/",f"Ver los {len(PROJECTS)} proyectos "+icon("arrow",True),"button")}</p></div></section>
-    <section class="section game-invite home-game" id="una-partida"><div class="wrap game-invite-inner">
-    <div class="game-invite-copy"><p class="eyebrow">Una pausa · Tetris</p><h2>La pieza que todavía no llega.</h2>
-    <p class="lead">De los videojuegos, al que más vuelvo es al Tetris. Me gusta pensar qué espacio dejar para la próxima pieza. A veces el mejor movimiento es guardar un hueco.</p>
-    <p>Prueba el encaje. Si te quedas con ganas, te invito a una partida para superar tu marca.</p>
-    {a(d,"jugar/","Probar una partida "+icon("arrow",True),"button")}</div>
-    <figure class="game-invite-display" data-tetris-preview>
-    {interior_art("modular/P12-llave.svg","game-key-piece")}
-    <figcaption><span>La jugada</span><span role="status">Queda un hueco de cuatro filas.</span></figcaption>{game_art()}
-    <button type="button" class="button" hidden>Encajar la pieza</button></figure></div></section>
-    <section class="section home-method" id="como-trabajo"><div class="wrap">
-    <div class="method-layout"><div class="method-copy"><p class="eyebrow">Cómo trabajo · Caso hipotético</p><h2>Empiezo por la fila que no cuadra.</h2>
-    <p>Imagina que el mismo pedido aparece en dos planillas con montos distintos. Antes de automatizar el cierre, revisaría contigo cuál es la fuente de referencia y quién decide cuando discrepan.</p>
-    <p>El sistema puede juntar las coincidencias y dejarte sólo los casos que necesitan criterio.</p>
-    {a(d,"metodo/","Ver cómo preparo una entrega "+icon("arrow",True))}</div>
-    {order_example()}</div></div></section>
+    <section class="section home-method" id="como-trabajo" aria-labelledby="method-title"><div class="wrap">
+      <div class="method-layout">
+        <div class="method-copy">
+          <p class="eyebrow">Una forma de trabajar cercana y directa</p>
+          <h2 id="method-title">Primero te <em>escucho.</em></h2>
+          <p>Reviso cómo trabajas hoy, qué necesitas y qué vale la pena cambiar. La propuesta se ajusta a tu realidad y a tu presupuesto.</p>
+          <p class="method-principle">No se trata de sumar tecnología porque sí, sino de encontrar algo que realmente te sirva.</p>
+          <p class="section-action">{a(d,"metodo/","Cómo trabajo "+icon("arrow",True))}</p>
+        </div>
+        {home_method_visual()}
+      </div>
+    </div></section>
+
     {home_savings(d)}
-    <section class="section home-contact"><div class="wrap"><div class="home-contact-layout">
-    {interior_art("modular-v02/K02-marco-editorial.svg","contact-frame-art")}
-    <div><span class="eyebrow">Hablemos</span>
-    <h2>Cuéntame dónde se traba el trabajo.</h2></div><div><p>Puedes escribirme por WhatsApp o reservar una conversación inicial gratuita.</p>
-    {external(WHATSAPP,"Conversemos "+icon("arrow",True),"button dark")}
-    <p class="contact-secondary">{a(d,"contacto/#agenda","Prefiero agendar una hora "+icon("arrow",True))}</p></div></div></div></section>"""
-    page("","Jorge Morgado | Desarrollo web, datos y automatización","Jorge Morgado desarrolla herramientas, automatizaciones, integraciones y sitios web para resolver necesidades concretas de personas y empresas.",journey_markup()+main+tool_drawer(),journey=True)
+
+    <section class="section home-work" id="trabajos" aria-labelledby="projects-title"><div class="wrap">
+      <div class="section-head">
+        <h2 id="projects-title">Proyectos<em>.</em></h2>
+        <p>Algunos trabajos en los que he participado y las soluciones que quedaron funcionando.</p>
+      </div>
+      <div class="feature-list project-ledger">{"".join(featured_case(d,p) for p in featured_projects)}</div>
+      <p class="section-action">{a(d,"proyectos/","Ver más proyectos "+icon("arrow",True))}</p>
+    </div></section>
+
+    <section class="section home-persona" id="quien-soy" aria-label="Quién está detrás"><div class="wrap">
+      <div class="persona-content">
+        <div class="persona-identity"><h2>Soy <span class="persona-first">Jorge</span><br><span class="persona-last">Morgado</span><span class="persona-dot">.</span></h2></div>
+        <div class="persona-story">
+          <p>Trabajo de forma independiente con personas y empresas. Me involucro en entender el problema y encontrar una solución realista, desde una web o un panel de datos hasta una automatización o una herramienta propia.</p>
+          <p>También puedo ayudarte a revisar y mantener funcionando lo que ya utilizas.</p>
+          {external(LINKEDIN,"Ver mi trayectoria "+icon("arrow",True))}
+        </div>
+      </div>
+    </div></section>
+
+    <section class="section home-tools" id="recursos" aria-labelledby="tools-title"><div class="wrap">
+      <div class="section-head">
+        <h2 id="tools-title">Herramientas <em>propias</em><span class="title-dot">.</span></h2>
+        <p>Además de trabajar con clientes, desarrollo herramientas por iniciativa propia y comparto sus proyectos en abierto.</p>
+      </div>
+      {home_tools_showcase(d)}
+    </div></section>
+
+    <section class="section home-game" id="una-partida" aria-labelledby="pause-title"><div class="wrap">
+      <div class="pause-layout">
+        <div class="pause-copy">
+          <h2 id="pause-title">¿Te animas a <em>jugar?</em></h2>
+          <p>Tetris siempre ha sido uno de mis juegos favoritos. Aquí puedes jugar una partida individual.</p>
+        </div>
+        <div class="pause-figure">{home_tetris_visual(d)}</div>
+      </div>
+    </div></section>
+
+    <section class="home-contact-cta" id="contacto" aria-labelledby="contact-title"><div class="wrap">
+      <div class="contact-board">
+        <div class="contact-board-intro">
+          <p class="eyebrow">PRIMERA CONVERSACIÓN GRATUITA</p>
+          <h2 id="contact-title">Cuéntame qué necesitas <em>mejorar.</em></h2>
+        </div>
+        <div class="contact-board-copy">
+          <p>Podemos partir por el contexto y el resultado que buscas. No necesitas elegir una tecnología antes de conversar.</p>
+          <div class="contact-actions">
+            {external(WHATSAPP,"Escribirme por WhatsApp "+icon("whatsapp",True),"button dark")}
+            <a class="button outline" href="{e(BOOKING_URL)}" data-project-portal aria-haspopup="dialog">Agendar 45 minutos {icon("window",True)}</a>
+          </div>
+          <p class="contact-caveat">La conversación inicial es gratuita. Cualquier trabajo posterior se acuerda y presupuesta aparte.</p>
+          <p class="contact-caveat">Por favor, no envíes credenciales ni información confidencial en el primer contacto.</p>
+        </div>
+      </div>
+    </div></section>
+
+      {home_calculator_drawer()}
+      {home_booking_dialog()}"""
+    page("","Jorge Morgado | Desarrollo web, datos y automatización",
+         "Jorge Morgado desarrolla herramientas, automatizaciones, integraciones y sitios web para resolver necesidades concretas de personas y empresas.",
+         journey_markup()+main+tool_drawer(),journey=True)
+
 def portfolio():
     d=1
     cats=[("todos","Todos"),("plataformas","Plataformas"),("web","Web y catálogos"),("sistemas","Sistemas")]
@@ -364,6 +712,7 @@ def portal_dialog(d, *, title, subtitle, url, mode, panel, filter_available=Fals
         {external(url, "Abrir en otra pestaña "+icon("arrow",True), "button")}
         <form method="dialog"><button class="button" autofocus>Cerrar</button></form>
       </div>
+      <p class="project-portal-status" role="status" data-portal-status></p>
     </header>{panel}</dialog>
     <script src="{e(asset(d,'assets/project-portal.js'))}" defer></script>"""
 
@@ -402,16 +751,16 @@ def project_detail(p):
     links=[]
     if p["repo"]:links.append(external(p["repo"],"Ver código y documentación en GitHub "+icon("arrow",True),"button"))
     if not links and not p["site"]:links.append('<p class="hint">Este caso se presenta a través de su ficha.</p>')
-    flow="".join(f'<div class="flowstep"><span class="flow-index">0{i} / PASO</span><strong>{e(text)}</strong></div>' for i,text in enumerate(p["flow"],1))
+    flow="".join(f'<div class="flowstep"><span class="flow-index">0{i} · PASO</span><strong>{e(text)}</strong></div>' for i,text in enumerate(p["flow"],1))
     tags = tech_badges(d,p["tech"])
     related=SERV[p["related"]]
     participation, result = PROJECT_CONTEXT[p["slug"]]
     site_link = f'<a class="button dark" href="{e(p["site"])}" data-project-portal>Ver sitio {icon("window",True)}</a>' if p["site"] else ""
     portal = project_portal(d, p) if p["site"] else ""
     body=f"""<section class="page-hero project-hero tone-{e(p['accent'])}"><div class="wrap">{crumb(d,[("proyectos/","Proyectos"),(None,p["title"])])}
-    <div class="eyebrow">{e(p["area"])} / {e(p["label"])}</div>{project_mark(d,p)}<h1>{e(p["title"])}<span class="orange">.</span></h1>
+    <div class="eyebrow">{e(p["area"])} ? {e(p["label"])}</div>{project_mark(d,p)}<h1>{e(p["title"])}<span class="orange">.</span></h1>
     <p class="lead">{e(p["summary"])}</p>{site_link}
-    <div class="page-meta"><span>{e(p["state"])}</span><span>Estudio de caso / alcance documental</span></div></div></section>
+    <div class="page-meta"><span>{e(p["state"])}</span><span>Estudio de caso · alcance documentado</span></div></div></section>
     <section class="section"><div class="wrap">{overline("01","Qué se resolvió")}
     <div class="case-layout"><article class="prose"><h2>{e(CASE_HEADLINES[p['slug']])}</h2><p>{e(p["problem"])}</p>
     <h3>Trabajo desarrollado</h3><p>{e(p["work"])}</p>
@@ -419,7 +768,7 @@ def project_detail(p):
     <h3>Mi participación</h3><p>{e(participation)}</p>
     <h3>Resultado</h3><p>{e(result)}</p>
     <div class="tag-list">{tags}</div></article>
-    <aside><p class="eyebrow">Ficha técnica / Referencia</p>
+    <aside><p class="eyebrow">Datos del proyecto</p>
     <dl class="facts">{quick}</dl>
     <div style="display:grid;gap:.85rem;margin:1.7rem 0">{''.join(links)}</div>
     <p class="hint">La ficha explica el trabajo a nivel de portafolio. No sustituye la documentación técnica del repositorio.</p></aside></div></div></section>
@@ -438,10 +787,10 @@ def services_index():
     d=1
     service_icons={"automatizacion":"gear","desarrollo-web":"code","datos-y-bi":"data","integraciones":"network","ia-aplicada":"branch","soporte-ti":"support","redes-sociales":"grid"}
     services="".join(f"""<a class="service-line" href="{e(local(d,'servicios/'+s['slug']+'/'))}">
-    <span class="service-no">{i:02d}/</span><h3>{e(s["title"])}</h3><p>{e(s["short"])}</p>{icon(service_icons[s['slug']])}</a>""" for i,s in enumerate(SERVICES,1))
+    <span class="service-no">{i:02d}.</span><h3>{e(s["title"])}</h3><p>{e(s["short"])}</p>{icon(service_icons[s['slug']])}</a>""" for i,s in enumerate(SERVICES,1))
     body=f"""<section class="page-hero service-map-hero"><div class="wrap">{crumb(d,[(None,"Servicios")])}
     {interior_art("modular/S03-marco-abierto.svg","service-map-art")}
-    <span class="eyebrow">Servicios / Una solución proporcional</span>
+    <span class="eyebrow">Soluciones según tu necesidad</span>
     <h1>En qué puedo ayudarte<span class="orange">.</span></h1>
     <p class="lead">Desarrollo web, datos, automatización, soporte y gestión de redes sociales. Cada servicio explica qué puedo tomar a cargo y qué necesitamos acordar.</p></div></section>
     <section class="section service-map"><div class="wrap">{overline("01","Áreas de trabajo")}
@@ -480,7 +829,7 @@ def service_detail(s):
         links.append(f'<a href="{e(local(d,url))}"><span>{e(item["title"])}</span>{icon("arrow",True)}</a>')
     flow = tech_badges(d,s["stack"])
     body=f"""<section class="page-hero service-detail-hero"><div class="wrap">{crumb(d,[("servicios/","Servicios"),(None,s["title"])])}
-    <span class="eyebrow">Área de trabajo / Soluciones a medida</span><h1>{e(s["title"])}<span class="orange">.</span></h1>
+    <span class="eyebrow">Soluciones a medida</span><h1>{e(s["title"])}<span class="orange">.</span></h1>
     <p class="lead">{e(s["lead"])}</p><div class="page-meta"><span>Evaluación caso a caso</span><span>Primer diagnóstico conversado: gratuito</span></div></div></section>
     <section class="section service-detail-brief"><div class="wrap">{overline("01","Problema y enfoque")}
     <div class="case-layout"><article class="prose"><h2>Qué situación abordo.</h2><p>{e(s["situation"])}</p>
@@ -491,7 +840,7 @@ def service_detail(s):
     <section class="section" style="background:var(--paper2)"><div class="wrap">{overline("02","Experiencia demostrada")}
     <div class="section-head"><h2>Trabajos que aportan contexto.</h2><p>No son promesas de resultados: permiten revisar tipos de sistemas y decisiones técnicas que ya he trabajado.</p></div>
     <div class="related">{"".join(links)}</div></div></section>
-    <section class="section"><div class="wrap"><div class="contact-board"><div><span class="eyebrow" style="color:var(--ink)">03 / Contacto</span><h2>¿Tienes un proceso parecido?</h2></div>
+    <section class="section"><div class="wrap"><div class="contact-board"><div><span class="eyebrow" style="color:var(--ink)">Contacto</span><h2>¿Tienes un proceso parecido?</h2></div>
     <div><p>Cuéntame qué haces hoy y qué necesitas cambiar. La primera conversación es gratuita.</p>
     {a(d,"contacto/","Revisemos tu caso "+icon("arrow",True),"button dark")}</div></div></div></section>"""
     page("servicios/"+s["slug"],s["title"]+" — JMorgado",s["lead"],body,"servicios")
@@ -523,42 +872,10 @@ def calc():
     before_h, before_m = divmod(ORDER_CASE["before"], 60)
     after_h, after_m = divmod(ORDER_CASE["after"], 60)
     body=f"""<section class="page-hero calculator-hero"><div class="wrap">{crumb(d,[(None,"Calculadora")])}
-    <span class="eyebrow">Herramienta interactiva / Estimación de tiempo</span><h1>El tiempo también cuenta<span class="orange">.</span></h1>
+    <span class="eyebrow">Calculadora de tiempo</span><h1>El tiempo también cuenta<span class="orange">.</span></h1>
     <p class="lead">La calculadora parte con el cierre de pedidos de la portada. Cambia los tiempos, la frecuencia y el número de personas para estimar tu propio caso.</p></div></section>
     <section class="section calculator-panel"><div class="wrap">{overline("01","Compara dos escenarios")}
-    <div class="calc-grid"><form id="calculator" novalidate aria-label="Calculadora de tiempo recuperado">
-    <div class="calc-fields">
-    <div class="field-title full">A / Tiempo activo actual por ejecución</div>
-    <div class="field"><label for="before-h">Horas</label><input id="before-h" type="number" min="0" step="1" value="{before_h}" inputmode="numeric"></div>
-    <div class="field"><label for="before-m">Minutos (0 a 59)</label><input id="before-m" type="number" min="0" max="59" step="1" value="{before_m}" inputmode="numeric"></div>
-    <div class="field-title full">B / Intervención humana posterior</div>
-    <div class="field"><label for="after-h">Horas</label><input id="after-h" type="number" min="0" step="1" value="{after_h}" inputmode="numeric"></div>
-    <div class="field"><label for="after-m">Minutos (0 a 59)</label><input id="after-m" type="number" min="0" max="59" step="1" value="{after_m}" inputmode="numeric"></div>
-    <div class="field-title full">C / Frecuencia y dedicación</div>
-    <div class="field"><label for="frequency">Veces que se repite</label><input id="frequency" type="number" min=".01" step="any" value="{ORDER_CASE["runs_per_week"]}"></div>
-    <div class="field"><label for="period">Frecuencia</label><select id="period"><option value="week">Por semana</option><option value="day">Por día</option><option value="month">Por mes</option></select></div>
-    <div class="field" id="days-field" hidden><label for="days">Días de operación por semana</label><input id="days" type="number" min="1" max="7" step="1" value="5"></div>
-    <div class="field"><label for="people">Personas con igual dedicación</label><input id="people" type="number" min="1" step="1" value="1"></div>
-    <div class="field"><label for="workday">Horas por jornada</label><input id="workday" type="number" min=".1" step="any" value="8"></div></div>
-    <p class="hint">Si ingresas el tiempo total del equipo, deja Personas = 1. Cuenta sólo trabajo activo, incluyendo revisión posterior, correcciones y excepciones.</p>
-    <details><summary>D / Estimación económica opcional</summary><div class="calc-fields">
-    <div class="field full"><label for="hour-cost">Valor del tiempo por hora (CLP)</label><input id="hour-cost" type="number" min="0" step="any" placeholder="Opcional"></div>
-    <div class="field"><label for="initial-cost">Costo inicial de implementación (CLP)</label><input id="initial-cost" type="number" min="0" step="any" placeholder="Opcional"></div>
-    <div class="field"><label for="monthly-cost">Costo mensual de operación (CLP)</label><input id="monthly-cost" type="number" min="0" step="any" placeholder="Opcional"></div></div></details>
-    <p class="hint">{icon("scan",True)} Los cálculos se realizan en este navegador. Nada se transmite ni almacena.</p>
-    </form><aside class="result" aria-live="polite" aria-atomic="true">
-    <div class="eyebrow">Resultado / por ejecución y persona</div>
-    <div class="result-value" id="per-run">{ORDER_CASE["before"] - ORDER_CASE["after"]} min</div>
-    <div class="result-status" id="calc-state">Tiempo activo recuperado por ejecución</div>
-    <div class="result-stats">
-    <div><strong id="per-week">—</strong><span>Por semana · equipo</span></div>
-    <div><strong id="per-month">—</strong><span>Por mes · equipo</span></div>
-    <div><strong id="per-year">—</strong><span>Por año · equipo</span></div>
-    <div><strong id="reduction">—</strong><span>Variación del tiempo activo</span></div>
-    <div><strong id="workdays">—</strong><span>Jornadas equivalentes / mes</span></div>
-    <div><strong id="execs">—</strong><span>Ejecuciones / mes</span></div></div>
-    <p class="result-money" id="money-output" hidden></p><p class="result-note" id="assumptions"></p>
-    <p class="result-note" id="calc-error" role="status"></p></aside></div></div></section>
+    {calculator_widget()}</div></section>
     <section class="section" style="background:var(--paper2)"><div class="wrap">{overline("02","Cómo interpretar la cifra")}
     <div class="section-head"><h2>Cómo leer el resultado.</h2>
     <p>El caso de pedidos supone cinco cierres por semana durante 52 semanas. Si la tarea es estacional o cambia de frecuencia, ajusta ese dato para representar mejor tu operación.</p></div>
@@ -584,7 +901,7 @@ def contact():
         "el contexto y el resultado que buscas. Evita incluir información confidencial al describir tu consulta.")
     body=f"""<section class="page-hero contact-hero"><div class="wrap">{crumb(d,[(None,"Contacto")])}
     {interior_art("modular-v02/K02-marco-editorial.svg","contact-frame-art")}
-    <span class="eyebrow">Conversación directa / Diagnóstico inicial gratuito</span>
+    <span class="eyebrow">Diagnóstico inicial gratuito</span>
     <h1>¿Qué necesitas resolver<span class="orange">?</span></h1>
     <p class="lead">Cuéntame qué haces hoy y qué parte te está tomando más tiempo del que debería.</p>
     {external(WHATSAPP,"Conversemos por WhatsApp "+icon("arrow",True),"button dark")}</div></section>
@@ -600,7 +917,7 @@ def contact():
     <div class="case-layout"><div><h2>Cuéntame cómo haces hoy la tarea.</h2><p class="lead">Podemos empezar por el resultado que esperas y las herramientas que ya usas.</p>
     <p style="margin-top:2rem">{external(LINKEDIN,"Contactar por LinkedIn "+icon("arrow",True),"button strong")}</p>
     <p class="hint">Si prefieres conversar antes de reservar, también puedes escribirme por LinkedIn.</p></div>
-    <aside><p class="eyebrow">Orientación / sin costo</p>
+    <aside><p class="eyebrow">Orientación gratuita</p>
     <p>La primera conversación ayuda a decidir si conviene evaluar el problema con más detalle. Una auditoría, instalación, desarrollo o intervención se presupuestan y acuerdan por separado.</p>
     <p class="hint">No envíes credenciales, bases de clientes, datos privados ni archivos sensibles en el primer mensaje.</p></aside></div></div></section>
     <section class="ink-panel"><div class="wrap">{overline("03","Antes de conversar")}
@@ -612,4 +929,4 @@ if __name__=="__main__":
     for p in PROJECTS:project_detail(p)
     services_index()
     for s in SERVICES:service_detail(s)
-    method();calc();contact()
+    method();calc();contact();not_found()

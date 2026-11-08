@@ -1,6 +1,6 @@
 # JMorgado
 
-**Contexto y decisiones vigentes:** [Contexto maestro del proyecto](docs/CONTEXTO_MAESTRO_JMORGADO.md). Para agentes, leer también [AGENTS.md](AGENTS.md) y el [encargo de identidad de secciones interiores](docs/ENCARGO_AGENTE_IDENTIDAD_INTERIOR_JMORGADO.md).
+**Contexto y decisiones vigentes:** [Contexto maestro del proyecto](docs/CONTEXTO_MAESTRO_JMORGADO.md). Para continuar el inicio, seguir el [plan operativo de mejoras de escenas](docs/PLAN_MEJORA_ESCENAS_INICIO_JMORGADO.md). Para agentes, leer también [AGENTS.md](AGENTS.md) y el [encargo de identidad de secciones interiores](docs/ENCARGO_AGENTE_IDENTIDAD_INTERIOR_JMORGADO.md).
 
 Fuente de la web estática de Jorge Morgado. Python estándar genera 24 páginas canónicas y 2 redirecciones (26 rutas); no se requiere instalar dependencias para publicar.
 
@@ -10,7 +10,7 @@ Fuente de la web estática de Jorge Morgado. Python estándar genera 24 páginas
 python publish_site.py
 ```
 
-La salida pública se escribe en `_site/`, con HTML, recursos, sitemap y robots. Los borradores editoriales locales y archivos de revisión siguen excluidos de Git y de la salida pública. Se exceptúan únicamente los dos documentos de contexto y coordinación enlazados arriba, que deben viajar con el repositorio; no se copian a _site/.
+La salida pública se escribe en `_site/`, con HTML, recursos, sitemap y robots. Los borradores editoriales locales y archivos de revisión siguen excluidos de Git y de la salida pública. Se exceptúan únicamente los tres documentos de contexto y coordinación enlazados arriba, que deben viajar con el repositorio; no se copian a _site/.
 
 ## Publicación
 
@@ -23,3 +23,16 @@ La salida pública se escribe en `_site/`, con HTML, recursos, sitemap y robots.
 - Las URL canónicas y el sitemap apuntan a GitHub Pages en ambos alojamientos.
 
 Los cambios en `main` disparan publicaciones automáticas. No se incluyen credenciales ni servicios de pago. Los estilos, scripts y contenido editorial se mantienen en sus archivos existentes.
+
+## Ranking de Tetris
+
+El ranking opcional usa una Pages Function y un namespace de Workers KV con el binding `TETRIS_RANKING`. Las dos direcciones públicas consultan el mismo endpoint en Cloudflare Pages. `_routes.json` reserva las invocaciones de la función para ese endpoint.
+
+Para probar con datos locales:
+
+```sh
+python publish_site.py
+npx wrangler pages dev _site --kv TETRIS_RANKING --port 8788
+```
+
+Para activarlo en producción, confirma que la cuenta usa Workers Free y vincula un namespace KV al proyecto Pages `jmorgado` como `TETRIS_RANKING` antes del despliegue. Cada marca ocupa una clave y el Top 10 se guarda en caché durante un minuto. Si la cuota gratuita se agota, el ranking muestra un aviso y el juego sigue disponible con su registro local.

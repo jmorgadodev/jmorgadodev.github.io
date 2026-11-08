@@ -1,0 +1,72 @@
+/* JMorgado / visual pass 06.
+   Hover response is deliberately slow on entry and exit; the piece never changes its rotation clock. */
+
+.home-page .tetris-piece-orbit {
+  transition: opacity 1.05s cubic-bezier(.22,.61,.36,1);
+}
+.home-page .tetris-piece-scene {
+  transition:
+    transform 1.05s cubic-bezier(.22,.61,.36,1),
+    filter 1.05s cubic-bezier(.22,.61,.36,1);
+  will-change: transform,filter;
+}
+.home-page .tetris-piece-link:is(:hover,:focus-visible) .tetris-piece-scene {
+  transform: translate3d(0,-4px,0) scale(1.018);
+  filter: drop-shadow(0 11px 18px color-mix(in srgb,var(--jm-petrol-deep) 14%,transparent));
+}
+.home-page .tetris-piece-link:is(:hover,:focus-visible) .tetris-piece-orbit--a {opacity:.95}
+.home-page .tetris-piece-link:is(:hover,:focus-visible) .tetris-piece-orbit--b {opacity:.76}
+
+/* Keep the object's own motion identical before, during and after hover. */
+.home-page .tetris-piece-link:is(:hover,:focus-visible) .tetris-tetromino {
+  animation-duration:8.2s!important;
+  animation-play-state:running!important;
+}
+.home-page .tetris-piece-link:is(:hover,:focus-visible) {
+  background:transparent!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+}
+.home-page .tetris-piece-link:focus-visible .tetris-piece-scene {
+  outline:0;
+}
+@media(prefers-reduced-motion:reduce) {
+  .home-page .tetris-piece-scene,
+  .home-page .tetris-piece-orbit {
+    transition:none!important;
+    will-change:auto;
+  }
+}
+
+
+/* Slow release: the return should feel deliberate, not spring back. */
+.home-page .tetris-piece-scene {
+  transition-duration:1.12s;
+  transition-timing-function:cubic-bezier(.65,0,.35,1);
+}
+.home-page .tetris-piece-orbit {
+  transition-duration:1.12s;
+  transition-timing-function:cubic-bezier(.65,0,.35,1);
+}
+.home-page .tetris-piece-link:is(:hover,:focus-visible) .tetris-piece-scene,
+.home-page .tetris-piece-link:is(:hover,:focus-visible) .tetris-piece-orbit {
+  transition-duration:.48s;
+  transition-timing-function:cubic-bezier(.16,1,.3,1);
+}
+
+
+/* Pointer exit is slower than entry so the object settles instead of snapping back. */
+.home-page .tetris-piece-link:not(:hover) .tetris-piece-scene,
+.home-page .tetris-piece-link:not(:hover) .tetris-piece-orbit {
+  transition-duration:1.3s!important;
+  transition-timing-function:linear!important;
+}
+.home-page .tetris-piece-link:hover .tetris-piece-scene,
+.home-page .tetris-piece-link:hover .tetris-piece-orbit {
+  transition-duration:.48s!important;
+  transition-timing-function:cubic-bezier(.16,1,.3,1)!important;
+}
+.home-page .tetris-piece-link:focus-visible:not(:hover) .tetris-piece-scene {
+  transform:none!important;
+  filter:none!important;
+}

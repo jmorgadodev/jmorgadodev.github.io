@@ -3,7 +3,7 @@
 **Fecha de consolidación:** 7 de noviembre de 2026  
 **Estado:** referencia activa para continuar el proyecto. Reúne decisiones confirmadas por Jorge, el contenido real del repositorio y propuestas todavía sujetas a validación.  
 **Destino:** agentes, colaboradores y futuras sesiones.  
-**Alcance:** todo el sitio, con especial protección de la introducción. **Este documento NO aprueba rediseñar la introducción.**
+**Alcance:** todo el sitio, con especial protección de la introducción. **Este documento no autoriza rediseñar el canon ni la estructura narrativa; los refinamientos visuales aprobados para las escenas se rigen exclusivamente por docs/PLAN_MEJORA_ESCENAS_INICIO_JMORGADO.md.**
 
 > LEER ANTES DE TOCAR CÓDIGO. En este proyecto ya se perdió trabajo por sustituir animaciones, reescribir textos y confundir una referencia visual con una autorización de rediseño. La prioridad es continuidad, no reinterpretación. Si falta contexto, revisar los respaldos y pruebas; no inventar una nueva versión.
 
@@ -252,7 +252,7 @@ El usuario debe poder seguir revisando el intro mientras el otro agente trabaja.
 
 1. Leer este documento, AGENTS.md y los archivos de la sección antes de editar.
 2. Consultar git status/diff y los últimos trabajos; identificar autoría de cada grupo de archivos.
-3. Crear snapshot local acotado de los archivos de trabajo; **nunca restaurar toda la rama**.
+3. Crear snapshot local acotado de los archivos de trabajo; **nunca restaurar toda la rama**. Excepción para la introducción: Jorge declaró la versión actual como oficial y pidió no generar respaldos rutinarios nuevos, salvo que lo solicite.
 4. Documentar problema observado con captura o evidencia, objetivo y archivos que se modificarán.
 5. Cambios quirúrgicos: un bloque/sección a la vez, sin reescribir textos aprobados para acomodar gráficos.
 6. Comparar antes/después en pantalla ancha, tablet, teléfono y landscape, día/noche, scroll ida/vuelta y reduced motion.
@@ -286,3 +286,178 @@ Esta es una **implementación provisional para revisión visual de Jorge**, no u
 - Validar con navegador día/noche, scroll ida/vuelta, landscape, móvil, reduced-motion; correr `python qa_smoke.py`. Una pasada técnica no sustituye la revisión editorial y visual de Jorge.
 
 Este historial sirve para diferenciar mejoras en prueba de decisiones finales y para que nadie las confunda con una instrucción de rediseño.
+
+
+## 14. Estado vigente del inicio y plan de refinamiento (8 nov. 2026)
+
+**Actualización basada en la validación explícita de Jorge:** el trabajo anterior de escenas, coreografías y transiciones queda aprobado y constituye la versión oficial de continuidad. La sección 13 conserva el registro histórico de la revisión del 7 de noviembre; su etiqueta de implementación provisional ya no describe el estado actual.
+
+No se debe reconstruir ni reabrir la base aprobada. Las siguientes mejoras son una segunda etapa de pulido, organizada en el documento operativo [PLAN_MEJORA_ESCENAS_INICIO_JMORGADO.md](PLAN_MEJORA_ESCENAS_INICIO_JMORGADO.md):
+
+1. **Fase 1 — Fondo y atmósfera:** auditoría de las siete escenas; fondos específicos dentro de un sistema común; profundidad, capas, iluminación y transiciones tonales coherentes en día/noche; ritmo y revelado tipográfico sin cambiar el canon.
+2. **Fase 2 — Reposo activo:** movimiento ambiental autónomo en todas las escenas, sin depender del puntero; continuidad temporal y ausencia de reinicios; movimiento también durante las transformaciones y transiciones.
+3. **Fase 3 — Interacción con puntero:** respuesta espacial y sistémica basada en proximidad y dirección, suave y contextual; experiencia completa en táctil y sin hover.
+4. **Fase 4 — Refinamiento de materialidad:** bordes, luces, sombras, volumen 2.5D, anclajes, conectores, limpieza visual y componentes reutilizables.
+
+**Reglas que gobiernan todas las fases:** los efectos deben existir durante el recorrido completo y no sólo en los estados de reposo; las animaciones deben ser reversibles y conservar su estado al detener/reanudar/invertir scroll; el puntero no debe controlar la misma transformación que scroll o reposo; el diseño debe mantener legibilidad, rendimiento, accesibilidad, responsive y coherencia día/noche. La referencia principal de principios visuales es Lusion; no se copia su estética ni se abandona la identidad modular de JMorgado.
+
+**Alcance actual:** sólo las siete escenas narrativas del inicio y sus transiciones. Las secciones posteriores del sitio se revisarán cuando Jorge declare terminado el inicio. Cada fase requiere validación de Jorge antes de comenzar la siguiente.
+
+**Estado al 8 de noviembre:** Fase 1 — Fondo y atmósfera aprobada. Fase 2 — Reposo activo aprobada por Jorge: reloj ambiental continuo, intensidad diferenciada entre scroll y reposo y señales sincronizadas con transiciones. Fase 3 — Interacción con puntero aprobada por Jorge: campo espacial común por proximidad/dirección/velocidad, respuestas en las ocho escenas, scroll ida/vuelta y toque móvil; QA integral satisfactorio. Fase 4 — Refinamiento de materialidad cerrada y aprobada por Jorge tras revisar el ajuste de contención/sincronización de módulos en la esfera. Cierre responsive del inicio: la separación entre la descripción de la quinta escena y la esfera en horizontal compacto (844×390) ya está corregida en CSS acotado; QA técnico satisfactorio en día/noche, móvil vertical, escritorio y 320×568. Pendiente revisión visual final de Jorge antes de declarar terminado el inicio. El detalle está en la bitácora del plan operativo.
+
+**Operación:** la versión actual es oficial; no generar respaldos rutinarios nuevos. No eliminar respaldos históricos. No hacer commit, push ni despliegue: Jorge realizará el push cuando corresponda. La compilación y el QA no sustituyen la inspección visual de cada escena y de todos sus tramos de transición.
+
+
+## 15. Portada de entrada y diferenciación atmosférica (8 nov. 2026)
+
+Jorge aprobó la composición de portada que aparece al cargar el sitio y pidió una iteración adicional sobre su secuencia de entrada, el reposo de los tres grupos y la identidad de los fondos. Este bloque complementa las fases 1–4 ya aprobadas; no las reabre ni cambia el canon.
+
+- En `assets/journey-study.js`, la carga inicial revela los tres grupos en tres tiempos, activa progresivamente la línea inferior y sus anclajes y deja una señal coral viajera. El movimiento autónomo del reposo sigue los tres grupos reales (no la antigua retícula de columnas), con microdesplazamientos contenidos.
+- Las superficies base ahora diferencian los ocho capítulos en día/noche: papel cálido, salvia, coral, mineral, petróleo, piedra fría, arena y cierre petróleo. Las luces de ambiente tienen desplazamiento lento y acotado.
+- Se conservan textos exactos, cantidad de módulos, composiciones, geometrías, anclajes, timeline de scroll y transiciones aprobadas. No se tocaron CSS, HTML, secciones posteriores ni archivos del agente paralelo.
+- QA técnico completado: `node --check`, `python qa_smoke.py` (26 rutas; cinco tamaños), `node qa_tetris.cjs`, `git diff --check); Playwright 80 estados en cinco tamaños y día/noche sin errores ni overflow; movimiento reducido estático.
+- Capturas: `_revision/portada-ambient-20261108/` y `_revision/portada-ambient-after-20261108/`.
+
+**Estado:** implementación lista para revisión visual de Jorge. No commit, push ni despliegue.
+
+
+## 16. Segunda iteración visual de la portada (8 nov. 2026)
+
+Jorge observó que la primera mejora de portada no resolvía el problema: el modo día seguía percibiéndose plano y los objetos parecían detenidos tras una animación de entrada. Esa iteración anterior queda como antecedente técnico, no como aprobación visual.
+
+En `assets/journey-study.js` se implementó una segunda dirección:
+
+- Los tres grupos de módulos ahora se leen como **TAREA → IDEA → FORMA**, mediante etiquetas discretas y una ruta curva con tres nodos. Un pulso coral viaja entre ellos y cada grupo reacciona al recibirlo.
+- La animación autónoma tiene tres comportamientos distintos: compresión/recuperación para TAREA, órbita y variación radial para IDEA, y una onda de alineación por filas para FORMA. Continúa después de la entrada inicial.
+- La entrada parte de una concentración central y despliega los módulos hacia los grupos con desfase y asentamiento.
+- En modo día se reforzaron las superficies con gradientes direccionales, focos por material, sombras de contacto, viñeteado y textura determinista de grano. Se ajustaron las bases cromáticas claras. La noche mantiene su carácter.
+- El recorrido de scroll, textos, cantidad de módulos, geometría y transiciones posteriores permanecen intactos. No se tocó HTML ni secciones fuera del inicio. Se añadió una única media query CSS para evitar la superposición de titular, descripción y módulos en landscape compacto (844×390).
+- Capturas: `_revision/portada-narrativa-20261108/`.
+
+**Estado:** segunda iteración implementada; pendiente aprobación visual de Jorge. No commit, push ni despliegue.
+
+
+## 17. Portada: campo orbital compartido y transferencia entre estados (8 nov. 2026)
+
+Jorge eligió la dirección **campo sistémico + órbitas controladas + transferencias sutiles** para resolver que la actividad se concentraba demasiado en la línea inferior. Se implementó una tercera iteración complementaria en `assets/journey-study.js`:
+
+- El campo visual ahora atraviesa los tres grupos mediante dos trayectorias curvas y tres arcos orbitales parciales, cada uno con una inclinación propia. Se evita el átomo literal y los anillos decorativos completos.
+- Los módulos reales orbitan sus centros: TAREA tiene contracción y recuperación de una masa compacta; IDEA presenta la órbita más abierta y fases individuales alrededor del núcleo; FORMA recibe una onda de alineación por filas.
+- Dos pequeños paquetes viajan entre grupos. El núcleo de IDEA pulsa y la conexión inferior queda subordinada como referencia.
+- El movimiento se desvanece al iniciar el scroll y no altera el destino de las piezas, el canon textual, la cantidad de módulos ni las escenas siguientes.
+- Con movimiento reducido, las trayectorias quedan estáticas y no se ejecutan órbitas ni transferencias.
+
+Capturas en `_revision/portada-orbital-20261108/`. QA: sintaxis JS, `qa_smoke.py` (26 rutas y cinco tamaños), `qa_tetris.cjs`, `git diff --check` y Playwright de escritorio, móvil y landscape en día/noche: correctos, sin errores de consola ni overflow. El muestreo temporal confirma movimiento en las tres zonas.
+
+**Estado:** implementación y QA técnico completados; pendiente aprobación visual de Jorge. Sólo se modificó `assets/journey-study.js` y documentación. Sin commit, push ni despliegue.
+
+
+## 18. Portada — segunda revisión del campo orbital (8 nov. 2026)
+
+Se refinó la tercera iteración a partir de capturas reales. Los centros de TAREA, IDEA y FORMA ahora se calculan desde `openingGroupCenter()`; `openingGroupDrift()` comparte el desplazamiento de reposo entre los módulos, los arcos orbitales, las curvas de conexión y los reflejos ambientales. `openingGroupOrbit()` sincroniza la inclinación de cada arco con el giro de su conjunto. Así las líneas dejan de quedarse fijas detrás de piezas que sí se mueven.
+
+En móvil vertical (incluido 320×568) se elevó moderadamente el sistema completo: centros, etiquetas, ramas y circuito inferior. El móvil horizontal y escritorio conservan su composición. En modo día se reforzó la tinta de las órbitas para equilibrar la lectura que ya ofrecía el modo noche; sin añadir adornos, halos grandes ni nuevas capas decorativas.
+
+QA: sintaxis JS, seis combinaciones de tamaño/tema sin errores de consola ni overflow; cambio de tema, puntero, transición por scroll y movimiento reducido comprobados. Respaldo anterior y capturas en `_revision/portada-orbital-20261108/`. Sólo implementación en `assets/journey-study.js` más documentación. Sin commit, push ni despliegue. Pendiente aprobación visual.
+
+
+## 19. Microanimación narrativa de entrada (8 nov. 2026)
+
+La portada ahora tiene una entrada de una sola ejecución (aprox. 2,68 s), en tres momentos solapados: aparición desde un núcleo común, formación escalonada de TAREA → IDEA → FORMA y conexión progresiva. Las curvas se dibujan en dos entregas, primero hacia IDEA y luego hacia FORMA; las órbitas se completan por conjunto y el núcleo central se activa al final. Después toma el relevo el reposo activo, sin repetir la entrada.
+
+Si el usuario empieza a hacer scroll antes de terminar, la entrada se completa para evitar estados interrumpidos. El cambio de tema no reinicia la animación. Con `prefers-reduced-motion`, la portada aparece completa y estática.
+
+Sólo cambió `assets/journey-study.js`; se conservaron copy, geometría final, CSS, HTML, escenas posteriores y transiciones aprobadas. QA completo: `node --check`, `python qa_smoke.py`, `node qa_tetris.cjs`, `git diff --check`; seis formatos/temas y pruebas de cambio de tema, scroll temprano y movimiento reducido, sin errores ni overflow. Capturas en `_revision/portada-orbital-20261108/`. Implementación y QA listos; pendiente revisión visual final. Sin commit, push ni despliegue.
+
+
+## 20. Portada — experiencia orgánica y modo día (8 nov. 2026)
+
+Jorge pidió superar el efecto «presentación PPT» y recuperar en modo día la profundidad y legibilidad del modo noche. Se modificó sólo `assets/journey-study.js` (no tocar el contenido canon, CSS ni escenas posteriores): aparición solapada de tres corrientes de piezas que vuelan por curvas desde un centro común, rutas y órbitas que comienzan durante la formación, etiquetas técnicas sin 01/02/03, un pulso que recorre la conexión y provoca respuesta físicamente contenida en los tres conjuntos. Los módulos conservan su geometría final y sus destinos al hacer scroll.
+
+El modo día cambia a papel mineral neutro, reduce el baño ámbar, refuerza líneas petróleo y emplea sombras de contacto más discretas que acompañan el asentamiento de cada grupo; no añade tarjetas ni efectos decorativos. Modo noche conserva la composición existente. La entrada no se repite, no se reinicia con el tema, y las preferencias de movimiento reducido mantienen composición estática.
+
+Capturas de esta iteración: `_revision/portada-orbital-20261108/production-*.png`. Pendiente aprobación visual de Jorge; no commit, push ni deploy.
+
+**Cierre técnico de la iteración:** también se oscurecieron selectivamente las piezas color piedra sólo en la escena inicial de día para evitar que se fundan con el papel claro. `node --check`, `python qa_smoke.py` (26 rutas), `node qa_tetris.cjs` y `git diff --check` correctos. Validación Playwright final: 1220×859 día/noche, 390×844 día/noche, 844×390 y 320×568, todos sin errores ni desbordamiento; scroll temprano y `prefers-reduced-motion` correctos. Capturas finales: `production-final-desktop-day.png` y `production-final-mobile-day.png` en `_revision/portada-orbital-20261108/`. Implementado, pendiente valoración visual de Jorge.
+
+
+## 21. Escenas 1–7: mismo estándar de movimiento y materialidad de la portada (8 nov. 2026)
+
+Jorge validó la mejora de la portada y solicitó elevar las otras escenas. Se compararon capturas reales día/noche de las siete escenas. No se rehizo la composición: se introdujo un pulso compartido entre objeto y conexión para que cada escena tenga comportamiento causal.
+
+- Escena 1: un solo paquete recorre la conexión, activando los puertos y módulos de cada grupo al llegar.
+- Escena 2: expansión radial elástica de los módulos existentes, sin aros nuevos.
+- Escena 3: onda coherente longitudinal sobre las partículas que dibujan CRECER; titular legible en modo noche por corrección CSS mínima.
+- Escena 4: esfera y piso aprobados preservados.
+- Escena 5: fichas responden al barrido de su plataforma, que gana profundidad en día.
+- Escena 6: fondo arena mineral diurno menos lavado, tonos piedra de barras reforzados; glint que atraviesa la curva y activa las barras sin alterar anclajes.
+- Escena 7: cierre, semilla y ondas preservados; se prolongó levemente el reposo visible de las cintas y se incorporaron señales que viajan por sus mismos trazados, para evitar que la escena quede estática.
+
+Modificados exclusivamente `assets/journey-study.js`, `assets/journey-study.css` (una regla nocturna) y documentación. Sin alterar textos, tiempos de scroll, destinos, títulos, navegación ni trabajo del agente paralelo. Comparativas y snapshots móviles en `_revision/escenas-refinamiento-20261108/`. QA: `node --check`, `python qa_smoke.py` (26 rutas), `node qa_tetris.cjs`, `git diff --check`, 56 estados Playwright (escritorio, móvil, tablet, landscape; ambos temas) sin errores ni overflow. Espera revisión visual de Jorge, sin commit/push/deploy.
+
+
+## 22. Plataformas y gráfico — refinamiento de material y transferencia (8 nov. 2026)
+
+Tras la aprobación de la portada y la primera pasada sobre siete escenas, se corrigió la transición entre la escena 5 (bases/plataformas) y la 6 (gráfico). En `assets/journey-study.js`, los planos de día usan la base fría cromática de su propio capítulo (`p.bg[5]`) para bastidor/caras superiores y laterales; noche conserva su material previo. `scene5FlowPhase(group,progress)` sincroniza cable, barrido, marcador y elevación de fichas. En escena 6, `withdraw(group)` retira cada plataforma y sus conexiones de acuerdo con el avance de sus piezas, evitando planos superpuestos a barras ya formadas.
+
+Sin cambios de textos, HTML, CSS, geometrías finales, scroll, portada, ni otros archivos del agente paralelo. Capturas: `_revision/plataformas-grafico-20261108/` (contactos día/noche y detalle 5–6). QA: `node --check`, `git diff --check`, Playwright 15 estados y luego 36 posiciones con navegación en ambos sentidos, seis combinaciones de tamaño/tema, reduced motion, sin errores ni overflow; `python qa_smoke.py` (26 rutas) y `node qa_tetris.cjs` correctos. Implementación lista para aprobación visual. No commit/push/deploy.
+
+
+## 23. Landing narrativa posterior a la introducción (8 nov. 2026)
+
+Jorge aprobó la reorganización de la landing sin alterar el inicio. Se implementó localmente el orden problema → método → impacto y calculadora → proyectos ejecutados → herramientas propias → presentación personal → pausa de Tetris → Hablemos y footer. Textos orientados al problema real, tono profesional cercano, colores funcionales según paleta JMorgado en día/noche, proyectos editoriales asimétricos con logos originales intactos y navegación contextual con marcador de capítulo.
+
+La calculadora se abre desde el lado izquierdo en `<dialog>` y comparte **exactamente** el motor de `assets/calculator.js` con la página completa; incluye resultado visible sincronizado, parámetros editables y cálculo económico opcional sin prometer ahorros de caja. Se reutiliza Google Calendar en visor modal interno de la landing, manteniendo WhatsApp y fallback externos. La invitación de Tetris se simplificó sin tocar su juego real. El footer obtuvo firma editorial propia. Fuentes editadas: `build_site.py`, `qa_smoke.py`, nuevos `assets/home-narrative.css` y `assets/home-narrative.js`; generados sólo `index.html` y `calculadora/index.html` (este último idéntico en bytes al anterior). No se editó el Canvas del inicio ni el código del juego.
+
+Respaldos, capturas y pruebas específicas: `_revision/landing-narrativa-implementacion-20261108/`. QA smoke completo (26 rutas, intro, responsive, JS disabled, reduced motion, visor, Tetris), pruebas propias de 5 combinaciones de pantalla/tema y modales, validaciones de menú sticky (top 80 px escritorio, 100 px móvil), foco restaurado, fórmula compartida y `git diff --check`: correctos. Servidor local: `http://127.0.0.1:8791/`. Estado: implementado y validado técnicamente, a la espera de aprobación visual. Sin commit, push ni despliegue.
+
+
+## 24. Segunda dirección visual de la landing (8 nov. 2026)
+
+Tras la crítica de Jorge («la ficha no aporta», «el impacto se representa mal», «software propio quedó igual»), se hizo una segunda implementación. En la portada se quitó la ficha hipotética de pedido y se sustituyó por un mapa visual de cuatro etapas del método (contexto, alcance, construcción, entrega). Impacto ahora compara barras proporcionales 60 min manuales vs 12 min de revisión, muestra 48 min por ejecución, 4 h/semana y 208 h/año con ecuación explícita 48 × 5 × 52. No se presenta como caso de cliente. Software propio dejó el selector antiguo y ahora muestra tres fichas simultáneas (AuditaPC, Nokto, DatosDemoCL) con capturas/muestra, tarea, plataforma, estado, repo y ficha técnica modal. Se restauró el diseño editorial desigual de proyectos y se aplicaron fondos y transiciones cromáticas día/noche en la nueva secuencia de secciones.
+
+Archivos nuevos assets/home-refinement.css; build_site.py incluye home_method_visual, home_tool_card, home_tools_showcase y nueva visualización home_savings; qa_smoke.py refleja los nuevos titulares. Se agregó la clase tool-card a las nuevas fichas para reutilizar assets/tool-panel.js. La portada conserva el Canvas de apertura exacto y la página /calculadora/ idéntica al respaldo; Tetris, proyectos y otros trabajos paralelos sin cambios.
+
+Capturas y respaldo: _revision/landing-refinement-20261108/. QA completo python qa_smoke.py (26 rutas), node qa_tetris.cjs, git diff --check, 4 temas/tamaños de sección, anclas sin colisión, 3 modales de herramientas en ambos temas, 320 px sin overflow, calculadora sincronizada, inicio exacto contra respaldo, sin errores de consola. Servidor local http://127.0.0.1:8791/, HTTP 200. Estado: implementado y validado técnicamente, pendiente aprobación visual. No commit/push/deploy.
+
+
+## 25. Tercera dirección de arte de la landing (8 nov. 2026)
+
+Jorge solicitó analizar todos los apartados por fondos degradados, submenú confuso, acentos de color sin función y figuras planas. Se hizo una revisión de ocho secciones en modo día, noche y móvil, manteniendo intacto el Canvas inicial.
+
+Se sustituyó el diagrama abstracto de problema por un esquema de fuentes reales (planilla, sistemas, proceso manual) que convergen en un mapa de datos/reglas/excepciones; se aumentó su escala tipográfica y se hizo una composición vertical móvil. Método quedó como secuencia continua sin tarjetas. Impacto conserva los cálculos y barras pero sin paneles ni líneas decorativas. Proyectos son folios sin cajas/fondos de colores. Software propio conserva las tres capturas/muestra y fichas técnicas; se corrigió el contraste de AuditaPC en noche. Persona es más compacta y la numeración quedó continua: 06 persona, 07 Tetris, 08 contacto. Tetris usa preview isométrica de volumen, sin alterar el juego. Contacto ya no hereda el panel gris de interior.css; su cierre y footer comparten superficies petróleo y texto de alto contraste.
+
+Se retiró el submenú fijo y su lógica JS; el header principal es la única navegación superior. Se ocultó el botón flotante WhatsApp en portada para evitar duplicación de CTA. Se reemplazaron todos los fondos de secciones por colores sólidos, sin degradados calculados en los apartados posteriores al intro. Nuevos estilos assets/home-art-direction.css; cambios en build_site.py, assets/home-narrative.js, qa_smoke.py; regenerados sólo index.html y calculadora/index.html. El Canvas, Tetris real, las nueve fichas de proyectos y otras páginas no se editaron.
+
+QA smoke 26 rutas, Tetris, git diff check; Playwright día/noche/móvil con ocho secciones, sin overflow, sin degradados, sin submenú, sin errores. Capturas _revision/landing-art-direction-20261108/. Local http://127.0.0.1:8791/. Sin commit/push/deploy. Pendiente aprobación visual.
+
+## 25. Referencias externas aplicadas a la landing — 8 nov. 2026
+
+Jorge pidió referencias de sitios reales para corregir la landing (el diseño anterior seguía viéndose como AI slop, con espacios iguales, gráficos tipo dashboard y cierre monocromático). Se revisaron https://velvele.studio/work (índice editorial), https://alright.studio/work (jerarquía del trabajo y contexto) y https://tobiasahlin.com/ (separación herramientas propias/trabajo profesional). Se tomó el principio de diseño, sin copiar contenido ni arte.
+
+Se rehízo en `build_site.py` la presentación del **impacto** como una sola comparación 60 minutos antes / 48 recuperados / 12 después, con 208 h/año y apertura de la calculadora real; los **cuatro proyectos** se transformaron en un índice editorial con sus logos, roles, resultados y visor interno, **sin capturas de proyectos**. El modal permite abrir sitio oficial o ficha local. Se redistribuyó **software propio** (AuditaPC protagonista, Nokto y DatosDemoCL secundarios) y se diferenció el cierre: identidad personal en salvia, Tetris en ámbar y tablero petróleo, Hablemos claro y footer petróleo compacto. CSS nueva capa sólo home: `assets/home-editorial-pass.css`. Interacción del modal: `assets/home-narrative.js`. La intro y Tetris permanecen intactos; ningún commit/push/deploy.
+
+Importante: comprobación HTTP del 8 nov. 2026 detectó que ImpulsaCV no permite embedding externo (`X-Frame-Options: SAMEORIGIN`), y El Cambiómetro tampoco (`DENY`, `frame-ancestors 'none'`). **No se eluden** esas restricciones: esos dos se abren en la ficha propia dentro del modal y ofrecen visitar el sitio oficial. Ryvolt y Flor de Almendro se intentan cargar directamente en visor, con enlaces alternativos. Modal de cada proyecto probado 12 veces en día/noche/móvil, con Escape y foco restaurado. Se mantiene el calendario en ventana interna, WhatsApp y la calculadora compartida.
+
+Respaldo y capturas de revisión técnica: `_revision/landing-art-rebuild-20261108/`. Investigación y decisiones: `docs/REFERENCIAS_Y_REDISENO_LANDING_20261108.md`. Se comprobó literalmente la igualdad de los 3518 caracteres del inicio original; el portafolio muestra 4 proyectos y 7 variantes de **sólo sus logos** (sin capturas). Regresión completa `python qa_smoke.py` sobre 26 rutas, cinco resoluciones, Canvas, temas, JS disabled, reduced motion y juego: OK. `node qa_tetris.cjs`: OK. Playwright día/noche/móvil/320, cálculo 208→468, agenda, modal, sin errores ni overflow. Servidor local activo: `http://127.0.0.1:8791/`. Pendiente aprobación visual del propietario y eventual consolidación de CSS de home tras su aprobación.
+
+
+## 26. Segunda pasada editorial de la landing — 8 nov. 2026
+
+A petición del propietario se revisó nuevamente la landing usando https://tobiasahlin.com/ como referencia directa. Principios observados en el referente: encabezados de sección breves y tipográficos, separación explícita Projects / Work / Say hi, bloques de color sólidos con composiciones variadas y contacto resuelto como cierre sencillo, no como otra gran sección promocional.
+
+Cambios implementados localmente:
+- Se eliminaron todos los overlines numerados del recorrido (01 / El problema, 02 / El criterio, etc.) y se simplificaron los títulos a «Proyectos.» y «Software propio.». También se quitaron los índices redundantes de las tarjetas de proyecto y de las herramientas; los tipos/estados siguen visibles.
+- Se eliminó por completo el capítulo «Hablemos» inmediatamente anterior al footer. No se perdió ninguna vía de contacto: WhatsApp, LinkedIn y agenda Google Calendar están ahora agrupados en el panel de cierre del propio footer.
+- Se retiró del footer la firma «JMorgado / Desarrollo independiente», el logotipo textual «JM.» y la frase «Desarrollo, datos y automatización. Soluciones con un propósito concreto.»; no se reemplazaron por otro tagline.
+- El footer se reorganizó como un cierre compacto de dos áreas: panel de contacto «Hablemos.» y navegación en dos columnas (Proyectos / Recorrido), más una línea inferior de copyright y retorno al inicio. Ajustes de espaciado para móvil y tema noche.
+- Proyectos: se sustituyó el índice horizontal por una composición asimétrica de cuatro paneles de color, manteniendo los logos originales, aportación, resultado, visor interno y enlaces oficiales. No se incorporaron capturas de proyectos.
+- Persona: se quitó el banner/monograma redundante; queda el nombre y la historia.
+- Tetris: etiqueta simplificada, sin índice de sección. No se cambió el juego.
+
+Archivos: `build_site.py`, `assets/home-editorial-pass.css`, `index.html`, `qa_smoke.py`. Se regeneró la landing con `home()`. QA visual Playwright previo: cinco variantes escritorio/móvil, día/noche, cero overflow; modal de proyecto y agenda abren/cierran correctamente. QA de esta última pasada se está cerrando. Sin commit, push ni despliegue. Servidor local: http://127.0.0.1:8791/.
+
+
+### Cierre de QA de la segunda iteración — 8 nov. 2026
+
+Regresión final completada correctamente: `python qa_smoke.py` (26 rutas, 24 canónicas, intro, motion, accesibilidad, tema, calculadora, visor y JS deshabilitado) y `node qa_tetris.cjs` (motor, teclado, tacto, persistencia, pausa y fin de partida). Playwright en 1440, 768, 390, 320 y 844 px, día/noche: cero overflow, cero errores de JS; se comprobó apertura/cierre de visor y agenda. Footer final: 372 px escritorio / 436 px móvil, con enlaces compactados y tres vías de contacto funcionales. Introducción y Tetris siguen intactos. `git diff --check` OK. Servidor local HTTP 200 en `http://127.0.0.1:8791/`. Sin commit, push ni despliegue.

@@ -44,7 +44,7 @@ def render_study():
         '<noscript><style>.home-header{position:sticky!important;visibility:visible!important;'
         'opacity:1!important;transform:none!important}.study-copy{opacity:1!important;'
         'visibility:visible!important}</style></noscript>'
-        '<section class="tech-study" data-study aria-label="Una idea toma forma">'
+        '<section class="tech-study" id="home-start" data-study aria-label="Una idea toma forma">'
         '<div class="study-frame">'
         '<div class="study-topline">'
         '<span class="study-monogram" aria-hidden="true">JM<span class="study-period">.</span></span>'

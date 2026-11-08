@@ -59,7 +59,10 @@ def navigation(page):
         menu.click()
         no_overflow(page)
     links = page.locator("#main-nav a")
-    assert links.all_text_contents() == ["Herramientas", "Proyectos", "Servicios", "Contacto"]
+    expected = (["Servicios", "Proyectos", "Sobre m\u00ed", "Contacto"]
+                if page.locator(".home-header").count()
+                else ["Herramientas", "Proyectos", "Servicios", "Contacto"])
+    assert links.all_text_contents() == expected
     assert all(link.is_visible() for link in links.all())
     if menu.is_visible():
         menu.click()
@@ -182,6 +185,10 @@ def game_keyboard(browser):
 def game_touch(browser):
     page = browser.new_page(viewport={"width":390,"height":844}, has_touch=True, is_mobile=True, reduced_motion="reduce")
     page.goto(base+"jugar/")
+    touch_buttons = page.locator(".game-touch [data-touch]")
+    touch_order = lambda: touch_buttons.evaluate_all("buttons=>buttons.map(button=>button.dataset.touch)")
+    default_order = ["hold","left","right","soft","ccw","cw","hard"]
+    assert touch_order() == default_order
     option = page.locator("[data-touch-option]")
     expect(option).to_be_checked()
     option.uncheck()
@@ -204,10 +211,39 @@ def game_touch(browser):
     assert 0 < after-int(stopped) <= 40
     page.locator('[data-touch="hold"]').tap()
     assert page.locator("[data-hold]").get_attribute("aria-label").startswith("Pieza en reserva")
+    page.get_by_role("button",name="Ordenar botones").tap()
+    expect(page.locator("[data-tetris]")).to_have_attribute("data-game-state","paused")
+    touch_controls = page.locator(".game-touch")
+    touch_controls.scroll_into_view_if_needed()
+    source = page.locator('[data-touch="hold"]').bounding_box()
+    destination = page.locator('[data-touch="hard"]').bounding_box()
+    start = {"x":source["x"]+source["width"]/2,"y":source["y"]+source["height"]/2}
+    finish = {"x":destination["x"]+destination["width"]/2,"y":destination["y"]+destination["height"]/2}
+    cdp.send("Input.dispatchTouchEvent", {"type":"touchStart","touchPoints":[start]})
+    cdp.send("Input.dispatchTouchEvent", {"type":"touchMove","touchPoints":[finish]})
+    cdp.send("Input.dispatchTouchEvent", {"type":"touchEnd","touchPoints":[]})
+    assert touch_order() == default_order[1:] + ["hold"]
+    page.locator('[data-touch="hard"]').tap()
+    page.locator('[data-touch="left"]').tap()
+    custom_order = ["hard","left","right","soft","ccw","cw","hold"]
+    assert touch_order() == custom_order
+    expect(page.locator('[data-stat="score"]')).to_have_text(str(after))
+    page.get_by_role("button",name="Listo",exact=True).tap()
     page.reload()
     expect(option).to_be_checked()
+    assert touch_order() == custom_order
+    page.get_by_role("button",name="Ordenar botones").tap()
+    page.get_by_role("button",name="Restaurar orden").tap()
+    assert touch_order() == default_order
+    page.evaluate("""() => {
+      const key = 'jmorgado.tetris.controls.v1';
+      const value = JSON.parse(localStorage.getItem(key));
+      localStorage.setItem(key, JSON.stringify({...value,touchOrder:Array(7).fill('hard')}));
+    }""")
+    page.reload()
+    assert touch_order() == default_order
     page.close()
-    print("Pulsación táctil, repetición, cancelación y persistencia OK")
+    print("Pulsación táctil, arrastre, reordenación, restauración y persistencia OK")
 
 def game_layouts(browser):
     for width, height in VIEWPORTS:
@@ -375,9 +411,9 @@ try:
                     assert page.locator('.copy-1 .study-heading').evaluate(
                         "e=>getComputedStyle(e).transform") in ('none','matrix(1, 0, 0, 1, 0, 0)')
             seek(page,.569);page.wait_for_timeout(220)
-            before=page.locator('canvas').evaluate('e=>e.toDataURL()')
+            before=page.locator('canvas.study-canvas').evaluate('e=>e.toDataURL()')
             page.mouse.move(width*.5,height*.62);page.wait_for_timeout(280)
-            after=page.locator('canvas').evaluate('e=>e.toDataURL()')
+            after=page.locator('canvas.study-canvas').evaluate('e=>e.toDataURL()')
             assert before!=after,(width,height,'pointer interaction did not redraw canvas')
             seek(page,.99);page.wait_for_timeout(560)
             assert page.locator('.copy-6').evaluate(
@@ -385,12 +421,14 @@ try:
             page.locator('.intro-skip').click()
             assert page.locator('.home-header').evaluate('e=>!e.inert')
             headings = page.locator("main > section:not([data-study])").all()
-            order = ["¿Qué necesitas resolver?", "Software de mi banco de trabajo.", "Proyectos realizados.",
-                     "La pieza que todavía no llega.", "Empiezo por la fila que no cuadra.", "Una hora diaria cerrando pedidos.",
-                     "Cuéntame dónde se traba el trabajo."]
+            # El recorrido editorial aprobó un orden nuevo sin alterar las siete escenas intro.
+            order = ["mejorar", "Primero te escucho.",
+                     "Una hora de trabajo puede reducirse", "Proyectos",
+                     "Soy Jorge", "Herramientas propias", "jugar", "necesitas"]
             assert len(headings) == len(order)
             for section, title in zip(headings, order):
-                assert title in section.locator("h2").first.inner_text()
+                actual_title=section.locator("h2").first.inner_text()
+                assert title in actual_title,(section.get_attribute("class"),title,actual_title)
             navigation(page)
             if ARTIFACTS and width in (1440,390):
                 page.locator("#recursos").evaluate("e=>window.scrollTo({top:e.getBoundingClientRect().top+scrollY-95,behavior:'instant'})")
@@ -404,9 +442,9 @@ try:
             page.close()
         touch=browser.new_page(viewport={'width':390,'height':844},has_touch=True)
         touch.goto(base,wait_until='networkidle');seek(touch,.569);touch.wait_for_timeout(220)
-        before=touch.locator('canvas').evaluate('e=>e.toDataURL()')
+        before=touch.locator('canvas.study-canvas').evaluate('e=>e.toDataURL()')
         touch.touchscreen.tap(195,540);touch.wait_for_timeout(300)
-        after=touch.locator('canvas').evaluate('e=>e.toDataURL()')
+        after=touch.locator('canvas.study-canvas').evaluate('e=>e.toDataURL()')
         assert before!=after,'touch ripple did not redraw canvas'
         touch.close();print('touch ripple OK')
         for settings in [dict(reduced_motion='reduce'),
@@ -441,7 +479,10 @@ try:
             ids = [element["id"] for element in document.select("[id]")]
             assert len(ids) == len(set(ids)), str(file)
             assert bool(document.select('script[src*="tetris.js"]')) == (route == "jugar/")
-            if route not in [f"proyectos/{slug}/" for slug in LEGACY_TOOL_SLUGS]:
+            if route == "":
+                assert document.select_one('.home-footer .footer-nav a[href="#recursos"]')
+                assert document.select_one('.home-footer .footer-nav a[href="#trabajos"]')
+            elif route not in [f"proyectos/{slug}/" for slug in LEGACY_TOOL_SLUGS]:
                 assert document.select_one('.footer-links a[href$="herramientas/"]')
                 assert document.select_one('.footer-links a[href$="jugar/"]')
         urls = {entry.text for entry in sitemap.findall(".//{*}loc")}

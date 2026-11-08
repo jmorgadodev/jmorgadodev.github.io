@@ -47,6 +47,7 @@
   };
   const HALF_KICKS = [[0,0],[-1,0],[1,0],[0,-1],[-2,0],[2,0],[-1,-1],[1,-1],[0,-2]];
   const LINE_POINTS = [0, 100, 300, 500, 800];
+  const SPIN_POINTS = {full: [400, 800, 1200, 1600], mini: [100, 200, 400]};
   const COMBO_STEP = 50;
   const DEFAULT_KEYS = Object.freeze({
     left:"ArrowLeft", right:"ArrowRight", soft:"ArrowDown", hard:"Space",
@@ -83,6 +84,8 @@
       this.canHold = true;
       this.score = this.lines = 0;
       this.combo = 0;
+      this.backToBack = false;
+      this.lastRotation = null;
       this.level = 1;
       this.status = "idle";
       this.resetTimers();
@@ -117,6 +120,7 @@
     spawn(type = this.next.shift()) {
       this.fillPreview();
       this.resetTimers();
+      this.lastRotation = null;
       this.active = {type, x: Math.floor((COLS - SHAPES[type].length) / 2), y: HIDDEN - 1, rotation: 0};
       if (this.collides(this.active)) {
         this.active = null;
@@ -148,6 +152,7 @@
       if (this.collides(candidate)) return false;
       const wasGrounded = this.grounded();
       this.active = candidate;
+      this.lastRotation = null;
       const resetLimit = Math.max(2, LOCK_RESETS - Math.floor((this.level - 1) / 2));
       if (wasGrounded && this.lockResets < resetLimit) {
         this.lockElapsed = 0;
@@ -161,32 +166,56 @@
       const {rotation, type, x, y} = this.active;
       const target = (rotation + delta + 4) % 4;
       const kicks = delta === 2 ? HALF_KICKS : (type === "I" ? I_KICKS : KICKS)[rotation + ">" + target];
-      return kicks.some(([dx, dy]) => this.place({type, rotation: target, x: x + dx, y: y + dy}));
+      const kick = kicks.findIndex(([dx, dy]) => this.place({type, rotation: target, x: x + dx, y: y + dy}));
+      if (kick < 0) return false;
+      this.lastRotation = {fifthKick: delta !== 2 && kick === 4};
+      return true;
     }
 
     descend() {
       const candidate = {...this.active, y: this.active.y + 1};
       if (this.collides(candidate)) return false;
       this.active = candidate;
+      this.lastRotation = null;
       return true;
+    }
+
+    spinType() {
+      const {type, rotation, x, y} = this.active;
+      if (type !== "T" || !this.lastRotation) return null;
+      const corners = [[x, y], [x + 2, y], [x + 2, y + 2], [x, y + 2]].map(([cx, cy]) =>
+        cx < 0 || cx >= COLS || cy < 0 || cy >= TOTAL || Boolean(this.board[cy][cx]));
+      if (corners.filter(Boolean).length < 3) return null;
+      const frontFilled = corners[rotation] && corners[(rotation + 1) % 4];
+      return frontFilled || this.lastRotation.fifthKick ? "full" : "mini";
     }
 
     lock() {
       const {type, rotation, x, y} = this.active;
+      const spin = this.spinType();
       for (const [dx, dy] of CELLS[type][rotation]) this.board[y + dy][x + dx] = type;
       const cleared = [];
       const remaining = this.board.filter((row, index) => {
         if (row.every(Boolean)) { cleared.push({row: index - HIDDEN, colors: row}); return false; }
         return true;
       });
-      this.combo = cleared.length ? this.combo + 1 : 0;
-      if (cleared.length) {
-        const bonus = COMBO_STEP * (this.combo - 1) * this.level;
-        this.score += LINE_POINTS[cleared.length] * this.level + bonus;
-        this.lines += cleared.length;
+      const lines = cleared.length;
+      this.combo = lines ? this.combo + 1 : 0;
+      if (lines || spin) {
+        const difficult = lines > 0 && (lines === 4 || spin !== null);
+        const backToBack = difficult && this.backToBack;
+        const bonus = COMBO_STEP * Math.max(0, this.combo - 1) * this.level;
+        const spinGrade = spin === "mini" && lines === 3 ? "full" : spin;
+        const base = spinGrade ? SPIN_POINTS[spinGrade][lines] : LINE_POINTS[lines];
+        const points = base * this.level * (backToBack ? 1.5 : 1) + bonus;
+        this.score += points;
+        this.lines += lines;
         this.level = 1 + Math.floor(this.lines / 10);
-        this.board = [...Array.from({length: cleared.length}, () => Array(COLS).fill(null)), ...remaining];
-        this.emit("clear", cleared, {combo: this.combo, bonus});
+        if (lines) {
+          this.backToBack = difficult;
+          this.board = [...Array.from({length: lines}, () => Array(COLS).fill(null)), ...remaining];
+        }
+        this.emit(lines ? "clear" : "spin", cleared, {combo: this.combo, bonus, spin: spinGrade, backToBack, points});
       }
       this.canHold = true;
       this.spawn();
@@ -206,7 +235,9 @@
           return true;
         case "hard": {
           const y = this.ghostY();
-          this.score += 2 * (y - this.active.y);
+          const distance = y - this.active.y;
+          this.score += 2 * distance;
+          if (distance) this.lastRotation = null;
           this.active.y = y;
           this.emit("impact");
           this.lock();
@@ -226,7 +257,7 @@
 
     gravity() {
       const progress = this.level - 1;
-      return 18 + 682 / (1 + .25 * progress + .05 * progress ** 2);
+      return 16 + 684 / (1 + .31 * progress + .08 * progress ** 2);
     }
 
     lockDelay() {
@@ -283,8 +314,30 @@
   const primary = find("[data-game-primary]");
   const pauseButton = find("[data-game-pause]");
   const restartButton = find("[data-game-restart]");
+  const ranking = find(".game-ranking");
+  const rankOpen = find("[data-ranking-open]");
+  const rankDialog = find(".game-rank-dialog");
+  const rankForm = find("[data-ranking-form]");
+  const rankAlias = find("#tetris-alias");
+  const rankSave = find("[data-ranking-submit]");
+  const rankDismiss = find("[data-ranking-dismiss]");
+  const rankView = find("[data-ranking-view]");
+  const rankCount = find("[data-ranking-count]");
+  const rankMeter = find("[data-ranking-meter]");
+  const rankFeedback = find("[data-ranking-feedback]");
+  const rankStatus = find("[data-ranking-status]");
+  const rankRetry = find("[data-ranking-retry]");
+  const rankList = find("[data-ranking-list]");
+  const rankEndpoint = location.hostname === "jmorgadodev.github.io" ?
+    "https://jmorgado.pages.dev/api/tetris/ranking" : "/api/tetris/ranking";
   const dialog = find(".game-dialog");
   const touch = find(".game-touch");
+  const touchPanel = find(".game-touch-panel");
+  const touchEdit = find("[data-touch-edit]");
+  const touchTools = find("#touch-edit-tools");
+  const touchStatus = find("[data-touch-status]");
+  const touchButtons = new Map([...touch.children].map(button => [button.dataset.touch, button]));
+  const defaultTouchOrder = [...touchButtons.keys()];
   const touchOption = find("[data-touch-option]");
   const stats = Object.fromEntries([...root.querySelectorAll("[data-stat]")].map(el => [el.dataset.stat, el]));
   const recordTime = find("[data-record-time]");
@@ -305,6 +358,8 @@
   let dropTrail = null;
   let celebrationAnimation, celebrationUntil = 0;
   let elapsed = 0, activeSince = null;
+  let rankCandidate = null, rankEntries = null, rankingLoading = false;
+  const savedEntries = new Map();
   let draftKeys, waiting = null, scoreAnimation;
   let previews = null;
 
@@ -330,13 +385,17 @@
     savedResults.best : {score: legacyScore, seconds: null};
   let touchOverride = typeof saved?.touchOverride === "boolean" ? saved.touchOverride : null;
   let touchSeen = false;
+  let touchOrder = Array.isArray(saved?.touchOrder) && saved.touchOrder.length === touchButtons.size &&
+    new Set(saved.touchOrder).size === touchButtons.size && saved.touchOrder.every(action => touchButtons.has(action)) ?
+    saved.touchOrder : defaultTouchOrder;
+  let editingTouch = false, touchSelection = null, touchDrag = null;
 
   function touchRecommended() {
     return touchSeen || touchPointer.matches || navigator.maxTouchPoints > 0 || narrowScreen.matches;
   }
 
   function persistControls() {
-    write(STORE.controls, {keys, touchOverride});
+    write(STORE.controls, {keys, touchOverride, touchOrder});
   }
 
   function playedSeconds() {
@@ -360,6 +419,128 @@
   function resultText({score, seconds}) {
     return format.format(score) + " puntos · " + clockText(seconds);
   }
+
+  function showRankFeedback(message) {
+    rankFeedback.textContent = message;
+  }
+
+  function syncRankAlias() {
+    const count = rankAlias.value.length;
+    rankCount.textContent = count + "/10";
+    rankMeter.style.setProperty("--alias-length", count);
+  }
+
+  function offerRanking(score = 0, seconds = 0) {
+    rankCandidate = score > 0 ? {score, seconds} : null;
+    rankOpen.hidden = !rankCandidate;
+    rankAlias.readOnly = false;
+    rankSave.disabled = false;
+    rankSave.hidden = false;
+    rankView.hidden = true;
+    rankDismiss.textContent = "Ahora no";
+    rankForm.reset();
+    syncRankAlias();
+    showRankFeedback("");
+  }
+
+  function renderRanking() {
+    const distinct = new Map([...rankEntries.map(entry => [entry.id, entry]), ...savedEntries]);
+    const entries = [...distinct.values()].sort((a, b) =>
+      b.score - a.score || a.seconds - b.seconds || (a.id < b.id ? -1 : a.id === b.id ? 0 : 1)).slice(0, 10);
+    rankList.replaceChildren(...entries.map(entry => {
+      const row = document.createElement("li");
+      const alias = document.createElement("span");
+      const result = document.createElement("small");
+      alias.textContent = entry.name;
+      result.textContent = format.format(entry.score) + " pts · " + clockText(entry.seconds);
+      row.append(alias, result);
+      return row;
+    }));
+    rankList.hidden = !entries.length;
+    rankStatus.textContent = entries.length ? "" : "Aún no hay marcas publicadas.";
+  }
+
+  async function loadRanking() {
+    if (rankingLoading) return;
+    rankingLoading = true;
+    rankRetry.hidden = true;
+    rankStatus.textContent = "Cargando ranking…";
+    try {
+      const response = await fetch(rankEndpoint, {signal: AbortSignal.timeout(7000)});
+      if (!response.ok) throw new Error("Ranking unavailable");
+      const {entries} = await response.json();
+      if (!Array.isArray(entries)) throw new Error("Invalid ranking");
+      rankEntries = entries;
+      renderRanking();
+    } catch {
+      rankStatus.textContent = "El ranking no está disponible ahora.";
+      rankRetry.hidden = false;
+    } finally {
+      rankingLoading = false;
+    }
+  }
+
+  ranking.addEventListener("toggle", () => {
+    if (ranking.open && rankEntries === null) loadRanking();
+  });
+  rankRetry.addEventListener("click", loadRanking);
+  rankOpen.addEventListener("click", () => {
+    if (!rankCandidate) return;
+    find("[data-ranking-score]").textContent = format.format(rankCandidate.score);
+    find("[data-ranking-time]").textContent = clockText(rankCandidate.seconds);
+    rankDialog.returnValue = "";
+    rankDialog.showModal();
+  });
+  rankAlias.addEventListener("input", syncRankAlias);
+  rankDismiss.addEventListener("click", () => rankDialog.close());
+  rankView.addEventListener("click", () => {
+    ranking.open = true;
+    rankDialog.close("ranking");
+    ranking.querySelector("summary").focus();
+  });
+  rankDialog.addEventListener("close", () => {
+    if (!rankDialog.open && rankDialog.returnValue !== "ranking") {
+      (rankOpen.hidden ? primary : rankOpen).focus({preventScroll:true});
+    }
+  });
+  rankForm.addEventListener("submit", async event => {
+    event.preventDefault();
+    const entry = rankCandidate;
+    if (!entry || rankSave.disabled) return;
+    const name = rankAlias.value.normalize("NFC").trim();
+    if (!/^[\p{L}\p{N}][\p{L}\p{M}\p{N} _-]{0,9}$/u.test(name)) {
+      showRankFeedback("Escribe un alias de hasta 10 caracteres. Puedes usar letras, números, espacios y guiones.");
+      return;
+    }
+    rankSave.disabled = true;
+    rankAlias.readOnly = true;
+    showRankFeedback("Guardando marca…");
+    try {
+      entry.id ??= crypto.randomUUID();
+      const response = await fetch(rankEndpoint, {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({...entry, name}), signal: AbortSignal.timeout(7000),
+      });
+      if (!response.ok) throw new Error("Ranking unavailable");
+      const {entry: saved} = await response.json();
+      savedEntries.set(saved.id, saved);
+      if (rankEntries !== null) renderRanking();
+      if (entry === rankCandidate) {
+        rankCandidate = null;
+        rankOpen.hidden = rankSave.hidden = true;
+        rankView.hidden = false;
+        rankDismiss.textContent = "Cerrar";
+        showRankFeedback("Marca publicada.");
+        if (rankDialog.open) rankView.focus();
+      }
+    } catch {
+      if (entry === rankCandidate) {
+        showRankFeedback("No se pudo guardar la marca. Puedes volver a intentarlo o seguir jugando.");
+        rankSave.disabled = false;
+        rankAlias.readOnly = false;
+      }
+    }
+  });
 
   function showLast(result) {
     if (!validResult(result) || result.seconds === null) return;
@@ -387,23 +568,28 @@
     return combo >= 5 ? 3 : combo >= 3 ? 2 : 1;
   }
 
-  function celebrateClear(lines, {combo, bonus}) {
+  function celebrateClear(lines, {combo, bonus, spin, backToBack, points}) {
     clearCelebration();
     const hasCombo = combo >= 2;
     const isTetris = lines === 4;
+    const move = spin === "mini" ? "T-Spin Mini" : spin ? "T-Spin" : isTetris ? "Tetris" : "";
     const tier = comboTier(combo);
     const duration = hasCombo ? 1200 + tier * 180 : 1050;
     const bonusText = format.format(bonus);
-    celebration.dataset.achievement = hasCombo ? "combo" : "tetris";
+    celebration.dataset.achievement = hasCombo ? "combo" : spin ? "spin" : "tetris";
     celebration.dataset.tier = tier;
-    celebrationTitle.textContent = hasCombo ? "Combo ×" + combo : "TETRIS";
-    celebrationDetail.textContent = hasCombo ?
-      (isTetris ? "Tetris · " : "") + "+" + bonusText + " pts de bono" : "4 líneas de una vez";
+    celebration.toggleAttribute("data-spin", Boolean(spin));
+    const comboText = "Combo ×" + combo;
+    const lineText = lines === 1 ? "1 línea" : lines + " líneas";
+    const detail = [lineText, "+" + format.format(points) + " pts"];
+    if (backToBack) detail.push("B2B +50 %");
+    if (hasCombo) detail.push(comboText);
+    celebrationTitle.textContent = move ? move.toUpperCase() : comboText;
+    celebrationDetail.textContent = move ? detail.join(" · ") : "+" + bonusText + " pts de bono";
     celebrationUntil = performance.now() + duration;
     celebration.hidden = false;
-    find(".game-status").textContent = hasCombo ?
-      (isTetris ? "Tetris. " : "") + "Combo de " + combo + ". " + bonusText + " puntos de bono." :
-      "Tetris. Cuatro líneas de una vez.";
+    find(".game-status").textContent = move ?
+      move + ". " + detail.join(". ").replace("pts", "puntos") : "Combo de " + combo + ". " + bonusText + " puntos de bono.";
     if (!reduced.matches) {
       celebrationAnimation = celebration.animate([
         {opacity:0, transform:hasCombo ? "translateY(12px) scale(.9)" : "translateY(9px)"},
@@ -417,7 +603,9 @@
   }
 
   function gameEffect(event, rows, streak) {
-    if (event === "clear" && (rows.length === 4 || streak.combo >= 2)) celebrateClear(rows.length, streak);
+    if (event === "spin" || (event === "clear" && (streak.spin || rows.length === 4 || streak.combo >= 2))) {
+      celebrateClear(rows.length, streak);
+    }
     if (reduced.matches) return;
     const now = performance.now();
     if (event === "spawn") spawnAt = now;
@@ -437,7 +625,7 @@
         row,
         start: now,
         duration: (rows.length === 4 ? 560 : 340) + (tier - 1) * 70,
-        color: tier === 3 ? colors.T : rows.length === 4 || tier === 2 ? colors.O : colors.I,
+        color: streak.spin || tier === 3 ? colors.T : rows.length === 4 || tier === 2 ? colors.O : colors.I,
         dust: cells.flatMap((type, x) => Array.from({length: tier + 1}, () => ({
           x: (x + Math.random()) * CELL,
           dx: (Math.random() - .5) * 70,
@@ -618,6 +806,7 @@
     clearCelebration();
     stopClock();
     if (game.status !== "idle") saveResult();
+    if (game.status === "over") offerRanking(game.score, playedSeconds());
     const screens = {
       idle: ["Partida individual", "Completa filas y supera tu mejor puntaje.", "Empezar"],
       paused: ["En pausa", "Tu partida queda aquí.", "Continuar"],
@@ -675,6 +864,8 @@
   }
 
   function start() {
+    setTouchEditing(false);
+    offerRanking();
     if (game.status === "playing") {
       stopClock();
       saveResult();
@@ -711,6 +902,7 @@
   }
 
   function resume() {
+    setTouchEditing(false);
     game.resume();
     activeSince = performance.now();
     draw();
@@ -763,11 +955,79 @@
   });
   document.addEventListener("keyup", event => release("key:" + event.code));
 
+  function applyTouchOrder() {
+    touch.replaceChildren(...touchOrder.map(action => touchButtons.get(action)));
+  }
+
+  function selectTouch(button) {
+    touchSelection = button;
+    for (const item of touchButtons.values()) {
+      if (editingTouch) item.setAttribute("aria-pressed", String(item === button));
+      else item.removeAttribute("aria-pressed");
+    }
+  }
+
+  function finishTouchDrag() {
+    touchDrag?.target?.classList.remove("is-touch-target");
+    touchDrag = null;
+  }
+
+  function touchDestination(event, button) {
+    const hit = document.elementFromPoint(event.clientX, event.clientY)?.closest("[data-touch]");
+    return hit && hit !== button && touch.contains(hit) ? hit : null;
+  }
+
+  function setTouchEditing(editing) {
+    if (editingTouch === editing) return;
+    editingTouch = editing;
+    if (editing) pause();
+    finishTouchDrag();
+    selectTouch(null);
+    touch.toggleAttribute("data-editing", editing);
+    touchTools.hidden = !editing;
+    touchEdit.setAttribute("aria-expanded", String(editing));
+    touchEdit.textContent = editing ? "Listo" : "Ordenar botones";
+  }
+
+  function moveTouch(button, destination) {
+    const action = button.dataset.touch;
+    const to = touchOrder.indexOf(destination.dataset.touch);
+    touchOrder = touchOrder.filter(item => item !== action);
+    touchOrder.splice(to, 0, action);
+    applyTouchOrder();
+    selectTouch(null);
+    button.focus({preventScroll:true});
+    touchStatus.textContent = button.getAttribute("aria-label") + ", posición " + (to + 1) + ".";
+    persistControls();
+  }
+
+  function tapTouch(button) {
+    if (touchSelection && touchSelection !== button) moveTouch(touchSelection, button);
+    else selectTouch(touchSelection === button ? null : button);
+  }
+
+  touchEdit.addEventListener("click", () => setTouchEditing(!editingTouch));
+  find("[data-touch-reset]").addEventListener("click", () => {
+    finishTouchDrag();
+    touchOrder = defaultTouchOrder;
+    applyTouchOrder();
+    selectTouch(null);
+    touchStatus.textContent = "Orden inicial restaurado.";
+    persistControls();
+  });
+  touchPanel.addEventListener("keydown", event => {
+    if (editingTouch && event.key === "Escape") {
+      setTouchEditing(false);
+      touchEdit.focus({preventScroll:true});
+    }
+  });
+
   function syncTouch() {
     const enabled = touchOverride ?? touchRecommended();
     touchOption.checked = enabled;
-    if (touch.hidden === !enabled) return;
-    touch.hidden = !enabled;
+    if (touchPanel.hidden === !enabled) return;
+    touchPanel.hidden = !enabled;
+    if (!enabled) setTouchEditing(false);
     clearInput();
   }
   touchOption.addEventListener("change", () => {
@@ -782,20 +1042,52 @@
     touchSeen = true;
     syncTouch();
   });
-  for (const button of touch.querySelectorAll("[data-touch]")) {
+  for (const button of touchButtons.values()) {
     const action = button.dataset.touch;
     button.addEventListener("pointerdown", event => {
-      if (event.button !== 0 || game.status !== "playing") return;
+      if (event.button !== 0) return;
+      if (editingTouch) {
+        if (touchDrag) return;
+        event.preventDefault();
+        button.setPointerCapture(event.pointerId);
+        touchDrag = {id:event.pointerId, x:event.clientX, y:event.clientY, target:null, moved:false};
+        return;
+      }
+      if (game.status !== "playing") return;
       event.preventDefault();
       board.focus({preventScroll:true});
       button.setPointerCapture(event.pointerId);
       press(action, "pointer:" + event.pointerId);
     });
+    button.addEventListener("pointermove", event => {
+      if (touchDrag?.id !== event.pointerId) return;
+      touchDrag.moved ||= Math.hypot(event.clientX - touchDrag.x, event.clientY - touchDrag.y) > 6;
+      const target = touchDestination(event, button);
+      if (target === touchDrag.target) return;
+      touchDrag.target?.classList.remove("is-touch-target");
+      touchDrag.target = target;
+      target?.classList.add("is-touch-target");
+    });
     for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) {
-      button.addEventListener(type, event => release("pointer:" + event.pointerId));
+      button.addEventListener(type, event => {
+        if (touchDrag?.id === event.pointerId) {
+          const {moved} = touchDrag;
+          const target = type === "pointerup" ? touchDestination(event, button) : null;
+          finishTouchDrag();
+          if (type === "pointerup") {
+            if (target) moveTouch(button, target);
+            else if (!moved) tapTouch(button);
+          }
+        }
+        release("pointer:" + event.pointerId);
+      });
     }
     button.addEventListener("click", event => {
       if (event.detail !== 0) return;
+      if (editingTouch) {
+        tapTouch(button);
+        return;
+      }
       game.act(action);
       draw();
     });
@@ -816,6 +1108,7 @@
   }
 
   find("[data-game-settings]").addEventListener("click", () => {
+    setTouchEditing(false);
     pause();
     draftKeys = {...keys};
     waiting = null;
@@ -874,9 +1167,11 @@
   });
 
   palette();
+  applyTouchOrder();
   syncTouch();
   showLast(savedResults?.last);
   find(".game-shell").hidden = false;
+  ranking.hidden = false;
   new ResizeObserver(() => {
     const scale = Math.min(devicePixelRatio || 1, 2);
     const width = Math.max(1, Math.round(boardCanvas.clientWidth * scale));
