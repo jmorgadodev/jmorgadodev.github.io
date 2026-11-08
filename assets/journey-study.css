@@ -13,10 +13,13 @@
 
 .tech-study{--ui-color:#222327;position:relative;overflow:clip;background:var(--paper);color:var(--ink);font-family:var(--font-text);isolation:isolate}
 [data-jm-theme="night"] .tech-study{--ui-color:#F3F0E8}
-.tech-study[data-scene="2"],.tech-study[data-scene="3"],.tech-study[data-scene="6"]{--ui-color:#222327}
-.tech-study[data-scene="4"],.tech-study[data-scene="5"],.tech-study[data-scene="7"]{--ui-color:#FCFAF5}
+.tech-study[data-scene="2"],.tech-study[data-scene="3"],.tech-study[data-scene="5"],.tech-study[data-scene="6"]{--ui-color:#222327}
+.tech-study[data-scene="4"],.tech-study[data-scene="7"]{--ui-color:#FCFAF5}
+[data-jm-theme="night"] .tech-study[data-scene="3"],
+[data-jm-theme="night"] .tech-study[data-scene="5"],
+[data-jm-theme="night"] .tech-study[data-scene="6"]{--ui-color:#F3F0E8}
 .study-frame{position:relative;min-height:100svh}
-.study-topline{position:relative;z-index:12;display:flex;justify-content:space-between;align-items:center;padding:1.6rem max(5vw,1.25rem);color:var(--ui-color);transition:color .18s ease}
+.study-topline{position:relative;z-index:12;display:flex;justify-content:space-between;align-items:center;padding:1.6rem max(5vw,1.25rem);color:var(--ui-color);transition:color .36s ease}
 .study-monogram{font:700 1.24rem/1 var(--font-text);letter-spacing:-.07em}
 .study-period{color:var(--jm-coral)}
 .study-topactions{display:flex;gap:1.45rem;align-items:center}
@@ -25,11 +28,7 @@
 .intro-skip{text-underline-offset:4px;padding:.7rem 0}
 .study-stage{position:relative;height:480px;pointer-events:none}
 .study-canvas{display:block;width:100%;height:100%;pointer-events:auto;touch-action:pan-y;cursor:crosshair;-webkit-tap-highlight-color:transparent}
-.study-copy{position:relative;padding:2rem 7vw;max-width:49rem;color:var(--ink)}
-.study-copy.copy-1{color:#222327}
-.study-copy.copy-3{color:#222327}
-.study-copy.copy-4,.study-copy.copy-6{color:#FCFAF5}
-[data-jm-theme="night"] .tech-study .study-copy:not(.copy-2){color:#F3F0E8}
+.study-copy{position:relative;padding:2rem 7vw;max-width:49rem;color:var(--copy-contrast,var(--ink));transition:color .36s ease}
 .study-heading{position:relative}
 .study-heading h1,.study-heading h2{font:650 clamp(2.15rem,3.7vw,3.9rem)/1.08 var(--font-text);letter-spacing:-.044em;margin:0;max-width:100%}
 .study-mask{display:block;width:fit-content;max-width:100%;overflow:clip;padding:.08em .04em .13em;margin-left:-.04em}
@@ -45,7 +44,7 @@
 .copy-1 .study-rule{background:#222327}
 .copy-3 .study-rule,.copy-4 .study-rule{background:var(--jm-amber)}
 .study-description{font:400 clamp(1rem,1.3vw,1.14rem)/1.55 var(--font-text);max-width:37ch;margin:1.15rem 0 0;color:inherit;opacity:.78}
-.study-invitation{display:flex;align-items:center;gap:.8rem;font:500 11px/1.4 var(--font-mono);letter-spacing:.012em;color:var(--ui-color);padding:1.2rem 5vw;margin:0;transition:color .18s}
+.study-invitation{display:flex;align-items:center;gap:.8rem;font:500 11px/1.4 var(--font-mono);letter-spacing:.012em;color:var(--ui-color);padding:1.2rem 5vw;margin:0;transition:color .36s ease}
 .study-cue-line{display:inline-block;width:36px;height:1px;background:var(--jm-coral)}
 .study-invitation span:last-child{color:var(--jm-coral)}
 .tech-study:not(.is-linked) .study-copy{color:var(--ink)!important}
@@ -58,7 +57,11 @@
 .is-linked .study-stage{position:absolute;inset:0;height:100%}
 .is-linked .study-topline{position:absolute;top:0;left:0;right:0}
 .is-linked .study-copy{position:absolute;z-index:4;padding:0;width:42%;max-width:40rem;opacity:0;visibility:hidden;pointer-events:none}
-.is-linked .copy-0{left:8%;top:12%;width:45%}
+/* Apertura: texto presente en el tercio superior y conectado visualmente con las piezas. */
+.is-linked .copy-0{left:9%;top:17%;width:56%;max-width:48rem}
+.is-linked .copy-0 .study-heading h1{font-size:clamp(2.6rem,4.25vw,4.5rem);line-height:1.07}
+.is-linked .copy-0 .study-rule{margin-top:1.05rem}
+.is-linked .copy-0 .study-description{max-width:43ch;margin-top:1rem;font-size:clamp(1rem,1.38vw,1.2rem);line-height:1.5}
 /* Segundo capítulo: lectura horizontal, jerarquía clara y aire sobre el diagrama.
    La orientación vertical fue descartada expresamente para esta experiencia. */
 .is-linked .copy-1{left:8%;right:8%;top:8%;width:84%;max-width:none;height:auto;text-align:center}
@@ -73,13 +76,16 @@
 .is-linked .copy-2 .study-description{text-align:center}
 /* La palabra CRECER ya existe en Canvas; el HTML sólo introduce y cierra la frase. */
 .is-linked .copy-3{left:6%;right:6%;top:0;width:88%;max-width:none;height:100%;text-align:center}
-.is-linked .copy-3 .study-heading{position:absolute;left:0;top:10%;width:100%;transform:none}
-.is-linked .copy-3 .study-heading h2{font-size:clamp(2rem,4.4vw,4.8rem);white-space:normal}
+.is-linked .copy-3 .study-heading{position:absolute;left:0;top:19%;width:100%;transform:none}
+.is-linked .copy-3 .study-heading h2{font-size:clamp(2rem,4.4vw,4.8rem);white-space:normal;color:var(--jm-petrol)}
 .is-linked .copy-3 .study-mask,.is-linked .copy-3 .study-rule{margin-inline:auto}
 .is-linked .copy-3 .study-rule{display:none}
-.is-linked .copy-3 .study-description{position:absolute;left:0;top:79%;width:100%;max-width:none;text-align:center;margin:0}
-.is-linked .copy-4{left:auto;right:8%;top:10%;width:39%;text-align:right}
+.is-linked .copy-3 .study-description{position:absolute;left:0;top:82.5%;width:100%;max-width:none;text-align:center;margin:0}
+.is-linked .copy-4{left:auto;right:7%;top:12%;width:44%;max-width:38rem;text-align:right}
 .is-linked .copy-4 .study-mask,.is-linked .copy-4 .study-rule,.is-linked .copy-4 .study-description{margin-left:auto}
+.is-linked .copy-4 .study-heading h2{font-size:clamp(2rem,3.7vw,3.9rem);line-height:1.09}
+.is-linked .copy-4 .study-rule{margin-top:.85rem}
+.is-linked .copy-4 .study-description{max-width:38ch;margin-top:.9rem;line-height:1.5}
 /* El texto recupera el primer plano; las piezas pasan por debajo sin cruzarlo. */
 .is-linked .copy-5{left:14%;top:10%;width:72%;max-width:none;text-align:center}
 .is-linked .copy-5 .study-heading h2{font-size:clamp(2.55rem,4.9vw,5.1rem)}
@@ -89,6 +95,9 @@
 .is-linked .study-invitation{position:absolute;bottom:1.25rem;left:0;right:0;z-index:4;padding:0 5vw}
 .is-linked .study-invitation::after{content:"";height:1px;flex:1;background:currentColor;opacity:.15;margin-left:2rem}
 @media(max-height:720px) and (min-width:901px){
+ .is-linked .copy-0{top:15%}
+ .is-linked .copy-0 .study-heading h1{font-size:clamp(2.2rem,3.65vw,3.2rem)}
+ .is-linked .copy-0 .study-description{font-size:1rem}
  .is-linked .copy-1 .study-heading h2{font-size:clamp(1.1rem,1.65vw,1.52rem)}
  .is-linked .copy-1 .study-description{top:17%}
 }
@@ -100,6 +109,9 @@
  .study-topactions{gap:1.1rem}
  .study-theme,.intro-skip{font-size:12px}
  .is-linked .study-copy{left:7%;right:auto;top:12%;width:86%;max-width:none;text-align:left}
+ .is-linked .copy-0{left:7%;top:15%;width:86%;max-width:none}
+ .is-linked .copy-0 .study-heading h1{font-size:clamp(1.95rem,5.4vw,2.8rem)}
+ .is-linked .copy-0 .study-description{font-size:15px;max-width:33ch}
  .is-linked .copy-0,.is-linked .copy-2,.is-linked .copy-4{text-align:center}
  .is-linked .copy-0 .study-mask,.is-linked .copy-0 .study-description,.is-linked .copy-0 .study-rule,
  .is-linked .copy-2 .study-mask,.is-linked .copy-2 .study-description,.is-linked .copy-2 .study-rule,
@@ -125,6 +137,8 @@
 @media(max-width:430px){
  .is-linked .study-copy{top:14%}
  .is-linked .copy-3{top:0;left:6%;width:88%}
+ .is-linked .copy-0 .study-heading h1{font-size:clamp(1.83rem,7vw,2.35rem)}
+ .is-linked .copy-0 .study-description{font-size:14px}
  .is-linked .copy-6{top:41%}
  .study-heading h1,.study-heading h2{font-size:clamp(1.83rem,7vw,2.35rem)}
  .study-description{font-size:14px}

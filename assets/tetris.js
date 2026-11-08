@@ -53,7 +53,11 @@
     ccw:"KeyV", cw:"ArrowUp", half:"KeyX", hold:"KeyC",
   });
   const ACTIONS = Object.keys(DEFAULT_KEYS);
-  const STORE = {controls:"jmorgado.tetris.controls.v1", best:"jmorgado.tetris.best.v1"};
+  const STORE = {
+    controls: "jmorgado.tetris.controls.v1",
+    results: "jmorgado.tetris.results.v1",
+    legacyBest: "jmorgado.tetris.best.v1",
+  };
   const assignable = code => typeof code === "string" &&
     /^(Key[A-Z]|Digit[0-9]|Arrow(?:Left|Right|Up|Down)|Space|Numpad(?:[0-9]|Add|Subtract|Multiply|Divide|Decimal)|Comma|Period|Slash|Semicolon|Quote|BracketLeft|BracketRight|Backslash|Backquote|Minus|Equal|IntlBackslash)$/.test(code);
 
@@ -144,7 +148,8 @@
       if (this.collides(candidate)) return false;
       const wasGrounded = this.grounded();
       this.active = candidate;
-      if (wasGrounded && this.lockResets < LOCK_RESETS) {
+      const resetLimit = Math.max(2, LOCK_RESETS - Math.floor((this.level - 1) / 2));
+      if (wasGrounded && this.lockResets < resetLimit) {
         this.lockElapsed = 0;
         this.lockResets++;
       }
@@ -220,16 +225,22 @@
     }
 
     gravity() {
-      return Math.max(65, 900 * .82 ** (this.level - 1));
+      const progress = this.level - 1;
+      return 18 + 682 / (1 + .25 * progress + .05 * progress ** 2);
+    }
+
+    lockDelay() {
+      return 100 + (LOCK_DELAY - 100) * .94 ** (this.level - 1);
     }
 
     advance(ms) {
       while (ms > 0 && this.status === "playing") {
         if (this.grounded()) {
-          const step = Math.min(ms, LOCK_DELAY - this.lockElapsed);
+          const delay = this.lockDelay();
+          const step = Math.min(ms, delay - this.lockElapsed);
           this.lockElapsed += step;
           ms -= step;
-          if (this.lockElapsed >= LOCK_DELAY) this.lock();
+          if (this.lockElapsed >= delay) this.lock();
         } else {
           const interval = this.gravity();
           const step = Math.min(ms, interval - this.fallElapsed);
@@ -276,6 +287,8 @@
   const touch = find(".game-touch");
   const touchOption = find("[data-touch-option]");
   const stats = Object.fromEntries([...root.querySelectorAll("[data-stat]")].map(el => [el.dataset.stat, el]));
+  const recordTime = find("[data-record-time]");
+  const lastResult = find("[data-last-result]");
   const reduced = matchMedia("(prefers-reduced-motion: reduce)");
   const touchPointer = matchMedia("(any-pointer: coarse)");
   const narrowScreen = matchMedia("(max-width: 620px)");
@@ -287,10 +300,11 @@
   const REPEATABLE = new Set(["left", "right", "soft"]);
   const pressed = new Map();
   const repeatAt = new Map();
-  let colors, wellColor, frame = 0, lastFrame = null, lastStatus = "";
+  let colors, wellColor, gridColor, ghostColor, frame = 0, lastFrame = null, lastStatus = "";
   let spawnAt = -Infinity, impactAt = -Infinity, flashes = [];
   let dropTrail = null;
   let celebrationAnimation, celebrationUntil = 0;
+  let elapsed = 0, activeSince = null;
   let draftKeys, waiting = null, scoreAnimation;
   let previews = null;
 
@@ -306,8 +320,14 @@
 
   const saved = read(STORE.controls);
   let keys = cleanKeys(saved?.keys);
-  const previousBest = read(STORE.best);
-  let best = Number.isSafeInteger(previousBest) && previousBest >= 0 ? previousBest : 0;
+  const validNumber = value => Number.isSafeInteger(value) && value >= 0;
+  const validResult = entry => validNumber(entry?.score) &&
+    (entry.seconds === null || validNumber(entry.seconds));
+  const previousBest = read(STORE.legacyBest);
+  const legacyScore = validNumber(previousBest) ? previousBest : 0;
+  const savedResults = read(STORE.results);
+  let record = validResult(savedResults?.best) && savedResults.best.score >= legacyScore ?
+    savedResults.best : {score: legacyScore, seconds: null};
   let touchOverride = typeof saved?.touchOverride === "boolean" ? saved.touchOverride : null;
   let touchSeen = false;
 
@@ -319,6 +339,43 @@
     write(STORE.controls, {keys, touchOverride});
   }
 
+  function playedSeconds() {
+    const running = activeSince === null ? 0 : performance.now() - activeSince;
+    return Math.floor((elapsed + running) / 1000);
+  }
+
+  function stopClock() {
+    if (activeSince === null) return;
+    elapsed += performance.now() - activeSince;
+    activeSince = null;
+  }
+
+  function clockText(seconds) {
+    const pair = value => String(value).padStart(2, "0");
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    return (hours ? hours + ":" : "") + pair(minutes % 60) + ":" + pair(seconds % 60);
+  }
+
+  function resultText({score, seconds}) {
+    return format.format(score) + " puntos · " + clockText(seconds);
+  }
+
+  function showLast(result) {
+    if (!validResult(result) || result.seconds === null) return;
+    lastResult.textContent = "Última partida · " + resultText(result);
+    lastResult.hidden = false;
+  }
+
+  function saveResult() {
+    const result = {score: game.score, seconds: playedSeconds()};
+    const stored = read(STORE.results)?.best;
+    if (validResult(stored) && stored.score >= record.score) record = stored;
+    if (result.score > record.score) record = result;
+    write(STORE.results, {best: record, last: result});
+    showLast(result);
+  }
+
   function clearCelebration() {
     celebrationUntil = 0;
     celebrationAnimation?.cancel();
@@ -326,13 +383,19 @@
     celebration.hidden = true;
   }
 
+  function comboTier(combo) {
+    return combo >= 5 ? 3 : combo >= 3 ? 2 : 1;
+  }
+
   function celebrateClear(lines, {combo, bonus}) {
     clearCelebration();
     const hasCombo = combo >= 2;
     const isTetris = lines === 4;
-    const duration = hasCombo ? 1400 : 1050;
+    const tier = comboTier(combo);
+    const duration = hasCombo ? 1200 + tier * 180 : 1050;
     const bonusText = format.format(bonus);
     celebration.dataset.achievement = hasCombo ? "combo" : "tetris";
+    celebration.dataset.tier = tier;
     celebrationTitle.textContent = hasCombo ? "Combo ×" + combo : "TETRIS";
     celebrationDetail.textContent = hasCombo ?
       (isTetris ? "Tetris · " : "") + "+" + bonusText + " pts de bono" : "4 líneas de una vez";
@@ -344,7 +407,8 @@
     if (!reduced.matches) {
       celebrationAnimation = celebration.animate([
         {opacity:0, transform:hasCombo ? "translateY(12px) scale(.9)" : "translateY(9px)"},
-        {opacity:1, transform:hasCombo ? "scale(1.035)" : "none", offset:.16},
+        {opacity:1, transform:hasCombo ? `scale(${1 + tier * .026})` : "none", offset:.16},
+        {opacity:1, transform:hasCombo && tier > 1 ? "scale(.985)" : "none", offset:.23},
         {opacity:1, transform:"none", offset:.28},
         {opacity:1, transform:"none", offset:.8},
         {opacity:0, transform:"translateY(-5px)"},
@@ -368,12 +432,13 @@
       };
     }
     if (event === "clear") {
+      const tier = comboTier(streak.combo);
       flashes = rows.filter(item => item.row >= 0).map(({row, colors: cells}) => ({
         row,
         start: now,
-        duration: rows.length === 4 ? 560 : 340,
-        color: rows.length === 4 ? colors.O : "#fcfaf5",
-        dust: cells.flatMap((type, x) => Array.from({length: 2}, () => ({
+        duration: (rows.length === 4 ? 560 : 340) + (tier - 1) * 70,
+        color: tier === 3 ? colors.T : rows.length === 4 || tier === 2 ? colors.O : colors.I,
+        dust: cells.flatMap((type, x) => Array.from({length: tier + 1}, () => ({
           x: (x + Math.random()) * CELL,
           dx: (Math.random() - .5) * 70,
           dy: -18 - Math.random() * 45,
@@ -389,6 +454,9 @@
     const css = getComputedStyle(root);
     colors = Object.fromEntries(TYPES.map(type => [type, css.getPropertyValue("--game-piece-" + type).trim()]));
     wellColor = css.getPropertyValue("--game-well").trim();
+    gridColor = css.getPropertyValue("--game-cell-line").trim();
+    ghostColor = css.getPropertyValue("--game-ghost").trim();
+    flashes = [];
     previews = null;
   }
 
@@ -397,7 +465,7 @@
       context.fillStyle = colors[type];
       context.globalAlpha = .20;
       context.fillRect(x + 3, y + 3, size - 6, size - 6);
-      context.strokeStyle = "#FCFAF5";
+      context.strokeStyle = ghostColor;
       context.globalAlpha = .5;
       context.lineWidth = 1.25;
       context.strokeRect(x + 3, y + 3, size - 6, size - 6);
@@ -430,7 +498,7 @@
     ctx.save();
     const impact = (now - impactAt) / 110;
     if (!reduced.matches && impact >= 0 && impact < 1) ctx.translate(0, 3 * (1 - impact));
-    ctx.strokeStyle = "#fcfaf513";
+    ctx.strokeStyle = gridColor;
     ctx.lineWidth = 1;
     ctx.beginPath();
     for (let x = 1; x < COLS; x++) {
@@ -514,19 +582,25 @@
   }
 
   function syncScore() {
-    if (game.score > best) {
-      best = game.score;
-      write(STORE.best, best);
-    }
-    for (const [name, value] of Object.entries({score: game.score, best, lines: game.lines, level: game.level})) {
-      const text = format.format(value);
+    const seconds = playedSeconds();
+    const personalBest = Math.max(record.score, game.score);
+    const values = {
+      score: format.format(game.score), best: format.format(personalBest),
+      time: clockText(seconds), lines: format.format(game.lines), level: format.format(game.level),
+    };
+    for (const [name, text] of Object.entries(values)) {
       if (stats[name].textContent === text) continue;
       stats[name].textContent = text;
-      if (name === "score" && value && !reduced.matches) {
+      stats[name].style.setProperty("--stat-chars", text.length);
+      if (name === "score" && game.score && !reduced.matches) {
         scoreAnimation?.cancel();
         scoreAnimation = stats.score.animate([{transform:"translateY(-3px)"}, {transform:"none"}], {duration:230});
       }
     }
+    const bestSeconds = game.score > record.score ? seconds : record.seconds;
+    const bestText = bestSeconds === null ? "" : clockText(bestSeconds);
+    if (recordTime.textContent !== bestText) recordTime.textContent = bestText;
+    if (recordTime.hidden !== (bestSeconds === null)) recordTime.hidden = bestSeconds === null;
   }
 
   function syncState() {
@@ -542,10 +616,12 @@
       return;
     }
     clearCelebration();
+    stopClock();
+    if (game.status !== "idle") saveResult();
     const screens = {
       idle: ["Partida individual", "Completa filas y supera tu mejor puntaje.", "Empezar"],
       paused: ["En pausa", "Tu partida queda aquí.", "Continuar"],
-      over: ["Fin de la partida", format.format(game.score) + " puntos · Récord " + format.format(best), "Jugar de nuevo"],
+      over: ["Fin de la partida", resultText({score: game.score, seconds: playedSeconds()}), "Jugar de nuevo"],
     };
     const [title, message, button] = screens[game.status];
     find("[data-game-title]").textContent = title;
@@ -557,8 +633,8 @@
 
   function draw(now = performance.now()) {
     if (celebrationUntil && now >= celebrationUntil) clearCelebration();
-    syncScore();
     syncState();
+    syncScore();
     drawBoard(now);
     drawPreviews();
   }
@@ -599,6 +675,12 @@
   }
 
   function start() {
+    if (game.status === "playing") {
+      stopClock();
+      saveResult();
+    }
+    elapsed = 0;
+    activeSince = performance.now();
     clearInput();
     clearCelebration();
     flashes = [];
@@ -630,6 +712,7 @@
 
   function resume() {
     game.resume();
+    activeSince = performance.now();
     draw();
     board.focus({preventScroll:true});
     run();
@@ -660,15 +743,19 @@
   board.addEventListener("focusout", () => clearInput());
   document.addEventListener("visibilitychange", () => { if (document.hidden) pause(); });
   window.addEventListener("blur", () => pause());
+  window.addEventListener("pagehide", () => pause());
 
   document.addEventListener("keydown", event => {
     if (dialog.open || event.ctrlKey || event.metaKey || event.altKey || event.isComposing) return;
-    if (event.code === "Escape" && board.contains(document.activeElement) && ["playing", "paused"].includes(game.status)) {
+    const focused = document.activeElement;
+    const pauseShortcut = event.key === "Enter" ?
+      board.contains(focused) || focused === pauseButton : event.code === "Escape" && board.contains(focused);
+    if (pauseShortcut && ["playing", "paused"].includes(game.status)) {
       event.preventDefault();
       if (!event.repeat) game.status === "paused" ? resume() : pause(true);
       return;
     }
-    if (document.activeElement !== board || game.status !== "playing") return;
+    if (focused !== board || game.status !== "playing") return;
     const action = ACTIONS.find(candidate => keys[candidate] === event.code);
     if (!action) return;
     event.preventDefault();
@@ -788,6 +875,7 @@
 
   palette();
   syncTouch();
+  showLast(savedResults?.last);
   find(".game-shell").hidden = false;
   new ResizeObserver(() => {
     const scale = Math.min(devicePixelRatio || 1, 2);

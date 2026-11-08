@@ -93,6 +93,25 @@ for (const [lines, score] of [[1,100], [2,300], [3,500], [4,800]]) {
 }
 
 {
+  const game = fresh();
+  let previousGravity = Infinity, previousDelay = Infinity;
+  for (const level of [1, 5, 10, 15, 30, 57]) {
+    game.level = level;
+    assert(game.gravity() < previousGravity);
+    assert(game.lockDelay() < previousDelay);
+    previousGravity = game.gravity();
+    previousDelay = game.lockDelay();
+  }
+  assert(game.gravity() < 30);
+  game.active.y = game.ghostY();
+  const delay = game.lockDelay();
+  game.advance(delay - 1);
+  assert(game.grounded());
+  game.advance(1);
+  assert.equal(game.active.y, HIDDEN - 1);
+}
+
+{
   const clears = [];
   const game = new Tetris(() => .63, (event, rows, streak) => {
     if (event === "clear") clears.push({lines: rows.length, ...streak});

@@ -86,10 +86,21 @@ def game_keyboard(browser):
     assert page.locator("[data-hold]").get_attribute("aria-label").startswith("Pieza en reserva")
     page.keyboard.press("Space")
     assert int(page.locator('[data-stat="score"]').inner_text()) > 1
-    page.keyboard.press("Escape")
+    timer = page.locator('[data-stat="time"]')
+    expect(timer).not_to_have_text("00:00")
+    page.keyboard.down("Enter")
+    page.keyboard.down("Enter")
     expect(root).to_have_attribute("data-game-state", "paused")
-    page.keyboard.press("Escape")
+    page.keyboard.up("Enter")
+    paused_time = timer.inner_text()
+    saved = page.evaluate("JSON.parse(localStorage.getItem('jmorgado.tetris.results.v1'))")
+    assert saved["best"] == saved["last"]
+    assert saved["last"]["seconds"] >= 1
+    page.wait_for_timeout(1100)
+    expect(timer).to_have_text(paused_time)
+    page.keyboard.press("Enter")
     expect(root).to_have_attribute("data-game-state", "playing")
+    expect(board).to_be_focused()
     page.evaluate("""()=>{
       Object.defineProperty(document,'hidden',{configurable:true,value:true});
       document.dispatchEvent(new Event('visibilitychange'));
@@ -100,6 +111,9 @@ def game_keyboard(browser):
     dialog = page.get_by_role("dialog")
     left = dialog.locator('[data-bind="left"]')
     left.click()
+    page.keyboard.press("Enter")
+    expect(dialog.get_by_role("status")).to_contain_text("tecla está reservada")
+    expect(root).to_have_attribute("data-game-state", "paused")
     page.keyboard.press("ArrowRight")
     expect(dialog.get_by_role("status")).to_contain_text("ya está asignada")
     page.keyboard.press("Escape")
@@ -115,6 +129,9 @@ def game_keyboard(browser):
     page.reload()
     expect(root).to_have_attribute("data-game-state", "idle")
     expect(page.locator('[data-stat="best"]')).to_have_text(record)
+    expect(timer).to_have_text("00:00")
+    expect(page.locator("[data-last-result]")).to_contain_text(record + " puntos")
+    expect(page.locator("[data-record-time]")).to_be_visible()
     page.get_by_role("button", name="Configurar controles").click()
     expect(left).to_have_text("A")
     dialog.get_by_role("button", name="Restablecer controles").click()
@@ -137,8 +154,22 @@ def game_keyboard(browser):
     page.keyboard.press("Space")
     expect(page.locator("[data-touch-option]")).to_be_checked()
     expect(page.locator('[data-stat="score"]')).to_have_text("0")
+    page.locator("[data-game-pause]").click()
     page.evaluate("""()=>{
       localStorage.setItem('jmorgado.tetris.controls.v1','{malformed');
+      localStorage.setItem('jmorgado.tetris.results.v1','{malformed');
+      localStorage.setItem('jmorgado.tetris.best.v1','2517824');
+    }""")
+    page.reload()
+    expect(page.locator('[data-stat="best"]')).to_have_text("2.517.824")
+    expect(page.locator("[data-record-time]")).to_be_hidden()
+    assert page.locator('[data-stat="best"]').evaluate("""el=>{
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      return range.getClientRects().length === 1 &&
+        range.getBoundingClientRect().width <= el.clientWidth;
+    }""")
+    page.evaluate("""()=>{
       localStorage.setItem('jmorgado.tetris.best.v1','-42');
     }""")
     page.reload()
@@ -180,13 +211,16 @@ def game_touch(browser):
 
 def game_layouts(browser):
     for width, height in VIEWPORTS:
-        page = browser.new_page(viewport={"width":width,"height":height}, has_touch=width<=620)
+        page = browser.new_page(viewport={"width":width,"height":height}, has_touch=width<=620, color_scheme="light")
         errors, external = [], []
         page.on("console", lambda message: errors.append(message.text) if message.type == "error" else None)
         page.on("pageerror", lambda error: errors.append(str(error)))
         page.on("request", lambda request: external.append(request.url) if urlsplit(request.url).netloc != urlsplit(base).netloc else None)
         page.goto(base+"jugar/")
         expect(page.locator(".game-shell")).to_be_visible()
+        board_pixel = """()=>[...document.querySelector('[data-board]').getContext('2d')
+            .getImageData(4,4,1,1).data].slice(0,3).join(',')"""
+        assert page.evaluate(board_pixel) == "230,235,226"
         no_overflow(page)
         navigation(page)
         rect = page.locator("[data-board]").bounding_box()
@@ -207,6 +241,12 @@ def game_layouts(browser):
             page.keyboard.press("Space")
             page.locator(".game-shell").evaluate("e=>window.scrollTo({top:e.getBoundingClientRect().top+scrollY-10,behavior:'instant'})")
             page.screenshot(path=Path(ARTIFACTS)/f"jmorgado-jugar-{width}.png")
+        page.locator("[data-theme-toggle]").click()
+        expect(page.locator("html")).to_have_attribute("data-jm-theme", "night")
+        assert page.evaluate(board_pixel) == "13,32,41"
+        expect(page.locator("[data-tetris]")).to_have_attribute("data-game-state","playing")
+        if ARTIFACTS and width in (1440,390):
+            page.locator(".game-shell").screenshot(path=Path(ARTIFACTS)/f"jmorgado-jugar-{width}-noche.png")
         assert not errors,errors
         assert not external,external
         print(width,height,"juego responsive y recursos locales OK")

@@ -453,3 +453,81 @@
   #trabajos .feature:is(:hover,:focus-visible),.service-map .service-line:is(:hover,:focus-visible),
   .game-invite-display[data-cleared] .game-key-piece { transform:none; }
 }
+
+
+/* Continuidad cromática de la portada: transiciones de fondo sin JavaScript.
+   Los degradados viven en el propio recorrido de cada sección; no alteran
+   el contenido, el ritmo de lectura ni la altura del documento. */
+.home-page{
+  --home-edge-fade:clamp(3rem,6vw,6rem);
+  --home-intro-edge:#102E38;
+  --home-explore-edge:color-mix(in srgb,var(--jm-bg) 72%,var(--jm-surface));
+  --home-tools-bg:color-mix(in srgb,var(--jm-stone) 13%,var(--jm-bg));
+  --home-game-bg:color-mix(in srgb,var(--jm-petrol) 12%,var(--jm-bg));
+  --home-method-bg:color-mix(in srgb,var(--jm-olive) 10%,var(--jm-bg));
+  --home-ink-panel:#222327;
+  --home-footer-edge:#102E38;
+}
+[data-jm-theme="night"] .home-page{
+  --home-intro-edge:#0B141C;
+  --home-ink-panel:#102E38;
+}
+.home-page :is(#explorar,#recursos,#trabajos,#una-partida,#como-trabajo,#ahorro,.home-contact){
+  border-top-color:color-mix(in srgb,var(--jm-line) 34%,transparent);
+}
+.home-page #explorar{
+  background-image:
+    linear-gradient(to bottom,var(--home-intro-edge) 0,transparent var(--home-edge-fade)),
+    linear-gradient(to right,var(--jm-bg) 72%,var(--jm-surface) 72%);
+}
+.home-page #recursos{
+  background-color:var(--home-tools-bg);
+  background-image:linear-gradient(to bottom,
+    var(--home-explore-edge) 0,
+    var(--home-tools-bg) var(--home-edge-fade),
+    var(--home-tools-bg) 100%);
+}
+.home-page #trabajos{
+  background-color:var(--jm-surface);
+  background-image:linear-gradient(to bottom,
+    var(--home-tools-bg) 0,
+    var(--jm-surface) var(--home-edge-fade),
+    var(--jm-surface) 100%);
+}
+.home-page .home-game{
+  background-color:var(--home-game-bg);
+  background-image:linear-gradient(to bottom,
+    var(--jm-surface) 0,
+    var(--home-game-bg) var(--home-edge-fade),
+    var(--home-game-bg) 100%);
+}
+.home-page .home-method{
+  background-color:var(--home-method-bg);
+  background-image:linear-gradient(to bottom,
+    var(--home-game-bg) 0,
+    var(--home-method-bg) var(--home-edge-fade),
+    var(--home-method-bg) 100%);
+}
+.home-page .home-calculator{
+  background-image:linear-gradient(to bottom,
+    var(--home-method-bg) 0,
+    var(--home-ink-panel) var(--home-edge-fade),
+    var(--home-ink-panel) 100%);
+}
+.home-page .home-contact{
+  background-color:var(--jm-surface);
+  background-image:linear-gradient(to bottom,
+    var(--home-ink-panel) 0,
+    var(--jm-surface) var(--home-edge-fade),
+    var(--jm-surface) calc(100% - var(--home-edge-fade)),
+    var(--home-footer-edge) 100%);
+}
+@media(max-width:800px){
+  .home-page{--home-explore-edge:var(--jm-bg)}
+  .home-page #explorar{
+    background-color:var(--jm-bg);
+    background-image:linear-gradient(to bottom,
+      var(--home-intro-edge) 0,
+      transparent var(--home-edge-fade));
+  }
+}

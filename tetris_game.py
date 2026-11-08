@@ -58,12 +58,13 @@ def render_game():
     <nav class="breadcrumb" aria-label="Ruta de navegación"><a href="../#una-partida">Inicio</a><span aria-hidden="true">/</span><span aria-current="page">Pausa de Tetris</span></nav>
     <div class="game-heading"><div><p class="eyebrow">Entre proyectos</p><h1>Pausa de Tetris<span class="orange">.</span></h1></div>
     <div class="game-intro"><p>Me gusta que el tablero guarde las decisiones anteriores. Puedes arreglar una mala jugada con las siguientes piezas. Aquí tienes una partida para probarlo y mejorar tu marca.</p>
-    <p class="game-record-note">Tu récord se guarda en este navegador.</p></div></div>
+    <p class="game-record-note">El puntaje y el tiempo de juego se guardan en este navegador.</p></div></div>
     <noscript><p>Activa JavaScript para jugar en el navegador.</p></noscript>
     <div class="game-shell" hidden>
       <dl class="game-score">
         <div><dt>Puntos</dt><dd data-stat="score">0</dd></div>
-        <div><dt>Récord</dt><dd data-stat="best">0</dd></div>
+        <div><dt>Récord</dt><dd data-stat="best">0</dd><dd class="game-record-time" data-record-time hidden></dd></div>
+        <div><dt>Tiempo</dt><dd data-stat="time">00:00</dd></div>
         <div><dt>Líneas</dt><dd data-stat="lines">0</dd></div>
         <div><dt>Nivel</dt><dd data-stat="level">1</dd></div>
       </dl>
@@ -85,12 +86,13 @@ def render_game():
       </div>
       <div class="game-touch" hidden aria-label="Controles táctiles">{touch}</div>
       <div class="game-actions">
-        <button type="button" class="button" data-game-pause disabled>Pausar</button>
+        <button type="button" class="button" data-game-pause aria-keyshortcuts="Enter" disabled>Pausar</button>
         <button type="button" class="button" data-game-restart disabled>Reiniciar</button>
         <button type="button" class="button" data-game-settings>Configurar controles</button>
       </div>
       <label class="game-touch-option"><input type="checkbox" data-touch-option> Habilitar controles táctiles</label>
-      <p class="game-hint" id="game-key-hint">Con el tablero enfocado, usa tus teclas asignadas. Escape pausa o reanuda la partida.</p>
+      <p class="game-last-result" data-last-result hidden></p>
+      <p class="game-hint" id="game-key-hint">Con el tablero enfocado, usa tus teclas asignadas. Enter pausa o reanuda la partida.</p>
       <p class="game-hint">Completa filas con piezas consecutivas. Desde el combo ×2, cada pieza de la racha suma un bono.</p>
       <p class="game-status" role="status"></p>
     </div>
