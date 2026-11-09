@@ -423,12 +423,39 @@ try:
             headings = page.locator("main > section:not([data-study])").all()
             # El recorrido editorial aprobó un orden nuevo sin alterar las siete escenas intro.
             order = ["mejorar", "Primero te escucho.",
-                     "Una hora de trabajo puede reducirse", "Proyectos",
-                     "Soy Jorge", "Herramientas propias", "jugar", "necesitas"]
+                     "Compara el tiempo", "Proyectos",
+                     "Soy Jorge", "Herramientas propias", "necesitas", "una partida"]
             assert len(headings) == len(order)
             for section, title in zip(headings, order):
                 actual_title=section.locator("h2").first.inner_text()
                 assert title in actual_title,(section.get_attribute("class"),title,actual_title)
+            quick=page.locator("[data-home-quick-calc]")
+            assert quick.count()==1
+            quick.locator("[data-time-before]").fill("30")
+            quick.locator("[data-time-after]").fill("10")
+            quick.locator("[data-frequency]").fill("3")
+            expect(page.locator("[data-quick-run]")).to_have_text("20 min")
+            expect(page.locator("[data-quick-week]")).to_have_text("1 h")
+            expect(page.locator("[data-quick-year]")).to_have_text("52 h")
+            full_calculator=page.locator(".quick-calc-next-link")
+            assert full_calculator.count()==1
+            expect(full_calculator).to_be_visible()
+            assert full_calculator.get_attribute("href").endswith("calculadora/")
+            assert full_calculator.evaluate("e=>{const s=getComputedStyle(e);const r=e.getBoundingClientRect();return r.width>=150&&r.height>=44&&s.display!=='none'&&s.visibility==='visible'&&s.backgroundColor!=='rgba(0, 0, 0, 0)'}")
+            full_calculator.click()
+            drawer=page.locator("#calculator-drawer")
+            expect(drawer).to_be_visible()
+            assert drawer.evaluate("e=>e.open")
+            expect(drawer.locator("#before-m")).to_have_value("30")
+            expect(drawer.locator("#after-m")).to_have_value("10")
+            expect(drawer.locator("#frequency")).to_have_value("3")
+            expect(drawer.locator("#per-week")).to_have_text("1 h")
+            drawer.locator("[data-close-calculator]").click()
+            expect(drawer).not_to_be_visible()
+            assert full_calculator.evaluate("e=>document.activeElement===e")
+            assert page.locator(".home-problem .section-action").count()==0
+            assert page.locator(".home-tool-action").count()==0
+            assert "credenciales" not in page.locator(".contact-board").inner_text().lower()
             navigation(page)
             if ARTIFACTS and width in (1440,390):
                 page.locator("#recursos").evaluate("e=>window.scrollTo({top:e.getBoundingClientRect().top+scrollY-95,behavior:'instant'})")

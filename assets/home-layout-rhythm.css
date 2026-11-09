@@ -1,0 +1,369 @@
+/* JMorgado | Editorial rhythm for the content landing, not the narrative scenes.
+   Keep chapters distinct: centered service invitation, reversed method, time lab,
+   project index, personal signature, tool collection, conversation, game epilogue. */
+
+/* 01 | Services: honest line icons, three centered explanations, no pseudo-rule. */
+body.home-page .home-problem .section-head {
+  display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;
+  gap:clamp(.7rem,1.5vw,1.25rem)!important;
+  max-width:70rem!important;margin:0 auto clamp(2rem,3vw,3rem)!important;
+  text-align:center!important;
+}
+body.home-page .home-problem .section-head h2 {
+  width:auto;max-width:18ch!important;
+  font-size:clamp(2.9rem,5.4vw,5.6rem)!important;
+}
+body.home-page .home-problem .section-head > p {
+  max-width:57ch!important;margin:0 auto!important;text-align:center!important;
+}
+body.home-page .home-problem .home-offer-grid {
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:clamp(1.5rem,3.8vw,3.5rem)!important;
+  margin:0!important;padding:0!important;border:0!important;
+}
+body.home-page .home-problem .home-offer {
+  display:flex!important;flex-direction:column;align-items:center!important;
+  min-width:0;text-align:center!important;padding:0!important;border:0!important;
+}
+body.home-page .home-problem .home-offer::before {display:none!important;}
+body.home-page .home-problem .home-offer-icon {
+  display:grid;place-items:center;
+  width:3.6rem;height:3.6rem;
+  margin:0 auto 1rem;
+  color:var(--jm-petrol);background:transparent;
+}
+body.home-page .home-problem .home-offer:nth-child(2) .home-offer-icon {color:var(--jm-olive);}
+body.home-page .home-problem .home-offer:nth-child(3) .home-offer-icon {color:var(--jm-coral);}
+:root[data-jm-theme="night"] body.home-page .home-problem .home-offer:first-child .home-offer-icon {color:#99C6C4;}
+:root[data-jm-theme="night"] body.home-page .home-problem .home-offer:nth-child(2) .home-offer-icon {color:#B6C5A6;}
+body.home-page .home-problem .home-offer-icon .icon {
+  display:block;width:2.5rem;height:2.5rem;
+  color:inherit;stroke:currentColor;stroke-width:1.35;
+  stroke-linecap:round;stroke-linejoin:round;fill:none;
+  transition:transform .5s cubic-bezier(.2,.7,.2,1);
+}
+body.home-page .home-problem .home-offer:is(:hover,:focus-within) .home-offer-icon .icon {
+  transform:translateY(-3px);
+}
+body.home-page .home-problem .home-offer h3 {margin:0 0 .6rem!important;text-align:center!important;}
+body.home-page .home-problem .home-offer p {
+  max-width:33ch!important;margin:0 auto!important;text-align:center!important;
+}
+
+/* 02 | Method: retain the reversed explanation/actions; place its one CTA beneath both. */
+body.home-page .home-method .method-bottom-link {
+  display:flex;align-items:center;justify-content:center;
+  margin:clamp(1.3rem,2vw,2rem) auto 0!important;text-align:center;
+}
+body.home-page .home-method .method-more-link {
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:2.9rem;padding:.5rem .2rem;
+  color:var(--art-ink)!important;
+  border-bottom:1px solid var(--art-line);
+  font:650 .78rem/1.35 var(--font-mono);
+  text-decoration:none!important;
+  transition:color .22s ease,border-color .22s ease;
+}
+body.home-page .home-method .method-more-link:is(:hover,:focus-visible) {
+  color:var(--jm-coral)!important;border-color:var(--jm-coral)!important;
+}
+body.home-page .home-method .method-more-link:focus-visible {
+  outline:2px solid var(--jm-coral);outline-offset:4px;
+}
+
+/* 03 | Calculator: center the question, input trio, and the time recovered. */
+body.home-page .home-calculator .impact-heading {
+  display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;
+  gap:.8rem!important;margin:0 auto clamp(1.8rem,3vw,2.6rem)!important;
+  max-width:67rem!important;text-align:center!important;
+}
+body.home-page .home-calculator .impact-heading > div {width:100%;}
+body.home-page .home-calculator .impact-heading h2 {
+  max-width:19ch!important;margin:0 auto!important;
+  font-size:clamp(2.7rem,4.8vw,4.9rem)!important;
+  text-align:center!important;
+}
+body.home-page .home-calculator .impact-heading > p {
+  max-width:65ch!important;margin:0 auto!important;text-align:center!important;
+}
+body.home-page .home-calculator .quick-calc-layout {
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+  gap:clamp(1.25rem,2vw,2.1rem)!important;
+}
+body.home-page .home-calculator .quick-calc-fields {
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:clamp(1rem,3.7vw,4.8rem)!important;
+  max-width:64rem;margin:0 auto;
+}
+body.home-page .home-calculator .quick-calc-field {
+  align-items:center!important;text-align:center!important;gap:.55rem!important;
+}
+body.home-page .home-calculator .quick-calc-field > span:first-child {
+  min-height:2.4rem!important;
+  display:flex;align-items:flex-end;justify-content:center;
+  text-align:center!important;
+}
+body.home-page .home-calculator .quick-calc-control {
+  width:100%;min-width:0;justify-content:center!important;align-items:baseline;
+}
+body.home-page .home-calculator .quick-calc-control input {
+  display:block;flex:0 1 8.4rem;min-width:0;max-width:8.4rem;
+  text-align:center!important;
+}
+body.home-page .home-calculator .quick-calc-note {
+  max-width:65ch!important;margin:1rem auto 0!important;text-align:center!important;
+}
+body.home-page .home-calculator .quick-calc-result {
+  display:flex!important;flex-direction:column!important;
+  justify-content:center!important;align-items:center!important;
+  gap:.5rem!important;
+  width:min(100%,63rem);margin:0 auto;
+  padding:clamp(1.2rem,2vw,1.9rem) 0 0!important;
+  border:0!important;border-top:1px solid #587277!important;
+  text-align:center!important;
+}
+body.home-page .home-calculator .quick-calc-result-label {margin:0!important;}
+body.home-page .home-calculator .quick-calc-primary {
+  display:flex!important;justify-content:center!important;align-items:baseline!important;
+  gap:clamp(.45rem,1vw,.9rem)!important;margin:.2rem auto 0!important;
+}
+body.home-page .home-calculator .quick-calc-primary strong {
+  font-variant-numeric:tabular-nums;
+}
+body.home-page .home-calculator .quick-calc-totals {
+  display:flex!important;justify-content:center!important;align-items:flex-start!important;
+  gap:clamp(2.8rem,9vw,9rem)!important;
+  width:auto;margin:clamp(.8rem,1.5vw,1.4rem) auto 0!important;
+  padding:0!important;
+}
+body.home-page .home-calculator .quick-calc-totals > div {
+  display:flex!important;flex-direction:column;align-items:center!important;
+  min-width:7.5rem;text-align:center!important;
+}
+body.home-page .home-calculator .quick-calc-status {
+  max-width:62ch!important;margin:.65rem auto 0!important;text-align:center!important;
+}
+body.home-page .home-calculator .quick-calc-more {
+  margin:.9rem 0 0!important;text-align:center!important;
+}
+
+/* 04 | Center ONLY the project header; project cases remain completely untouched. */
+body.home-page #trabajos .section-head {
+  display:flex!important;flex-direction:column!important;
+  align-items:center!important;gap:.8rem!important;
+  max-width:60rem!important;margin:0 auto clamp(1.8rem,3vw,2.7rem)!important;
+  text-align:center!important;
+}
+body.home-page #trabajos .section-head h2 {
+  max-width:none!important;margin:0 auto!important;text-align:center!important;
+}
+body.home-page #trabajos .section-head > p {
+  max-width:55ch!important;margin:0 auto!important;text-align:center!important;
+}
+
+/* 05 | A coherent personal signature: headline and story share one focal column. */
+body.home-page .home-persona .persona-content {
+  display:flex!important;flex-direction:column!important;
+  align-items:flex-start!important;
+  gap:clamp(1.25rem,2vw,1.8rem)!important;
+  width:min(100%,53rem);max-width:53rem!important;
+  margin:0 auto!important;padding:0!important;
+}
+body.home-page .home-persona .persona-identity {
+  display:block!important;width:100%;margin:0!important;
+}
+body.home-page .home-persona .persona-identity::after {display:none!important;}
+body.home-page .home-persona .persona-identity h2 {
+  max-width:none!important;margin:0!important;
+  font-size:clamp(3.9rem,7.3vw,7.5rem)!important;
+  line-height:.91!important;letter-spacing:-.075em!important;
+  text-align:left!important;
+}
+body.home-page .home-persona .persona-story {
+  display:flex!important;flex-direction:column!important;
+  align-items:flex-start!important;gap:.8rem!important;
+  width:100%;max-width:48rem!important;margin:0!important;padding:0!important;
+}
+body.home-page .home-persona .persona-story p {
+  max-width:65ch!important;margin:0!important;
+  font-size:clamp(.98rem,1.17vw,1.07rem)!important;
+  line-height:1.67!important;
+}
+body.home-page .home-persona .persona-story > a {
+  display:inline-flex!important;width:max-content;max-width:100%;
+  margin:.35rem 0 0!important;
+}
+
+/* 06 | Tools: the introduction uses the available width without drifting right. */
+body.home-page .home-tools .section-head {
+  display:flex!important;flex-direction:column!important;
+  align-items:flex-start!important;justify-content:flex-start!important;
+  gap:.75rem!important;
+  max-width:74rem!important;margin:0 0 clamp(1.8rem,3vw,2.8rem)!important;
+  text-align:left!important;
+}
+body.home-page .home-tools .section-head h2 {
+  max-width:19ch!important;margin:0!important;text-align:left!important;
+}
+body.home-page .home-tools .section-head > p {
+  max-width:65ch!important;margin:0!important;
+  align-self:flex-start!important;text-align:left!important;
+}
+
+/* 07 | Conversation: restore the original orange two-column invitation. */
+body.home-page .home-contact-cta .contact-board {
+  display:grid!important;
+  grid-template-columns:minmax(0,1.14fr) minmax(0,.86fr)!important;
+  align-items:center!important;justify-items:stretch!important;
+  gap:clamp(2rem,4.5vw,4.5rem)!important;
+  padding:clamp(2.1rem,4vw,3.8rem)!important;text-align:left!important;
+}
+body.home-page .home-contact-cta .contact-board-intro,
+body.home-page .home-contact-cta .contact-board-copy {min-width:0;max-width:none!important;}
+body.home-page .home-contact-cta .contact-board h2 {
+  max-width:12ch!important;margin:0!important;text-align:left!important;
+}
+body.home-page .home-contact-cta .contact-board-copy > p {
+  max-width:44ch!important;margin:.2rem 0 1.3rem!important;text-align:left!important;
+}
+body.home-page .home-contact-cta .contact-actions {
+  justify-content:flex-start!important;margin:0!important;
+}
+body.home-page .home-contact-cta .contact-caveat {margin:.8rem 0 0!important;}
+
+/* 08 | The game is the final, optional pause after contacting. */
+body.home-page .home-game .pause-layout {
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+  gap:clamp(.9rem,1.8vw,1.75rem)!important;justify-items:center!important;
+}
+body.home-page .home-game .pause-copy {
+  max-width:54rem!important;margin:0 auto!important;text-align:center!important;
+}
+body.home-page .home-game .pause-copy h2 {max-width:19ch!important;margin:0 auto .8rem!important;}
+body.home-page .home-game .pause-copy > p {
+  max-width:57ch!important;margin-inline:auto!important;text-align:center!important;
+}
+body.home-page .home-game .pause-figure {
+  width:min(100%,42rem)!important;margin:0 auto!important;
+  aspect-ratio:auto!important;height:auto!important;min-height:0!important;
+  overflow:visible!important;
+}
+body.home-page .home-game .pause-figure .tetris-play-stage {
+  height:auto!important;min-height:0!important;
+}
+
+/* More considered section pacing: the content never spills into the next chapter. */
+@media (min-width:901px) {
+  body.home-page main > :is(.home-problem,.home-method,.home-calculator,.home-work,.home-persona,.home-tools,.home-game) {
+    padding-block:clamp(3.4rem,4.9vw,5.2rem)!important;
+  }
+  body.home-page main > .home-contact-cta {
+    padding-block:clamp(3.2rem,4.7vw,4.8rem)!important;
+  }
+  body.home-page .home-method .method-layout {
+    display:grid!important;
+    grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr)!important;
+    grid-template-areas:"steps copy";
+    gap:clamp(2rem,5vw,5rem)!important;align-items:center!important;
+  }
+  body.home-page .home-method .method-steps {grid-area:steps;min-width:0;margin:0!important;}
+  body.home-page .home-method .method-copy {grid-area:copy;min-width:0;margin:0!important;}
+  body.home-page .home-method .method-step {padding-block:clamp(.95rem,1.7vw,1.4rem)!important;}
+}
+@media (max-width:900px) {
+  body.home-page main > :is(.home-problem,.home-method,.home-calculator,.home-work,.home-persona,.home-tools,.home-game,.home-contact-cta) {
+    padding-block:clamp(2.8rem,6vw,4.3rem)!important;
+  }
+  body.home-page .home-method .method-layout {
+    grid-template-columns:1fr!important;gap:1.7rem!important;
+  }
+  body.home-page .home-method .method-copy {order:0;}
+  body.home-page .home-method .method-steps {order:1;}
+  body.home-page .home-method .method-bottom-link {margin-top:1.2rem!important;}
+  body.home-page .home-calculator .quick-calc-result {padding:1.3rem 0 0!important;}
+  body.home-page .home-persona .persona-content {max-width:43rem!important;}
+  body.home-page .home-contact-cta .contact-board {
+    grid-template-columns:1fr!important;gap:1.4rem!important;
+  }
+}
+@media (max-width:640px) {
+  body.home-page main > :is(.home-problem,.home-method,.home-calculator,.home-work,.home-persona,.home-tools,.home-game,.home-contact-cta) {
+    padding-block:2.9rem!important;
+  }
+  body.home-page .home-problem .section-head h2 {font-size:clamp(2.75rem,11.1vw,4.1rem)!important;}
+  body.home-page .home-problem .home-offer-grid {
+    grid-template-columns:1fr!important;gap:1.85rem!important;
+  }
+  body.home-page .home-problem .home-offer-icon {margin-bottom:.65rem;}
+  body.home-page .home-calculator .impact-heading h2 {
+    font-size:clamp(2.4rem,10.4vw,3.75rem)!important;
+  }
+  body.home-page .home-calculator .quick-calc-fields {
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:1.2rem .85rem!important;
+  }
+  body.home-page .home-calculator .quick-calc-field:last-child {
+    grid-column:1/-1;max-width:64%!important;margin:0 auto;
+  }
+  body.home-page .home-calculator .quick-calc-field > span:first-child {font-size:.62rem;}
+  body.home-page .home-calculator .quick-calc-primary {
+    flex-wrap:wrap!important;gap:.35rem!important;
+  }
+  body.home-page .home-calculator .quick-calc-primary strong {
+    font-size:clamp(3.1rem,15vw,4.4rem)!important;
+  }
+  body.home-page .home-calculator .quick-calc-totals {
+    gap:clamp(.7rem,5vw,2rem)!important;width:100%;
+  }
+  body.home-page .home-calculator .quick-calc-totals > div {min-width:0;flex:1;}
+  body.home-page .home-persona .persona-identity h2 {
+    font-size:clamp(3rem,13.5vw,5.5rem)!important;
+  }
+  body.home-page .home-persona .persona-story {max-width:100%!important;}
+  body.home-page .home-contact-cta .contact-board {
+    padding:clamp(1.4rem,6vw,2rem)!important;
+    gap:1.1rem!important;
+  }
+  body.home-page .home-contact-cta .contact-board h2 {
+    font-size:clamp(2.45rem,10.7vw,3.7rem)!important;
+  }
+  body.home-page .home-game .pause-copy h2 {
+    font-size:clamp(2.4rem,10.3vw,3.8rem)!important;
+  }
+}
+
+/* Each element reveals once in its own direction, without blur or excessive travel. */
+body.home-page.home-motion-ready .home-reveal {
+  --entry-x:0px;--entry-y:18px;--entry-scale:1;
+  opacity:0!important;filter:none!important;
+  transform:translate3d(var(--entry-x),var(--entry-y),0) scale(var(--entry-scale))!important;
+  transition:opacity .78s cubic-bezier(.18,.72,.23,1),
+             transform .92s cubic-bezier(.18,.72,.23,1)!important;
+  transition-delay:var(--home-reveal-delay,0ms)!important;
+}
+body.home-page.home-motion-ready .home-reveal[data-reveal-kind="from-left"] {
+  --entry-x:-22px;--entry-y:0px;
+}
+body.home-page.home-motion-ready .home-reveal[data-reveal-kind="from-right"] {
+  --entry-x:22px;--entry-y:0px;
+}
+body.home-page.home-motion-ready .home-reveal[data-reveal-kind="item"] {--entry-y:13px;}
+body.home-page.home-motion-ready .home-reveal[data-reveal-kind="ledger"] {
+  --entry-x:12px;--entry-y:0px;
+}
+body.home-page.home-motion-ready .home-reveal[data-reveal-kind="soft"] {
+  --entry-y:10px;--entry-scale:.992;
+}
+body.home-page.home-motion-ready .home-reveal.is-visible {
+  opacity:1!important;filter:none!important;
+  transform:translate3d(0,0,0) scale(1)!important;
+}
+@media (prefers-reduced-motion:reduce) {
+  body.home-page.home-motion-ready .home-reveal {
+    opacity:1!important;transform:none!important;filter:none!important;transition:none!important;
+  }
+  body.home-page .home-problem .home-offer-icon .icon {transition:none!important;transform:none!important;}
+}

@@ -1,0 +1,278 @@
+/* JMorgado | Landing hierarchy refinement
+   Applied after the existing editorial passes. Never targets the narrative scenes
+   or project cards; it adjusts only three landing chapters and the restored drawer. */
+
+/* About: use the horizontal measure without pushing the story to the far edge. */
+@media (min-width: 921px) {
+  body.home-page .home-persona .persona-content {
+    display:grid!important;
+    grid-template-columns:minmax(0,.94fr) minmax(0,1.06fr)!important;
+    align-items:center!important;
+    column-gap:clamp(1.9rem,4.1vw,4.4rem)!important;
+    width:min(100%,76rem)!important;max-width:76rem!important;
+    margin-inline:auto!important;padding:0!important;
+  }
+  body.home-page .home-persona .persona-identity {
+    grid-column:1!important;grid-row:1!important;
+    width:100%!important;max-width:none!important;
+    padding-top:1.5rem!important;
+    align-self:center!important;
+  }
+  body.home-page .home-persona .persona-identity h2 {
+    max-width:none!important;
+    font-size:clamp(4.4rem,5.8vw,6.4rem)!important;
+    line-height:.93!important;
+    letter-spacing:-.073em!important;
+  }
+  body.home-page .home-persona .persona-story {
+    grid-column:2!important;grid-row:1!important;
+    display:flex!important;flex-direction:column!important;
+    align-items:flex-start!important;justify-content:center!important;
+    width:100%!important;max-width:none!important;
+    margin:0!important;padding:0!important;
+    gap:1.15rem!important;
+  }
+  body.home-page .home-persona .persona-story p:first-child {
+    max-width:55ch!important;
+    font-size:clamp(1rem,1.2vw,1.1rem)!important;
+    line-height:1.66!important;
+    font-weight:400!important;
+  }
+  body.home-page .home-persona .persona-story p:nth-of-type(2) {
+    max-width:50ch!important;
+  }
+  body.home-page main > section.home-persona {
+    padding-block:clamp(3.5rem,4.4vw,4.5rem)!important;
+    min-height:0!important;
+  }
+  body.home-page main > section.home-persona::after {
+    background-position:right 3.5% top 16%,right 3.5% top 16%!important;
+    opacity:.43!important;
+  }
+}
+
+/* Contact is the primary business conclusion: give the coral area real presence. */
+@media (min-width: 921px) {
+  body.home-page main > section.home-contact-cta {
+    display:flex!important;align-items:center!important;
+    min-height:clamp(37rem,44vw,42rem)!important;
+    padding-block:clamp(3.25rem,5.2vw,5rem)!important;
+  }
+  body.home-page .home-contact-cta > .wrap {
+    width:min(calc(100% - 2.5rem),var(--shell))!important;
+  }
+  body.home-page .home-contact-cta .contact-board {
+    min-height:clamp(28rem,33vw,31rem)!important;
+    padding:clamp(3.1rem,5vw,5rem)!important;
+    grid-template-columns:minmax(0,1.06fr) minmax(0,.94fr)!important;
+    gap:clamp(2rem,4vw,4.5rem)!important;
+    align-items:center!important;
+  }
+  body.home-page .home-contact-cta .contact-board h2 {
+    font-size:clamp(3.9rem,5.2vw,6.3rem)!important;
+    max-width:12ch!important;
+    line-height:.95!important;
+  }
+  body.home-page .home-contact-cta .contact-board-copy > p:first-child {
+    max-width:41ch!important;
+    font-size:clamp(1.05rem,1.3vw,1.18rem)!important;
+    line-height:1.65!important;
+    margin:0 0 1.8rem!important;
+  }
+  body.home-page .home-contact-cta .contact-caveat {
+    margin-top:1.35rem!important;
+    max-width:43ch!important;
+  }
+}
+
+/* Tetris is a small epilogue, not a second hero after the invitation. */
+@media (min-width: 921px) {
+  body.home-page main > section.home-game {
+    padding-block:clamp(2.8rem,3.6vw,3.9rem)!important;
+  }
+  body.home-page .home-game .pause-layout {
+    display:grid!important;
+    grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr)!important;
+    align-items:center!important;justify-items:stretch!important;
+    gap:clamp(2rem,5vw,5rem)!important;
+    width:min(100%,72rem)!important;
+    margin-inline:auto!important;
+  }
+  body.home-page .home-game .pause-copy {
+    width:100%!important;max-width:33rem!important;
+    margin:0!important;text-align:left!important;
+  }
+  body.home-page .home-game .pause-copy h2 {
+    max-width:13ch!important;
+    margin:0 0 .9rem!important;
+    text-align:left!important;
+    font-size:clamp(2.4rem,3.45vw,3.9rem)!important;
+    line-height:1.02!important;
+  }
+  body.home-page .home-game .pause-copy > p {
+    margin:0!important;max-width:40ch!important;
+    text-align:left!important;font-size:.96rem!important;
+    line-height:1.63!important;
+  }
+  body.home-page .home-game .pause-figure {
+    width:min(100%,28rem)!important;max-width:28rem!important;
+    margin:0 0 0 auto!important;
+  }
+}
+
+/* Preserve the original 3D piece, but give it less physical footprint. */
+body.home-page .home-game .tetris-piece-link {
+  --cube-size:clamp(42px,4vw,54px)!important;
+  --cube-gap:4px!important;
+  --cube-step:calc(var(--cube-size) + var(--cube-gap))!important;
+  --cube-half:calc(var(--cube-size)/2)!important;
+  min-height:0!important;
+}
+body.home-page .home-game .tetris-piece-scene {
+  min-height:clamp(215px,20vw,260px)!important;
+}
+body.home-page .home-game .tetris-piece-orbit--a {
+  width:min(82%,350px)!important;height:95px!important;
+}
+body.home-page .home-game .tetris-piece-orbit--b {
+  width:min(60%,245px)!important;height:145px!important;
+}
+body.home-page .home-game .tetris-piece-shadow {bottom:21px!important;}
+body.home-page .home-game .tetris-play-cta {
+  padding:.72rem 0!important;
+  margin:0 auto!important;
+  min-height:3.7rem!important;
+}
+body.home-page .home-game .tetris-play-cta-copy {gap:.25rem!important;}
+
+/* Smaller screens: keep two priorities explicit; do not sacrifice the entry link. */
+@media (max-width:920px) {
+  body.home-page .home-persona .persona-content {
+    display:flex!important;flex-direction:column!important;
+    align-items:flex-start!important;gap:1.45rem!important;
+    width:min(100%,44rem)!important;max-width:44rem!important;
+    margin-inline:auto!important;
+  }
+  body.home-page .home-persona .persona-story {
+    margin:0!important;max-width:100%!important;
+  }
+  body.home-page main > section.home-contact-cta {
+    min-height:0!important;
+    padding-block:clamp(3.15rem,6vw,4.5rem)!important;
+  }
+  body.home-page .home-contact-cta .contact-board {
+    min-height:clamp(27rem,47vw,35rem)!important;
+    padding:clamp(2rem,5vw,3.5rem)!important;
+  }
+  body.home-page main > section.home-game {
+    padding-block:clamp(2.3rem,4vw,3.1rem)!important;
+  }
+  body.home-page .home-game .pause-layout {
+    gap:.7rem!important;width:min(100%,38rem)!important;margin-inline:auto!important;
+  }
+  body.home-page .home-game .pause-copy {max-width:34rem!important;}
+  body.home-page .home-game .pause-copy h2 {
+    font-size:clamp(2.3rem,5.8vw,3.65rem)!important;
+    line-height:1.03!important;
+  }
+  body.home-page .home-game .pause-figure {
+    width:min(100%,28rem)!important;
+    max-width:28rem!important;margin:0 auto!important;
+  }
+}
+@media (max-width:640px) {
+  body.home-page .home-persona .persona-content {gap:1rem!important;}
+  body.home-page .home-persona .persona-story {gap:.9rem!important;}
+  body.home-page .home-contact-cta .contact-board {
+    min-height:0!important;
+    padding:clamp(2.3rem,7vw,3rem)!important;
+    gap:1.45rem!important;
+  }
+  body.home-page .home-contact-cta .contact-board h2 {
+    font-size:clamp(2.7rem,11vw,3.9rem)!important;
+  }
+  body.home-page .home-contact-cta .contact-board-copy > p:first-child {
+    font-size:1rem!important;
+    margin-bottom:1.1rem!important;
+  }
+  body.home-page .home-contact-cta .contact-caveat {
+    margin-top:.9rem!important;
+  }
+  body.home-page .home-game .pause-layout {gap:.45rem!important;}
+  body.home-page .home-game .pause-copy h2 {
+    max-width:14ch!important;margin-bottom:.65rem!important;
+    font-size:clamp(2.3rem,9.7vw,3.2rem)!important;
+  }
+  body.home-page .home-game .pause-copy > p {
+    font-size:.9rem!important;line-height:1.55!important;
+  }
+  body.home-page .home-game .tetris-piece-scene {
+    min-height:205px!important;
+  }
+  body.home-page .home-game .tetris-piece-link {
+    --cube-size:41px!important;--cube-gap:4px!important;
+  }
+  body.home-page .home-game .tetris-play-cta {
+    min-height:3.65rem!important;
+  }
+}
+
+/* Restore the native left-in calculator, with theme-safe fields and stable focus. */
+body.home-page .calculator-drawer {
+  width:min(43rem,100vw)!important;
+  z-index:100!important;
+  background:var(--jm-bg)!important;
+  color:var(--jm-text)!important;
+  border-right:1px solid var(--jm-line)!important;
+  transform:translate3d(-101%,0,0);
+  transition:transform .45s cubic-bezier(.22,.74,.2,1),
+    overlay .45s allow-discrete,display .45s allow-discrete!important;
+}
+body.home-page .calculator-drawer[open] {transform:translate3d(0,0,0)!important;}
+@starting-style {
+  body.home-page .calculator-drawer[open] {transform:translate3d(-101%,0,0)!important;}
+}
+body.home-page .calculator-drawer::backdrop {
+  background:rgba(4,18,23,.63)!important;
+}
+body.home-page .calculator-drawer .calculator-drawer-header .eyebrow {
+  color:var(--jm-coral)!important;
+}
+body.home-page .calculator-drawer .calculator-drawer-lead {
+  color:var(--jm-muted)!important;
+}
+body.home-page .calculator-drawer .calc-grid {gap:1.1rem!important;}
+body.home-page .calculator-drawer .field-title {
+  color:var(--jm-text)!important;
+}
+body.home-page .calculator-drawer .field input,
+body.home-page .calculator-drawer .field select {
+  color:var(--jm-text)!important;
+  background:var(--jm-surface)!important;
+  border-color:var(--jm-line)!important;
+}
+body.home-page .calculator-drawer .calculator-quick {
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:1.1rem;margin:1.4rem 0;
+}
+body.home-page .calculator-drawer .calculator-quick > div {
+  display:grid;gap:.3rem;padding:1rem;
+  border:1px solid var(--jm-line);
+}
+body.home-page .calculator-drawer .calculator-quick span {
+  color:#C9D7D2!important;font-size:.75rem;line-height:1.35;
+}
+body.home-page .calculator-drawer .calculator-quick strong {
+  color:#F3F0E8!important;font-size:clamp(1.4rem,2.4vw,2rem);
+  letter-spacing:-.045em;font-variant-numeric:tabular-nums;
+}
+body.home-page .calculator-drawer .calculator-drawer-end a {
+  text-decoration:underline;text-underline-offset:.2rem;
+}
+body.home-page .calculator-drawer .calculator-drawer-close {
+  color:var(--jm-text)!important;background:var(--jm-surface)!important;
+  border-color:var(--jm-line)!important;
+}
+@media(prefers-reduced-motion:reduce){
+  body.home-page .calculator-drawer {transition:none!important;}
+}

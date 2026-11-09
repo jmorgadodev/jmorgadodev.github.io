@@ -59,7 +59,11 @@ def meta(d, title, description, active="", journey=False, *, canonical=None):
                  f'<link rel="stylesheet" href="{e(asset(d,"assets/home-visual-pass-03.css"))}">'
                  f'<link rel="stylesheet" href="{e(asset(d,"assets/home-visual-pass-05.css"))}">'
                  f'<link rel="stylesheet" href="{e(asset(d,"assets/home-visual-pass-06.css"))}">'
-                 f'<link rel="stylesheet" href="{e(asset(d,"assets/home-theme-quality.css"))}">') if journey else ""
+                 f'<link rel="stylesheet" href="{e(asset(d,"assets/home-theme-quality.css"))}">'
+                 f'<link rel="stylesheet" href="{e(asset(d,"assets/home-layout-rhythm.css"))}">'
+                 f'<link rel="stylesheet" href="{e(asset(d,"assets/home-depth-editorial.css"))}">'
+                 f'<link rel="stylesheet" href="{e(asset(d,"assets/home-hierarchy.css"))}">'
+                 f'<link rel="stylesheet" href="{e(asset(d,"assets/home-project-carousel.css"))}">') if journey else ""
     body_class=' class="home-page"' if journey else ''
     header_class=' home-header' if journey else ''
     descriptor='Una forma de resolver' if journey else 'Desarrollo independiente<br>Software, datos y procesos'
@@ -67,7 +71,7 @@ def meta(d, title, description, active="", journey=False, *, canonical=None):
     home_target=local(d) + "#home-start"
     controls=''
     progress='' if journey else ''
-    fonts = '' if active=="jugar" else """<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    fonts = '' if journey or active=="jugar" else """<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">"""
     robots = "index,follow" if canonical else "noindex,follow"
     canonical_meta = f'<link rel="canonical" href="{e(canonical)}"><meta property="og:url" content="{e(canonical)}">' if canonical else ""
@@ -111,7 +115,10 @@ def foot(d, journey=False, active=""):
         extra += f'<script src="{e(asset(d,"assets/tool-panel.js"))}" defer></script>'
     if journey:
         extra += f'<script src="{e(asset(d,"assets/calculator.js"))}" defer></script>'
+        extra += f'<script src="{e(asset(d,"assets/home-quick-calculator.js"))}" defer></script>'
+        extra += f'<script src="{e(asset(d,"assets/home-calculator-drawer.js"))}" defer></script>'
         extra += f'<script src="{e(asset(d,"assets/home-narrative.js"))}" defer></script>'
+        extra += f'<script src="{e(asset(d,"assets/home-project-carousel.js"))}" defer></script>'
     fab_hidden = " hidden" if journey else ""
     if journey:
         footer_html=f"""<footer class="site-footer home-footer"><div class="wrap">
@@ -186,6 +193,59 @@ def featured_case(d, p):
       <p class="feature-summary">{e(summary)}</p>
       <span class="feature-arrow" aria-hidden="true">{icon("arrow",True)}</span>
     </a>"""
+
+def home_project_carousel(d, projects):
+    # Galería circular: una pieza central grande y el resto entrando en profundidad.
+    # Sin numeración, flechas ni instrucciones visibles.
+    blurbs = {
+        "impulsacv": "Currículums y herramientas para acompañar la búsqueda de empleo.",
+        "el-cambiometro": "Datos públicos organizados para consultar su evolución.",
+        "conecta": "Calendario y contenido de marcas coordinados en un mismo espacio.",
+        "ryvolt": "Una experiencia corporativa bilingüe para presentar servicios.",
+        "flor-de-almendro": "Catálogo de joyería que el negocio puede actualizar.",
+        "exo-dream": "Showroom digital con catálogo, agenda y fichas configurables.",
+        "tobys-warehouse": "Tiempos y resultados compartidos de competencias.",
+        "kooke-portal": "Colecciones multimedia reunidas para explorar contenido.",
+        "kooke-rrss": "Planificación y producción asistida de publicaciones.",
+    }
+    # Colores corporativos verificados; el resto usa los acentos ya definidos del sitio.
+    brand = {
+        "ryvolt": "#0098A9",
+        "tobys-warehouse": "#E52421",
+        "kooke-portal": "#00F2FF",
+        "conecta": "#23494E",
+    }
+    fallback = {"tobys-warehouse": "Hangar354", "kooke-portal": "kokeAI", "kooke-rrss": "RRSS"}
+    cards = []
+    for p in projects:
+        slug = p["slug"]
+        if slug in PROJECT_MARKS:
+            logo = project_mark(d, p)
+        else:
+            logo = f'<span class="projects-flow-fallback" aria-hidden="true">{e(fallback.get(slug, p["title"]))}</span>'
+        color = brand.get(slug) or ("var(--jm-coral)" if p["accent"] == "orange" else "var(--jm-petrol)")
+        href = e(local(d, "proyectos/" + slug + "/"))
+        cards.append(f'''<a class="projects-flow-card" href="{href}" data-project-card
+             data-project-slug="{e(slug)}" data-project-name="{e(p['title'])}"
+             style="--pf-brand:{color}" aria-label="Abrir la ficha de {e(p['title'])}">
+          <span class="projects-flow-card-surface">
+            <span class="projects-flow-logo">{logo}</span>
+            <span class="projects-flow-copy">
+              <strong class="projects-flow-name">{e(p['title'])}</strong>
+              <span class="projects-flow-desc">{e(blurbs.get(slug, p["summary"]))}</span>
+            </span>
+          </span>
+        </a>''')
+    return f'''<div class="projects-carousel" data-project-carousel>
+      <div class="projects-flow-stage" data-project-track role="region"
+        aria-roledescription="galería circular de proyectos"
+        aria-label="Proyectos. Usa las flechas izquierda y derecha para recorrer la galería; Intro abre la ficha del proyecto centrado.">
+        <div class="projects-flow-atmosphere" aria-hidden="true"></div>
+        {"".join(cards)}
+      </div>
+      <p class="projects-flow-status" data-flow-status role="status" aria-live="polite"></p>
+    </div>'''
+
 
 def entry(d,p,idx):
     url=local(d,"proyectos/"+p["slug"]+"/")
@@ -491,19 +551,22 @@ def home_tetris_visual(d):
     </div>"""
 
 def home_tool_card(d, tool):
-    summaries={
-        "auditapc":"Organiza la información de equipos y genera informes para cada visita técnica.",
-        "nokto":"Reúne controles del escritorio y rutinas que puedes automatizar.",
-        "datosdemocl":"Genera datos ficticios con formatos chilenos para probar formularios y sistemas."
+    outcomes={
+        "auditapc":"Deja el inventario y los informes listos para continuar o compartir los hallazgos.",
+        "nokto":"Convierte acciones frecuentes del escritorio en rutinas configurables.",
+        "datosdemocl":"Prepara lotes de prueba repetibles sin trabajar con registros reales."
     }
     name=e(tool["title"])
-    summary=e(summaries.get(tool["slug"],tool["summary"]))
+    task=e(tool["task"])
+    summary=e(tool["summary"])
+    outcome=e(outcomes.get(tool["slug"],tool["problem"]))
     detail=local(d, "herramientas/#" + tool["slug"])
     return f"""<article class="home-tool-card" id="home-{e(tool["slug"])}">
-      <a class="home-tool-link" href="{e(detail)}" aria-label="Conocer {name}">
+      <a class="home-tool-link" href="{e(detail)}" aria-label="Abrir la ficha de {name}">
+        <span class="home-tool-task">{task}</span>
         <span class="home-tool-name">{name}</span>
         <span class="home-tool-summary">{summary}</span>
-        <span class="home-tool-action">Conocer herramienta {icon("arrow",True)}</span>
+        <span class="home-tool-outcome">{outcome}</span>
       </a>
     </article>"""
 
@@ -522,38 +585,45 @@ def home_savings(d):
       <div class="impact-heading">
         <div>
           <p class="eyebrow">EL COSTO INVISIBLE DE REPETIR</p>
-          <h2 id="impact-title">Una hora de trabajo puede reducirse a <em>{after} minutos.</em></h2>
+          <h2 id="impact-title">Compara el tiempo antes y despu&eacute;s.</h2>
         </div>
-        <p>Una tarea repetida consume tiempo cada vez que vuelve a empezar. Automatizar parte del proceso puede liberar esos minutos para otras prioridades.</p>
+        <p>Incluye la revisi&oacute;n y las correcciones que todav&iacute;a requieren trabajo humano. Ajusta tres datos para estimar tu propio caso.</p>
       </div>
-      <div class="impact-visual">
-        <div class="impact-comparison">
-          <p class="impact-panel-kicker">TIEMPO POR EJECUCIÓN</p>
-          <div class="impact-bar-row">
-            <div class="impact-bar-label"><span>Antes de automatizar</span><strong>{before} min</strong></div>
-            <div class="impact-track"><span class="impact-fill-before" style="--bar-width:100%"></span></div>
+      <div class="quick-calc-layout">
+        <form class="home-quick-calc" data-home-quick-calc aria-label="Calculadora r&aacute;pida de tiempo">
+          <div class="quick-calc-fields">
+            <label class="quick-calc-field" for="quick-before">
+              <span>Antes de automatizar</span>
+              <span class="quick-calc-control"><input id="quick-before" data-time-before type="number" min="0" max="1440" step="1" value="{before}" inputmode="numeric"><span>min</span></span>
+            </label>
+            <label class="quick-calc-field" for="quick-after">
+              <span>Con automatizaci&oacute;n y revisi&oacute;n</span>
+              <span class="quick-calc-control"><input id="quick-after" data-time-after type="number" min="0" max="1440" step="1" value="{after}" inputmode="numeric"><span>min</span></span>
+            </label>
+            <label class="quick-calc-field" for="quick-frequency">
+              <span>Veces por semana</span>
+              <span class="quick-calc-control"><input id="quick-frequency" data-frequency type="number" min="0" max="1000" step="1" value="{runs}" inputmode="numeric"><span>veces</span></span>
+            </label>
           </div>
-          <div class="impact-bar-row">
-            <div class="impact-bar-label"><span>Con automatización y revisión</span><strong>{after} min</strong></div>
-            <div class="impact-track"><span class="impact-fill-after" style="--bar-width:{after/before*100:.1f}%"></span></div>
+          <p class="quick-calc-note">Cuenta el tiempo activo de una ejecuci&oacute;n, incluida la revisi&oacute;n que permanece.</p>
+        </form>
+        <aside class="quick-calc-result" aria-live="off">
+          <p class="quick-calc-result-label" data-quick-label>TIEMPO RECUPERADO</p>
+          <div class="quick-calc-primary"><strong data-quick-run>{recovered} min</strong><span>por ejecuci&oacute;n</span></div>
+          <div class="quick-calc-totals">
+            <div><span data-quick-week-label>Por semana</span><strong data-quick-week>{weekly_hours:g} h</strong></div>
+            <div><span data-quick-year-label>Por a&ntilde;o</span><strong data-quick-year>{annual_hours:g} h</strong></div>
           </div>
-        </div>
-        <aside class="impact-metrics" aria-label="Tiempo recuperado estimado">
-          <p class="impact-metric-label">TIEMPO QUE RECUPERAS</p>
-          <div class="impact-per-run"><strong>{recovered}</strong><span>minutos<br>por ejecución</span></div>
-          <div class="impact-periods">
-            <div><strong>{weekly_hours:g} h</strong><span>POR SEMANA</span></div>
-            <div><strong>{annual_hours:g} h</strong><span>POR AÑO</span></div>
+          <div class="quick-calc-next">
+            <span class="quick-calc-next-hint">Incluye personas y valor econ&oacute;mico.</span>
+            <a class="quick-calc-next-link" href="{e(local(d,'calculadora/'))}" data-open-calculator aria-haspopup="dialog" aria-controls="calculator-drawer">Calcular mi caso</a>
           </div>
+          <p class="quick-calc-status" data-quick-status role="status" aria-live="polite">La estimaci&oacute;n se actualiza al cambiar cualquier valor.</p>
         </aside>
-      </div>
-      <div class="impact-footer">
-        <p>Ejemplo ilustrativo: {runs:g} repeticiones por semana. El resultado real depende de cada proceso.</p>
-        <button class="button savings-launch" type="button" data-open-calculator aria-haspopup="dialog" aria-controls="calculator-drawer">Calcular mi caso {icon("arrow",True)}</button>
       </div>
     </div></section>"""
 
-def home_calculator_drawer():
+def home_calculator_drawer(d):
     return f"""<dialog class="calculator-drawer" id="calculator-drawer" aria-labelledby="calculator-drawer-title">
       <div class="calculator-drawer-shell">
         <header class="calculator-drawer-header"><div><p class="eyebrow">Calcula el tiempo que puedes recuperar</p>
@@ -565,7 +635,7 @@ def home_calculator_drawer():
           <div><span>Horas anuales del equipo</span><strong data-preview-year>208 h</strong></div>
         </div>
         {calculator_widget()}
-        <div class="calculator-drawer-end"><a href="calculadora/">Abrir calculadora completa {icon("arrow",True)}</a>
+        <div class="calculator-drawer-end"><a href="{e(local(d,'calculadora/'))}">Abrir calculadora completa {icon("arrow",True)}</a>
         <p>Estimaciones orientativas; no implican ahorros económicos garantizados.</p></div>
       </div></dialog>"""
 
@@ -580,7 +650,7 @@ def home_booking_dialog():
 
 def home():
     d=0
-    featured_projects=[PROJ[slug] for slug in ("impulsacv","el-cambiometro","ryvolt","flor-de-almendro")]
+    featured_projects=PROJECTS
     main=f"""\n    <section class="section home-problem" id="explorar" tabindex="-1" aria-labelledby="resolve-title"><div class="wrap">
       <div class="section-head">
         <h2 id="resolve-title">¿Qué te gustaría <em>mejorar?</em></h2>
@@ -588,19 +658,21 @@ def home():
       </div>
       <div class="home-offer-grid">
         <article class="home-offer">
+          <span class="home-offer-icon" aria-hidden="true">{icon("network")}</span>
           <h3>Automatizar y conectar</h3>
           <p>Reducir tareas repetidas y hacer que las aplicaciones que ya utilizas trabajen juntas.</p>
         </article>
         <article class="home-offer">
+          <span class="home-offer-icon" aria-hidden="true">{icon("data")}</span>
           <h3>Datos y paneles</h3>
           <p>Ordenar planillas e información para entender lo importante y tomar mejores decisiones.</p>
         </article>
         <article class="home-offer">
+          <span class="home-offer-icon" aria-hidden="true">{icon("window")}</span>
           <h3>Web y herramientas</h3>
           <p>Crear sitios, catálogos y sistemas a medida, además de soporte cuando lo necesites.</p>
         </article>
       </div>
-      <p class="section-action">{a(d,"servicios/","Conocer los servicios "+icon("arrow",True))}</p>
     </div></section>
 
     <section class="section home-method" id="como-trabajo" aria-labelledby="method-title"><div class="wrap">
@@ -610,10 +682,11 @@ def home():
           <h2 id="method-title">Primero te <em>escucho.</em></h2>
           <p>Reviso cómo trabajas hoy, qué necesitas y qué vale la pena cambiar. La propuesta se ajusta a tu realidad y a tu presupuesto.</p>
           <p class="method-principle">No se trata de sumar tecnología porque sí, sino de encontrar algo que realmente te sirva.</p>
-          <p class="section-action">{a(d,"metodo/","Cómo trabajo "+icon("arrow",True))}</p>
+
         </div>
         {home_method_visual()}
       </div>
+    <p class="method-bottom-link">{a(d,"metodo/","Conocer mi forma de trabajar","method-more-link")}</p>
     </div></section>
 
     {home_savings(d)}
@@ -623,7 +696,7 @@ def home():
         <h2 id="projects-title">Proyectos<em>.</em></h2>
         <p>Algunos trabajos en los que he participado y las soluciones que quedaron funcionando.</p>
       </div>
-      <div class="feature-list project-ledger">{"".join(featured_case(d,p) for p in featured_projects)}</div>
+      {home_project_carousel(d,featured_projects)}
       <p class="section-action">{a(d,"proyectos/","Ver más proyectos "+icon("arrow",True))}</p>
     </div></section>
 
@@ -646,16 +719,6 @@ def home():
       {home_tools_showcase(d)}
     </div></section>
 
-    <section class="section home-game" id="una-partida" aria-labelledby="pause-title"><div class="wrap">
-      <div class="pause-layout">
-        <div class="pause-copy">
-          <h2 id="pause-title">¿Te animas a <em>jugar?</em></h2>
-          <p>Tetris siempre ha sido uno de mis juegos favoritos. Aquí puedes jugar una partida individual.</p>
-        </div>
-        <div class="pause-figure">{home_tetris_visual(d)}</div>
-      </div>
-    </div></section>
-
     <section class="home-contact-cta" id="contacto" aria-labelledby="contact-title"><div class="wrap">
       <div class="contact-board">
         <div class="contact-board-intro">
@@ -669,12 +732,21 @@ def home():
             <a class="button outline" href="{e(BOOKING_URL)}" data-project-portal aria-haspopup="dialog">Agendar 45 minutos {icon("window",True)}</a>
           </div>
           <p class="contact-caveat">La conversación inicial es gratuita. Cualquier trabajo posterior se acuerda y presupuesta aparte.</p>
-          <p class="contact-caveat">Por favor, no envíes credenciales ni información confidencial en el primer contacto.</p>
         </div>
       </div>
     </div></section>
 
-      {home_calculator_drawer()}
+    <section class="section home-game" id="una-partida" aria-labelledby="pause-title"><div class="wrap">
+      <div class="pause-layout">
+        <div class="pause-copy">
+          <h2 id="pause-title">Antes de irte, <em>una partida.</em></h2>
+          <p>Tetris siempre ha sido uno de mis juegos favoritos. Aquí puedes jugar una partida individual.</p>
+        </div>
+        <div class="pause-figure">{home_tetris_visual(d)}</div>
+      </div>
+    </div></section>
+
+      {home_calculator_drawer(d)}
       {home_booking_dialog()}"""
     page("","Jorge Morgado | Desarrollo web, datos y automatización",
          "Jorge Morgado desarrolla herramientas, automatizaciones, integraciones y sitios web para resolver necesidades concretas de personas y empresas.",

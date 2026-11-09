@@ -185,3 +185,113 @@
     width:5.25rem!important;height:2.5rem!important;
   }
 }
+
+
+/* One display family across the narrative and the editorial landing. */
+.home-page { --font-display:var(--font-text); }
+.home-page .home-header .wordmark,.home-page .home-header .mark {font-family:var(--font-text)!important;}
+
+/* Quiet, relational light fields give each chapter its own depth in both themes. */
+.home-page main > :is(.home-problem,.home-method,.home-calculator,.home-work,.home-persona,.home-tools,.home-game,.home-contact-cta) {position:relative!important;isolation:isolate;}
+.home-page main > :is(.home-problem,.home-method,.home-calculator,.home-work,.home-persona,.home-tools,.home-game,.home-contact-cta) > .wrap {position:relative;z-index:1;}
+.home-page main > :is(.home-problem,.home-method,.home-calculator,.home-work,.home-persona,.home-tools,.home-game,.home-contact-cta)::before {content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.92;}
+.home-page main > .home-problem::before {background-image:radial-gradient(ellipse 58% 82% at 82% 18%,color-mix(in srgb,var(--jm-olive) 12%,transparent),transparent 72%)!important;}
+.home-page main > .home-method::before {background-image:radial-gradient(ellipse 54% 78% at 82% 54%,color-mix(in srgb,var(--jm-petrol) 10%,transparent),transparent 73%)!important;}
+.home-page main > .home-calculator::before {background-image:radial-gradient(ellipse 52% 86% at 84% 56%,color-mix(in srgb,var(--jm-amber) 10%,transparent),transparent 72%),radial-gradient(ellipse 55% 70% at 12% 18%,color-mix(in srgb,var(--jm-coral) 7%,transparent),transparent 76%)!important;}
+.home-page main > .home-work::before {background-image:radial-gradient(ellipse 62% 82% at 18% 76%,color-mix(in srgb,var(--jm-clay) 10%,transparent),transparent 73%)!important;}
+.home-page main > .home-persona::before {background-image:radial-gradient(ellipse 56% 92% at 16% 52%,color-mix(in srgb,var(--jm-olive) 14%,transparent),transparent 74%)!important;}
+.home-page main > .home-tools::before {background-image:radial-gradient(ellipse 58% 82% at 88% 30%,color-mix(in srgb,var(--jm-petrol) 9%,transparent),transparent 73%)!important;}
+.home-page main > .home-game::before {background-image:radial-gradient(ellipse 48% 78% at 76% 54%,color-mix(in srgb,var(--jm-coral) 8%,transparent),transparent 72%),radial-gradient(ellipse 46% 68% at 18% 76%,color-mix(in srgb,var(--jm-amber) 6%,transparent),transparent 74%)!important;}
+.home-page main > .home-contact-cta::before {background-image:radial-gradient(ellipse 54% 88% at 84% 18%,color-mix(in srgb,#FFFFFF 13%,transparent),transparent 74%)!important;}
+.home-page .home-footer {position:relative;isolation:isolate;}
+.home-page .home-footer > .wrap {position:relative;z-index:1;}
+.home-page .home-footer::before {content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(ellipse 62% 86% at 14% 8%,color-mix(in srgb,var(--jm-petrol) 16%,transparent),transparent 74%)!important;}
+
+/* Services: open editorial columns, without the repeated separator rules. */
+.home-page .home-problem .home-offer-grid {grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(1.5rem,3.4vw,3.4rem);margin:0;border:0!important;}
+.home-page .home-problem .home-offer {position:relative;min-width:0;padding:0!important;border:0!important;}
+.home-page .home-problem .home-offer::before {content:"";display:block;width:.48rem;height:.48rem;margin:0 0 1.05rem;border-radius:1px;background:var(--offer-accent,var(--jm-petrol));}
+.home-page .home-problem .home-offer:nth-child(1) {--offer-accent:var(--jm-petrol);}
+.home-page .home-problem .home-offer:nth-child(2) {--offer-accent:var(--jm-olive);}
+.home-page .home-problem .home-offer:nth-child(3) {--offer-accent:var(--jm-coral);}
+.home-page .home-problem .home-offer h3 {margin:0 0 .6rem;color:var(--art-ink)!important;font:650 clamp(1.35rem,2vw,1.8rem)/1.08 var(--font-text)!important;letter-spacing:-.045em!important;}
+.home-page .home-problem .home-offer p {max-width:34ch;margin:0;color:var(--art-muted)!important;font-size:.94rem;line-height:1.65;}
+.home-page .home-problem .section-action {display:none!important;}
+
+/* Quick calculator: three inputs, one result, no modal or secondary workflow. */
+.home-page .impact-heading {margin-bottom:clamp(1.8rem,3vw,2.8rem);}
+.home-page .impact-heading .eyebrow {margin:0 0 .75rem!important;color:var(--art-amber)!important;font-size:.57rem!important;letter-spacing:.11em!important;}
+.home-page .impact-heading h2 {max-width:13ch!important;font:650 clamp(2.5rem,4.6vw,4.75rem)/.99 var(--font-text)!important;letter-spacing:-.058em!important;}
+.home-page .impact-heading > p {max-width:39ch;}
+.home-page .quick-calc-layout {display:grid;grid-template-columns:minmax(0,1.2fr) minmax(18rem,.8fr);gap:clamp(2rem,5vw,5rem);align-items:stretch;}
+.home-page .home-quick-calc {min-width:0;margin:0;}
+.home-page .quick-calc-fields {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(1rem,2.2vw,2rem);}
+.home-page .quick-calc-field {display:flex;flex-direction:column;align-items:stretch;gap:1rem;min-width:0;}
+.home-page .quick-calc-field > span:first-child {min-height:2.4rem;color:#C9D7D2;font:600 .69rem/1.45 var(--font-mono);}
+.home-page .quick-calc-control {display:flex;align-items:baseline;gap:.5rem;padding:.15rem 0 .7rem;border-bottom:1px solid #587277;transition:border-color .2s ease,box-shadow .2s ease;}
+.home-page .quick-calc-control:focus-within {border-color:var(--art-amber);box-shadow:0 1px 0 var(--art-amber);}
+.home-page .quick-calc-control input {display:block;width:100%;min-width:0;padding:0;border:0;border-radius:0;outline:0!important;background:transparent;color:#F3F0E8;font:650 clamp(2rem,3.8vw,3.15rem)/1 var(--font-text);letter-spacing:-.06em;font-variant-numeric:tabular-nums;}
+.home-page .quick-calc-control input::-webkit-inner-spin-button,.home-page .quick-calc-control input::-webkit-outer-spin-button {-webkit-appearance:none;margin:0;}
+.home-page .quick-calc-control input[type=number] {-moz-appearance:textfield;}
+.home-page .quick-calc-control > span {flex:none;color:#AFC3BF;font:500 .68rem var(--font-mono);}
+.home-page .quick-calc-note {margin:1.2rem 0 0;color:#AFC3BF!important;font-size:.75rem;line-height:1.55;}
+.home-page .quick-calc-result {display:flex;flex-direction:column;justify-content:center;min-width:0;padding:0 0 0 clamp(1.5rem,3vw,3rem);border:0;border-left:1px solid #587277;background:transparent;}
+.home-page .quick-calc-result-label {margin:0 0 .9rem;color:#C9D7D2;font:600 .61rem var(--font-mono);letter-spacing:.1em;}
+.home-page .quick-calc-primary {display:flex;align-items:baseline;gap:.8rem;flex-wrap:wrap;}
+.home-page .quick-calc-primary strong {color:var(--art-amber);font:650 clamp(3.8rem,7vw,6.6rem)/.9 var(--font-text);letter-spacing:-.075em;font-variant-numeric:tabular-nums;}
+.home-page .quick-calc-primary span {color:#F3F0E8;font-size:.9rem;}
+.home-page .quick-calc-totals {display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:auto;padding-top:1.2rem;}
+.home-page .quick-calc-totals > div {display:grid;gap:.35rem;min-width:0;}
+.home-page .quick-calc-totals span {color:#AFC3BF;font:600 .6rem/1.4 var(--font-mono);}
+.home-page .quick-calc-totals strong {color:#F3F0E8;font:650 clamp(1.35rem,2vw,1.85rem)/1.1 var(--font-text);letter-spacing:-.045em;font-variant-numeric:tabular-nums;}
+.home-page .quick-calc-status {min-height:1.3rem;margin:1rem 0 0;color:#C9D7D2!important;font-size:.72rem;line-height:1.5;}
+.home-page .quick-calc-more {margin:1.3rem 0 0;}
+.home-page .quick-calc-more a {color:#E3EAE7;text-decoration:underline;text-underline-offset:.25rem;font:550 .72rem var(--font-mono);}
+.home-page .quick-calc-more a:hover {color:var(--art-amber);}
+
+/* Tool links use their space to explain the practical contribution, not repeat a CTA. */
+.home-page .home-tool-list {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(1.5rem,3.4vw,3.4rem);border:0!important;}
+.home-page .home-tool-card {min-width:0;margin:0!important;padding:0!important;border:0!important;background:transparent!important;}
+.home-page .home-tool-link {display:flex!important;flex-direction:column;align-items:flex-start;min-height:100%;gap:0;padding:0!important;color:var(--art-ink)!important;text-decoration:none!important;}
+.home-page .home-tool-task {color:var(--tool-accent,var(--jm-petrol))!important;font:600 .64rem/1.4 var(--font-mono);letter-spacing:.035em;}
+.home-page .home-tool-card:nth-child(1) {--tool-accent:var(--jm-petrol);}
+.home-page .home-tool-card:nth-child(2) {--tool-accent:var(--jm-coral);}
+.home-page .home-tool-card:nth-child(3) {--tool-accent:#A66F2C;}
+[data-jm-theme="night"] .home-page .home-tool-card:nth-child(3) {--tool-accent:var(--jm-amber);}
+.home-page .home-tool-name {display:block;margin:.75rem 0 .65rem;color:var(--art-ink)!important;font:650 clamp(1.9rem,3vw,2.55rem)/1 var(--font-text)!important;letter-spacing:-.06em!important;transition:color .2s ease;}
+.home-page .home-tool-summary {display:block;max-width:38ch;min-height:4.8rem;margin:0;color:var(--art-muted)!important;font-size:.9rem;line-height:1.6;}
+.home-page .home-tool-outcome {display:block;margin-top:1.05rem;max-width:39ch;color:var(--art-ink)!important;font-size:.87rem;line-height:1.55;font-weight:550;}
+.home-page .home-tool-outcome::before {content:"";display:inline-block;width:.38rem;height:.38rem;margin:0 .55rem .08rem 0;border-radius:1px;background:var(--tool-accent);vertical-align:middle;}
+.home-page .home-tool-link:is(:hover,:focus-visible) .home-tool-name {color:var(--tool-accent)!important;}
+.home-page .home-tool-link:focus-visible {outline:2px solid var(--jm-coral);outline-offset:6px;}
+
+@media(max-width:900px) {
+  .home-page .quick-calc-layout {grid-template-columns:1fr;gap:1.8rem;}
+  .home-page .quick-calc-result {border:0;border-top:1px solid #587277;padding:1.4rem 0 0;}
+  .home-page .home-tool-list {grid-template-columns:repeat(2,minmax(0,1fr));row-gap:2.5rem;}
+  .home-page .home-tool-summary {min-height:0;}
+}
+@media(max-width:800px) {
+  .home-page .home-problem .home-offer-grid {grid-template-columns:1fr;gap:1.6rem;}
+  .home-page .home-problem .home-offer::before {margin-bottom:.6rem;}
+}
+@media(max-width:620px) {
+  .home-page .quick-calc-fields {grid-template-columns:repeat(2,minmax(0,1fr));gap:1.4rem 1rem;}
+  .home-page .quick-calc-field:last-child {grid-column:1/-1;max-width:50%;}
+  .home-page .quick-calc-field > span:first-child {min-height:2rem;font-size:.62rem;}
+  .home-page .quick-calc-control input {font-size:2.25rem;}
+  .home-page .quick-calc-primary strong {font-size:4.3rem;}
+  .home-page .home-tool-list {grid-template-columns:1fr;gap:2rem;}
+  .home-page .home-tool-summary {max-width:48ch;}
+  .home-page .home-tool-outcome {margin-top:.75rem;}
+}
+@media(prefers-reduced-motion:reduce) {.home-page .home-tool-name,.home-page .quick-calc-control {transition:none!important;}}
+
+
+/* Night mode: remove legacy edge strokes and keep the section atmosphere soft. */
+:root[data-jm-theme="night"] .home-page main > .home-method::before {background-image:radial-gradient(ellipse 54% 78% at 82% 54%,color-mix(in srgb,var(--jm-petrol) 12%,transparent),transparent 73%)!important;}
+:root[data-jm-theme="night"] .home-page main > .home-work::before {background-image:radial-gradient(ellipse 62% 82% at 18% 76%,color-mix(in srgb,var(--jm-clay) 11%,transparent),transparent 73%)!important;}
+:root[data-jm-theme="night"] .home-page main > .home-tools::before {background-image:radial-gradient(ellipse 58% 82% at 88% 30%,color-mix(in srgb,var(--jm-petrol) 11%,transparent),transparent 73%)!important;}
+
+/* Display headings share the weight and rhythm of the narrative scenes. */
+.home-page .section-head h2,.home-page .home-method h2,.home-page .home-persona h2,.home-page .home-game h2,.home-page .contact-board h2 {font-weight:670!important;letter-spacing:-.055em!important;}

@@ -5,44 +5,6 @@
 
   // El diálogo es un cajón desde la izquierda. Mantiene las fórmulas originales
   // de calculator.js: no existe un segundo cálculo ni se envían datos a un servidor.
-  const drawer = document.querySelector("#calculator-drawer");
-  const opener = document.querySelector("[data-open-calculator]");
-  const closer = drawer?.querySelector("[data-close-calculator]");
-  if (drawer && typeof drawer.showModal === "function" && opener) {
-    opener.addEventListener("click", () => {
-      if (drawer.open) return;
-      drawer.showModal();
-      const input = drawer.querySelector("#before-h");
-      requestAnimationFrame(() => input?.focus({preventScroll: true}));
-    });
-    closer?.addEventListener("click", () => drawer.close());
-    drawer.addEventListener("click", event => {
-      if (event.target === drawer) drawer.close();
-    });
-    drawer.addEventListener("close", () => opener.focus({preventScroll: true}));
-  } else {
-    // Navegación convencional cuando no existe soporte para <dialog>.
-    opener?.addEventListener("click", () => location.assign("calculadora/"));
-  }
-
-  // Resumen visible con el mismo resultado del motor oficial, sin repetir fórmulas.
-  if (drawer) {
-    const week = drawer.querySelector("#per-week");
-    const year = drawer.querySelector("#per-year");
-    const weekPreview = drawer.querySelector("[data-preview-week]");
-    const yearPreview = drawer.querySelector("[data-preview-year]");
-    const updatePreview = () => {
-      if (week && weekPreview) weekPreview.textContent = week.textContent;
-      if (year && yearPreview) yearPreview.textContent = year.textContent;
-    };
-    if (week && year && weekPreview && yearPreview) {
-      new MutationObserver(updatePreview).observe(week, {childList: true, characterData: true, subtree: true});
-      new MutationObserver(updatePreview).observe(year, {childList: true, characterData: true, subtree: true});
-      updatePreview();
-    }
-  }
-
-  // El enlace del footer abre el mismo Calendar integrado: nunca duplica portales.
   const footerBooking = document.querySelector("[data-footer-booking]");
   const primaryBooking = document.querySelector("[data-project-portal]");
   const bookingDialog = document.querySelector(".booking-portal");
@@ -69,37 +31,48 @@
   const body=document.body;
   if(!body?.classList.contains("home-page"))return;
   const reduce=window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  // The commercial landing has its own entrance score, not an extension of scene choreography.
   const groups=[
-    ["#explorar",".section-head, .home-offer"],
-    ["#como-trabajo",".method-copy, .method-step"],
-    ["#ahorro",".impact-heading, .impact-bar-row, .impact-metrics, .impact-equation, .impact-footer"],
-    ["#trabajos",".section-head, .feature, .section-action"],
-    ["#quien-soy",".persona-identity, .persona-story"],
-    ["#recursos",".section-head, .home-tool-card"],
-    ["#una-partida",".pause-copy, .pause-figure"],
-    ["#contacto",".contact-board-intro, .contact-board-copy"]
+    {section:"#explorar",targets:[[".section-head","rise"],[".home-offer","item"]]},
+    {section:"#como-trabajo",targets:[[".method-copy","from-right"],[".method-step","from-left"],[".method-bottom-link","rise"]]},
+    {section:"#ahorro",targets:[[".impact-heading","rise"],[".quick-calc-field","item"],[".quick-calc-result","soft"]]},
+    {section:"#trabajos",targets:[[".section-head","rise"],[".projects-carousel","soft"],[".section-action","rise"]]},
+    {section:"#quien-soy",targets:[[".persona-identity","from-left"],[".persona-story > p, .persona-story > a","rise"]]},
+    {section:"#recursos",targets:[[".section-head","from-right"],[".home-tool-card","item"]]},
+    {section:"#contacto",targets:[[".contact-board-intro","rise"],[".contact-board-copy","soft"]]},
+    {section:"#una-partida",targets:[[".pause-copy","rise"],[".pause-figure","soft"]]}
   ];
   const targets=[];
-  groups.forEach(([sectionSelector,itemSelector])=>{
-    const section=document.querySelector(sectionSelector);
-    if(!section)return;
-    section.querySelectorAll(itemSelector).forEach((node,index)=>{
-      node.classList.add("home-reveal");
-      node.style.setProperty("--home-reveal-delay",String(Math.min(index,6)*85)+"ms");
-      targets.push(node);
+  groups.forEach(({section,targets:rules})=>{
+    const root=document.querySelector(section);
+    if(!root)return;
+    let index=0;
+    rules.forEach(([selector,kind])=>{
+      root.querySelectorAll(selector).forEach(node=>{
+        node.classList.add("home-reveal");
+        node.dataset.revealKind=kind;
+        node.style.setProperty("--home-reveal-delay",Math.min(index,8)*70+"ms");
+        index++;
+        targets.push(node);
+      });
     });
   });
-  if(reduce||!("IntersectionObserver" in window))return;
-  body.classList.add("home-motion-ready");
-  const revealObserver=new IntersectionObserver(entries=>{
-    entries.forEach(entry=>{
-      if(!entry.isIntersecting)return;
-      entry.target.classList.add("is-visible");
-      revealObserver.unobserve(entry.target);
+  if(!reduce&&"IntersectionObserver" in window){
+    body.classList.add("home-motion-ready");
+    const revealObserver=new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(!entry.isIntersecting)return;
+        entry.target.classList.add("is-visible");
+        revealObserver.unobserve(entry.target);
+      });
+    },{threshold:.08,rootMargin:"0px 0px -4% 0px"});
+    targets.forEach(node=>{
+      if(node.getBoundingClientRect().top<innerHeight*.92)node.classList.add("is-visible");
+      else revealObserver.observe(node);
     });
-  },{threshold:.12,rootMargin:"0px 0px -7% 0px"});
-  targets.forEach(node=>revealObserver.observe(node));
+  }
 
+  if(reduce||!("IntersectionObserver" in window))return;
   const numberFormat=new Intl.NumberFormat("es-CL",{maximumFractionDigits:1});
   const countObserver=new IntersectionObserver(entries=>{
     entries.forEach(entry=>{

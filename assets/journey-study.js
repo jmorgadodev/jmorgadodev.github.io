@@ -274,7 +274,7 @@ function drawBackdropLayer(scene,p,alpha=1){
   drawBackdropWash(lightX,H*.68,extent*.62,p.amber,isNight?.09:.075);
   drawBackdropWash(W*.50,H*.42,extent*.36,p.petrol,isNight?.045:.13);
  }else if(scene===7){
-  // Una banda de luz sostiene las ondas y conduce la mirada hacia la semilla.
+  // A restrained band of light focuses the last composition on the seed.
   const waveBand=ctx.createLinearGradient(0,H*.42,0,H*.84);
   waveBand.addColorStop(0,rgba(p.petrol,0));
   waveBand.addColorStop(.48,rgba(p.petrol,isNight?.095:.055));
@@ -283,7 +283,6 @@ function drawBackdropLayer(scene,p,alpha=1){
   drawBackdropWash(W*.50,H*.62,extent*.72,p.petrol,isNight?.13:.075);
   drawBackdropWash(W*.50,H*.74,extent*.28,p.coral,isNight?.055:.045);
  }
- // El viñeteado es tenue y adaptado al tema: aporta profundidad sin cerrar los bordes.
  const edgeColor=isNight?'#050B10':p.ink;
  drawSurfaceMaterial(scene,p);
  const vignette=ctx.createRadialGradient(W*.50,H*.48,Math.min(W,H)*.27,
