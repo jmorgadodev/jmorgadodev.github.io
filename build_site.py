@@ -153,8 +153,15 @@ def page(where,title,description,content,active="",journey=False):
     depth=len(Path(where).parts) if where else 0
     canonical=SITE_URL+(where.strip("/")+"/" if where else "")
     head=meta(depth,title,description,active,journey,canonical=canonical)
-    target.write_text(head+f'<main id="contenido">{content}</main>'+foot(depth,journey,active),encoding="utf-8")
+    impulsacv = where == "proyectos/impulsacv"
+    if impulsacv:
+        head=head.replace("</head>", f'<link rel="stylesheet" href="{e(asset(depth,"assets/project-impulsacv.css"))}"></head>')
+    output=head+f'<main id="contenido">{content}</main>'+foot(depth,journey,active)
+    if impulsacv:
+        output=output.replace("</body></html>", f'<script src="{e(asset(depth,"assets/project-impulsacv.js"))}" defer></script></body></html>')
+    target.write_text(output,encoding="utf-8")
     print("PAGE",target.relative_to(ROOT))
+
 
 def not_found():
     title = "Página no encontrada"
@@ -817,7 +824,63 @@ def project_portal(d, project):
     <p class="project-portal-note">El filtro noche ajusta la vista. Si el sitio no carga o te pide iniciar sesión, ábrelo en otra pestaña.</p>"""
     return portal_dialog(d, title=name, subtitle=subtitle, url=url, mode="live", panel=panel, filter_available=True)
 
+def impulsacv_detail():
+    d=2
+    p = PROJ["impulsacv"]
+    participation, result = PROJECT_CONTEXT["impulsacv"]
+    portal = project_portal(d, p) if p["site"] else ""
+    arch_src = e(asset(d, "assets/impulsacv-archify-architecture.html"))
+    flow_src = e(asset(d, "assets/impulsacv-archify-workflow.html"))
+    body = f'''<div class="project-impulsacv-page">
+    <section class="ic-hero"><div class="ic-wrap"><div class="ic-hero-topline"><p class="ic-crumb">Archivo <span>/</span> Software y plataformas <span>/</span> ImpulsaCV</p><a class="ic-ver-sitio" href="{e(p["site"])}" data-project-portal>Ver sitio {icon("window",True)}</a></div>
+      <div class="ic-hero-grid"><div><p class="ic-eyebrow">Producto digital · HR Tech</p><h1>Impulsa<br>CV<span class="ic-coral">.</span></h1></div>
+      <div class="ic-hero-copy"><p>{e(p["summary"])}</p><div class="ic-tags"><span>Producto digital</span><span>Infraestructura</span><span>IA aplicada</span></div>
+      <a class="ic-jump" href="#sistema">Explorar cómo funciona <b>↘</b></a></div></div></div></section>
+    <section class="ic-section ic-section--context"><div class="ic-wrap"><p class="ic-eyebrow">El desafío</p>
+      <div class="ic-section-head"><h2>Preparar una postulación no debería ser un trabajo fragmentado<span class="ic-coral">.</span></h2>
+      <p class="ic-intro">{e(p["problem"])}</p></div></div></section>
+    <section class="ic-section ic-section--system" id="sistema"><div class="ic-wrap"><p class="ic-eyebrow">Así funciona ImpulsaCV</p>
+      <div class="ic-system-head"><h2>Una plataforma.<br>Dos perspectivas interactivas<span class="ic-coral">.</span></h2>
+      <p class="ic-intro">Explora cómo funciona el producto y cómo está construida su arquitectura técnica. Selecciona cada componente para ver su función; usa zoom, desplazamiento y el control de animación para recorrer el diagrama. El tema acompaña el del sitio.</p></div>
+      <div class="ic-tabs" role="tablist" aria-label="Perspectiva del sistema">
+        <button type="button" role="tab" aria-selected="true" data-archify-view="workflow" data-src="{flow_src}">Cómo funciona ImpulsaCV</button>
+        <button type="button" role="tab" aria-selected="false" data-archify-view="architecture" data-src="{arch_src}">Arquitectura de ImpulsaCV</button>
+      </div>
+      <div class="ic-archify-frame">
+        <iframe id="archify-frame" data-archify-frame="workflow" src="{flow_src}" title="Diagrama interactivo de ImpulsaCV" loading="lazy" referrerpolicy="origin"></iframe>
+        <iframe id="archify-frame-architecture" data-archify-frame="architecture" title="Diagrama interactivo de arquitectura de ImpulsaCV" loading="lazy" referrerpolicy="origin" hidden></iframe>
+      </div>
+    </div></section>
+    <section class="ic-section"><div class="ic-wrap"><p class="ic-eyebrow">04 · Cómo funciona la plataforma</p>
+      <div class="ic-section-head"><h2>Todo conectado para acompañar cada postulación<span class="ic-coral">.</span></h2><p class="ic-intro">ImpulsaCV reúne distintas herramientas para ayudar a las personas a preparar su currículum y avanzar en sus postulaciones. Conecté sus funciones para que la información y el trabajo realizado tengan continuidad durante todo el proceso.</p></div>
+      <div class="ic-work-grid"><p class="ic-work-lead">Una persona avanza del currículum a la entrevista sin cambiar de solución.</p>
+      <div class="ic-work-list">
+        <article class="ic-work-item"><span class="ic-num">01</span><div><h3>Una experiencia conectada</h3><p>Herramientas para trabajar el currículum, revisar oportunidades y preparar entrevistas.</p></div></article>
+        <article class="ic-work-item"><span class="ic-num">02</span><div><h3>Asistencia inteligente</h3><p>Apoyo de IA para mejorar documentos, adaptar contenidos y orientar durante el proceso.</p></div></article>
+        <article class="ic-work-item"><span class="ic-num">03</span><div><h3>Acceso y planes</h3><p>Servicios que permiten guardar el avance y acceder a funciones adicionales mediante planes premium.</p></div></article>
+      </div></div></div></section>
+    <section class="ic-section ic-section--work"><div class="ic-wrap"><p class="ic-eyebrow">05 · Mi participación</p>
+      <div class="ic-section-head"><h2>De distintas herramientas a una experiencia completa<span class="ic-coral">.</span></h2><p class="ic-intro">Mi trabajo consistió en desarrollar y conectar las distintas herramientas para que ImpulsaCV funcionara como una plataforma integrada. La idea fue que una persona pudiera avanzar desde la organización de su currículum hasta la preparación de sus postulaciones y entrevistas sin tener que trabajar con soluciones desconectadas.</p></div>
+      <div class="ic-result-points" style="margin-top:2rem">
+        <div><strong>Desarrollo</strong><p>Creación de las herramientas que permiten trabajar y mejorar el currículum.</p></div>
+        <div><strong>Integración</strong><p>Conexión de las distintas funciones para dar continuidad al proceso.</p></div>
+        <div><strong>Asistencia</strong><p>Incorporación de herramientas inteligentes que ayudan a orientar y preparar a cada persona.</p></div>
+      </div>
+      <div class="related" style="margin-top:2rem"><p class="ic-eyebrow" style="padding-top:1rem">Seguir explorando</p>
+        <a href="{e(local(d,'proyectos/'))}"><span>Volver al archivo de proyectos</span>{icon("arrow")}</a>
+        <a href="{e(local(d,'contacto/'))}"><span>Conversar sobre un problema parecido</span>{icon("arrow")}</a>
+      </div>
+    </div></section>
+    <section class="ic-end"><div class="ic-wrap"><p class="ic-eyebrow">Continuidad</p><div class="ic-end-row"><div><h2>Una solución construida desde el problema.</h2><p>La ficha definitiva incluye tecnologías verificadas, detalles de integración y enlaces al producto cuando corresponda.</p></div><a class="ic-jump" href="#top">Volver al inicio <b>↑</b></a></div></div></section>
+    </div>{portal}'''
+    page("proyectos/impulsacv", p["title"]+" — ficha técnica y arquitectura", p["summary"]+" Conoce el alcance, la infraestructura, la IA y los pagos de este trabajo de JMorgado.", body, "proyectos")
+    return
+
+
 def project_detail(p):
+    if p["slug"] == "impulsacv":
+        impulsacv_detail()
+        return
     d=2
     quick=f'<dt>Tipo</dt><dd>{e(p["label"])}</dd><dt>Estado documental</dt><dd>{e(p["state"])}</dd><dt>Área</dt><dd>{e(p["area"])}</dd>'
     links=[]

@@ -1,9 +1,9 @@
 <!doctype html><html lang="es"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ImpulsaCV — proyecto y arquitectura | JMorgado</title><meta name="description" content="Una plataforma que reúne currículum, compatibilidad ATS, postulaciones, entrevistas y herramientas de apoyo en un mismo recorrido. Conoce el alcance, las tecnologías y los límites de este trabajo de JMorgado.">
+<title>ImpulsaCV — ficha técnica y arquitectura | JMorgado</title><meta name="description" content="Una plataforma que reúne currículum, compatibilidad ATS, postulaciones, entrevistas y herramientas de apoyo en un mismo recorrido. Conoce el alcance, la infraestructura, la IA y los pagos de este trabajo de JMorgado.">
 <meta name="robots" content="index,follow"><meta name="theme-color" content="#F0EDE5">
 <meta property="og:type" content="website"><meta property="og:locale" content="es_CL">
-<meta property="og:title" content="ImpulsaCV — proyecto y arquitectura | JMorgado"><meta property="og:description" content="Una plataforma que reúne currículum, compatibilidad ATS, postulaciones, entrevistas y herramientas de apoyo en un mismo recorrido. Conoce el alcance, las tecnologías y los límites de este trabajo de JMorgado.">
+<meta property="og:title" content="ImpulsaCV — ficha técnica y arquitectura | JMorgado"><meta property="og:description" content="Una plataforma que reúne currículum, compatibilidad ATS, postulaciones, entrevistas y herramientas de apoyo en un mismo recorrido. Conoce el alcance, la infraestructura, la IA y los pagos de este trabajo de JMorgado.">
 <meta property="og:image" content="https://jmorgadodev.github.io/assets/social-preview.png">
 <meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Jorge Morgado · Desarrollo web, datos y automatización. Composición con piezas modulares de JMorgado.">
@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="../../assets/site.css?v=87e262513c9a">
 <link rel="stylesheet" href="../../assets/themes.css">
 <link rel="stylesheet" href="../../assets/interior.css?v=68f9a46d599c">
-</head><body><a class="skip-link" href="#contenido">Saltar al contenido</a><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden">
+<link rel="stylesheet" href="../../assets/project-impulsacv.css?v=e1dde19db895"></head><body><a class="skip-link" href="#contenido">Saltar al contenido</a><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden">
 <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 20 20 4M8 4h12v12"/></symbol>
 <symbol id="i-data" viewBox="0 0 24 24"><path d="M3 6 12 2l9 4-9 4-9-4Zm0 6 9 4 9-4M3 18l9 4 9-4M3 6v12M21 6v12"/></symbol>
 <symbol id="i-branch" viewBox="0 0 24 24"><path d="M4 4v16M4 7h8m0 0v10m0-10h8M12 17h8M20 4v6m0 4v6"/><circle cx="4" cy="4" r="2"/><circle cx="20" cy="4" r="2"/><circle cx="20" cy="20" r="2"/></symbol>
@@ -35,31 +35,48 @@
 <button type="button" class="menu-toggle" data-menu-toggle aria-controls="main-nav" aria-expanded="false">Menú +</button>
 <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Cambiar a modo noche">Noche</button>
 <nav class="nav" id="main-nav" data-nav aria-label="Navegación principal"><a href="../../herramientas/">Herramientas</a><a href="../../proyectos/" aria-current="page">Proyectos</a><a href="../../servicios/">Servicios</a><a href="../../contacto/" class="nav-contact">Contacto</a></nav>
-</div></header><main id="contenido"><section class="page-hero project-hero tone-blue"><div class="wrap"><nav class="breadcrumb" aria-label="Ruta de navegación"><a href="../../">Inicio</a><span aria-hidden="true">/</span><a href="../../proyectos/">Proyectos</a><span aria-hidden="true">/</span><span aria-current="page">ImpulsaCV</span></nav>
-    <div class="eyebrow">Productos y plataformas ? Producto digital</div><span class="project-mark mark-impulsacv"><img class="mark-day" src="../../assets/project-marks/impulsacv-day.png?v=0da6077deb46" alt="" loading="lazy" decoding="async"><img class="mark-night" src="../../assets/project-marks/impulsacv.png?v=d9c043a738d8" alt="" loading="lazy" decoding="async"></span><h1>ImpulsaCV<span class="orange">.</span></h1>
-    <p class="lead">Una plataforma que reúne currículum, compatibilidad ATS, postulaciones, entrevistas y herramientas de apoyo en un mismo recorrido.</p><a class="button dark" href="https://impulsacv.cl" data-project-portal>Ver sitio <svg class="icon tiny" aria-hidden="true" focusable="false"><use href="#i-window"></use></svg></a>
-    <div class="page-meta"><span>Plataforma web</span><span>Estudio de caso · alcance documentado</span></div></div></section>
-    <section class="section"><div class="wrap"><div class="overline"><span class="num">01 · Qué se resolvió</span></div>
-    <div class="case-layout"><article class="prose"><h2>Un recorrido laboral que no debería estar fragmentado.</h2><p>Preparar una postulación laboral exige trabajar documentos, comparar requisitos, organizar versiones y alternar entre herramientas desconectadas.</p>
-    <h3>Trabajo desarrollado</h3><p>Desarrollo de una experiencia web con cuentas, membresías y pagos, módulos de edición y análisis de CV, preparación de entrevistas y componentes de inteligencia artificial integrados en un producto.</p>
-    <h3>Por qué lo construí así</h3><p>Separé la edición de documentos, el análisis y los módulos de apoyo para que cada paso conserve su propio contexto. La interfaz de React reúne el recorrido; Hono, Workers y D1 atienden las operaciones que requieren cuenta y persistencia.</p>
-    <h3>Mi participación</h3><p>Desarrollé la plataforma y sus módulos de edición y análisis de CV.</p>
-    <h3>Resultado</h3><p>Edición, análisis y preparación de entrevistas accesibles desde una misma cuenta.</p>
-    <div class="tag-list"><span class="tag tech-badge" style="--tech-color:#157d90">React / Vite</span><span class="tag tech-badge">Hono</span><span class="tag tech-badge" style="--tech-color:#a74915">Cloudflare Workers</span><span class="tag tech-badge">D1</span><span class="tag tech-badge">Integraciones de IA</span></div></article>
-    <aside><p class="eyebrow">Datos del proyecto</p>
-    <dl class="facts"><dt>Tipo</dt><dd>Producto digital</dd><dt>Estado documental</dt><dd>Plataforma web</dd><dt>Área</dt><dd>Productos y plataformas</dd></dl>
-    <div style="display:grid;gap:.85rem;margin:1.7rem 0"></div>
-    <p class="hint">La ficha explica el trabajo a nivel de portafolio. No sustituye la documentación técnica del repositorio.</p></aside></div></div></section>
-    <section class="section" style="background:var(--paper2)"><div class="wrap"><div class="overline"><span class="num">02 · Cómo se conecta el trabajo</span></div>
-    <h2>De la entrada al resultado.</h2><p class="lead">Esquema conceptual del flujo documentado. No representa una captura de producción ni un mapa exhaustivo de infraestructura.</p>
-    <div class="flowstrip"><div class="flowstep"><span class="flow-index">01 · PASO</span><strong>Documento y contexto</strong></div><div class="flowstep"><span class="flow-index">02 · PASO</span><strong>Motores de análisis y reglas</strong></div><div class="flowstep"><span class="flow-index">03 · PASO</span><strong>Resultado para la persona</strong></div></div></div></section>
-    <section class="section"><div class="wrap"><div class="overline"><span class="num">03 · Límites y evidencia</span></div>
-    <div class="case-layout"><div><h2>Qué se puede afirmar.</h2><p class="lead">No todos los módulos utilizan IA generativa. Existen motores deterministas, servicios remotos y componentes locales opcionales; tampoco se afirma que todos los procesos auxiliares estén activos automáticamente.</p></div>
-    <aside><p class="eyebrow">Servicio relacionado</p><h3>Desarrollo web y plataformas</h3><p>De una web comercial a una aplicación con usuarios y lógica propia.</p>
-    <a class="link-arrow" href="../../servicios/desarrollo-web/">Explorar este servicio <svg class="icon tiny" aria-hidden="true" focusable="false"><use href="#i-arrow"></use></svg></a></aside></div>
-    <div class="related" style="margin-top:4rem"><p class="eyebrow" style="padding-top:1rem">Seguir explorando</p>
-    <a href="../../proyectos/"><span>Volver al archivo de proyectos</span><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-arrow"></use></svg></a>
-    <a href="../../contacto/"><span>Conversar sobre un problema parecido</span><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-arrow"></use></svg></a></div></div></section><dialog class="project-portal project-portal-pages" aria-labelledby="project-portal-title">
+</div></header><main id="contenido"><div class="project-impulsacv-page">
+    <section class="ic-hero"><div class="ic-wrap"><div class="ic-hero-topline"><p class="ic-crumb">Archivo <span>/</span> Software y plataformas <span>/</span> ImpulsaCV</p><a class="ic-ver-sitio" href="https://impulsacv.cl" data-project-portal>Ver sitio <svg class="icon tiny" aria-hidden="true" focusable="false"><use href="#i-window"></use></svg></a></div>
+      <div class="ic-hero-grid"><div><p class="ic-eyebrow">Producto digital · HR Tech</p><h1>Impulsa<br>CV<span class="ic-coral">.</span></h1></div>
+      <div class="ic-hero-copy"><p>Una plataforma que reúne currículum, compatibilidad ATS, postulaciones, entrevistas y herramientas de apoyo en un mismo recorrido.</p><div class="ic-tags"><span>Producto digital</span><span>Infraestructura</span><span>IA aplicada</span></div>
+      <a class="ic-jump" href="#sistema">Explorar cómo funciona <b>↘</b></a></div></div></div></section>
+    <section class="ic-section ic-section--context"><div class="ic-wrap"><p class="ic-eyebrow">El desafío</p>
+      <div class="ic-section-head"><h2>Preparar una postulación no debería ser un trabajo fragmentado<span class="ic-coral">.</span></h2>
+      <p class="ic-intro">Preparar una postulación laboral exige trabajar documentos, comparar requisitos, organizar versiones y alternar entre herramientas desconectadas.</p></div></div></section>
+    <section class="ic-section ic-section--system" id="sistema"><div class="ic-wrap"><p class="ic-eyebrow">Así funciona ImpulsaCV</p>
+      <div class="ic-system-head"><h2>Una plataforma.<br>Dos perspectivas interactivas<span class="ic-coral">.</span></h2>
+      <p class="ic-intro">Explora cómo funciona el producto y cómo está construida su arquitectura técnica. Selecciona cada componente para ver su función; usa zoom, desplazamiento y el control de animación para recorrer el diagrama. El tema acompaña el del sitio.</p></div>
+      <div class="ic-tabs" role="tablist" aria-label="Perspectiva del sistema">
+        <button type="button" role="tab" aria-selected="true" data-archify-view="workflow" data-src="../../assets/impulsacv-archify-workflow.html?v=6f737267bcde">Cómo funciona ImpulsaCV</button>
+        <button type="button" role="tab" aria-selected="false" data-archify-view="architecture" data-src="../../assets/impulsacv-archify-architecture.html?v=000eea7ef63e">Arquitectura de ImpulsaCV</button>
+      </div>
+      <div class="ic-archify-frame">
+        <iframe id="archify-frame" data-archify-frame="workflow" src="../../assets/impulsacv-archify-workflow.html?v=6f737267bcde" title="Diagrama interactivo de ImpulsaCV" loading="lazy" referrerpolicy="origin"></iframe>
+        <iframe id="archify-frame-architecture" data-archify-frame="architecture" title="Diagrama interactivo de arquitectura de ImpulsaCV" loading="lazy" referrerpolicy="origin" hidden></iframe>
+      </div>
+    </div></section>
+    <section class="ic-section"><div class="ic-wrap"><p class="ic-eyebrow">04 · Cómo funciona la plataforma</p>
+      <div class="ic-section-head"><h2>Todo conectado para acompañar cada postulación<span class="ic-coral">.</span></h2><p class="ic-intro">ImpulsaCV reúne distintas herramientas para ayudar a las personas a preparar su currículum y avanzar en sus postulaciones. Conecté sus funciones para que la información y el trabajo realizado tengan continuidad durante todo el proceso.</p></div>
+      <div class="ic-work-grid"><p class="ic-work-lead">Una persona avanza del currículum a la entrevista sin cambiar de solución.</p>
+      <div class="ic-work-list">
+        <article class="ic-work-item"><span class="ic-num">01</span><div><h3>Una experiencia conectada</h3><p>Herramientas para trabajar el currículum, revisar oportunidades y preparar entrevistas.</p></div></article>
+        <article class="ic-work-item"><span class="ic-num">02</span><div><h3>Asistencia inteligente</h3><p>Apoyo de IA para mejorar documentos, adaptar contenidos y orientar durante el proceso.</p></div></article>
+        <article class="ic-work-item"><span class="ic-num">03</span><div><h3>Acceso y planes</h3><p>Servicios que permiten guardar el avance y acceder a funciones adicionales mediante planes premium.</p></div></article>
+      </div></div></div></section>
+    <section class="ic-section ic-section--work"><div class="ic-wrap"><p class="ic-eyebrow">05 · Mi participación</p>
+      <div class="ic-section-head"><h2>De distintas herramientas a una experiencia completa<span class="ic-coral">.</span></h2><p class="ic-intro">Mi trabajo consistió en desarrollar y conectar las distintas herramientas para que ImpulsaCV funcionara como una plataforma integrada. La idea fue que una persona pudiera avanzar desde la organización de su currículum hasta la preparación de sus postulaciones y entrevistas sin tener que trabajar con soluciones desconectadas.</p></div>
+      <div class="ic-result-points" style="margin-top:2rem">
+        <div><strong>Desarrollo</strong><p>Creación de las herramientas que permiten trabajar y mejorar el currículum.</p></div>
+        <div><strong>Integración</strong><p>Conexión de las distintas funciones para dar continuidad al proceso.</p></div>
+        <div><strong>Asistencia</strong><p>Incorporación de herramientas inteligentes que ayudan a orientar y preparar a cada persona.</p></div>
+      </div>
+      <div class="related" style="margin-top:2rem"><p class="ic-eyebrow" style="padding-top:1rem">Seguir explorando</p>
+        <a href="../../proyectos/"><span>Volver al archivo de proyectos</span><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-arrow"></use></svg></a>
+        <a href="../../contacto/"><span>Conversar sobre un problema parecido</span><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-arrow"></use></svg></a>
+      </div>
+    </div></section>
+    <section class="ic-end"><div class="ic-wrap"><p class="ic-eyebrow">Continuidad</p><div class="ic-end-row"><div><h2>Una solución construida desde el problema.</h2><p>La ficha definitiva incluye tecnologías verificadas, detalles de integración y enlaces al producto cuando corresponda.</p></div><a class="ic-jump" href="#top">Volver al inicio <b>↑</b></a></div></div></section>
+    </div><dialog class="project-portal project-portal-pages" aria-labelledby="project-portal-title">
     <header class="project-portal-bar">
       <div class="project-portal-identity"><p>impulsacv.cl</p><h2 id="project-portal-title">ImpulsaCV</h2></div>
       <div class="project-portal-actions"><button type="button" class="button" data-portal-filter aria-pressed="false">Filtro noche</button>
@@ -87,4 +104,4 @@
 <div class="footer-base"><span>© JMorgado</span><a href="#contenido">Volver arriba ↑</a></div>
 </div></footer>
 <a class="whatsapp-fab" href="https://wa.me/56933904330" target="_blank" rel="noopener noreferrer" aria-label="Escribirme por WhatsApp"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg></a>
-<script src="../../assets/site.js?v=aceae9b15480" defer></script></body></html>
+<script src="../../assets/site.js?v=aceae9b15480" defer></script><script src="../../assets/project-impulsacv.js?v=8d43321c8432" defer></script></body></html>
