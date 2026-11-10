@@ -1,0 +1,421 @@
+/* JMorgado — Herramientas propias.
+   Tres piezas modulares con identidad propia sobre una base común.
+   Rediseño aprobado 2026-11-09. Alcance exclusivo: #recursos (.home-tools). */
+
+.home-tools{
+  --tp-cut: clamp(16px, 1.6vw, 22px);
+  --tp-lift: 16px;
+  --tp-shell: #FFFDF8;
+  --tp-shell-2: #F7F2E8;
+  --tp-sheen: rgba(255,255,255,.30);
+  --tp-border: color-mix(in srgb, var(--jm-petrol) 24%, transparent);
+  --tp-border-lit: color-mix(in srgb, var(--jm-petrol) 55%, transparent);
+  --tp-divider: color-mix(in srgb, var(--jm-petrol) 16%, transparent);
+  --tp-base: color-mix(in srgb, var(--jm-petrol) 52%, transparent);
+  --tp-base-glow: color-mix(in srgb, var(--jm-olive) 26%, transparent);
+  --tp-text: var(--art-ink);
+  --tp-muted: var(--art-muted);
+  --tp-shadow: 18, 46, 56;
+  --tp-shadow-alpha: .13;
+}
+
+[data-jm-theme="night"] .home-tools{
+  --tp-shell: #162125;
+  --tp-shell-2: #111A1E;
+  --tp-sheen: rgba(255,255,255,.055);
+  --tp-border: rgba(255,255,255,.10);
+  --tp-border-lit: rgba(255,255,255,.24);
+  --tp-divider: rgba(255,255,255,.09);
+  --tp-base: rgba(203, 230, 224, .30);
+  --tp-base-glow: color-mix(in srgb, var(--jm-petrol) 34%, transparent);
+  --tp-shadow: 2, 8, 10;
+  --tp-shadow-alpha: .5;
+}
+
+/* ---- Base común: piezas apoyadas sobre un mismo suelo ------------------- */
+
+.tools-rig{
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: auto auto auto auto;
+  column-gap: clamp(1.1rem, 2.2vw, 2.4rem);
+  row-gap: 0;
+  margin-top: clamp(2.2rem, 4vw, 3.6rem);
+  padding-bottom: clamp(34px, 3.4vw, 46px);
+}
+
+/* La composición de piezas y su base reemplaza los rieles de esquina. */
+body.home-page main > section.home-tools::after{background-image:none!important;}
+
+/* Luz de suelo compartida. */
+.tools-rig::before{
+  content: "";
+  position: absolute;
+  left: 2%;
+  right: 2%;
+  bottom: -2px;
+  height: 58px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse 56% 100% at 50% 44%, var(--tp-base-glow), transparent 74%);
+  filter: blur(16px);
+  opacity: .85;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Base común: una línea fina y un estante apenas insinuado. */
+.tools-rig::after{
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(34px, 3.4vw, 46px);
+  background:
+    linear-gradient(90deg, transparent, var(--tp-base) 7%, var(--tp-base) 93%, transparent) top / 100% 1px no-repeat;
+  opacity: 1;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ---- La pieza --------------------------------------------------------- */
+
+/* Cada pieza comparte las cuatro filas de la retícula: identidad, nombre,
+   descripción y beneficio quedan alineados entre las tres columnas. */
+.tool-piece{
+  position: relative;
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: 1 / -1;
+  min-width: 0;
+  z-index: 1;
+  filter: drop-shadow(0 9px 14px rgba(var(--tp-shadow), var(--tp-shadow-alpha)));
+  transition: opacity .3s cubic-bezier(.22,.61,.36,1), filter .3s cubic-bezier(.22,.61,.36,1);
+}
+
+.tool-piece::before{
+  content: "";
+  position: absolute;
+  left: 9%;
+  right: 9%;
+  bottom: -13px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse 58% 100% at 50% 50%, rgba(var(--tp-tint), .30), transparent 74%);
+  filter: blur(7px);
+  opacity: .45;
+  z-index: 0;
+  pointer-events: none;
+  transition: opacity .3s cubic-bezier(.22,.61,.36,1);
+}
+
+.tool-piece-link{
+  position: relative;
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: 1 / -1;
+  align-content: stretch;
+  min-height: 0;
+  padding: clamp(1.35rem, 2.1vw, 1.85rem) clamp(1.15rem, 1.8vw, 1.6rem) clamp(1.35rem, 2vw, 1.75rem);
+  background-color: var(--tp-border);
+  clip-path: polygon(
+    0 var(--tp-cut),
+    var(--tp-cut) 0,
+    calc(100% - var(--tp-cut)) 0,
+    100% var(--tp-cut),
+    100% calc(100% - var(--tp-cut)),
+    calc(100% - var(--tp-cut)) 100%,
+    var(--tp-cut) 100%,
+    0 calc(100% - var(--tp-cut))
+  );
+  color: var(--tp-text);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transform: translateY(0) scale(1);
+  transition:
+    transform .3s cubic-bezier(.22,.61,.36,1),
+    background-color .3s cubic-bezier(.22,.61,.36,1);
+}
+
+.tool-piece-link::before{
+  content: "";
+  position: absolute;
+  inset: 1.2px;
+  background: linear-gradient(168deg, var(--tp-shell), var(--tp-shell-2));
+  clip-path: inherit;
+  z-index: 0;
+}
+
+.tool-piece-link::after{
+  content: "";
+  position: absolute;
+  inset: 1.2px;
+  background:
+    radial-gradient(120% 82% at 84% 4%, rgba(var(--tp-tint), .17), transparent 58%),
+    linear-gradient(180deg, var(--tp-sheen), transparent 38%);
+  clip-path: inherit;
+  opacity: .55;
+  z-index: 0;
+  transition: opacity .3s cubic-bezier(.22,.61,.36,1);
+}
+
+.tool-piece-head,
+.tool-piece-name,
+.tool-piece-summary,
+.tool-piece-outcome,
+.tool-piece-light{
+  position: relative;
+  z-index: 1;
+}
+
+/* Nivel superior — identidad: icono y microetiqueta centrados. */
+.tool-piece-head{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .72rem;
+}
+
+.tool-piece-icon{
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: clamp(58px, 4.6vw, 68px);
+  height: clamp(58px, 4.6vw, 68px);
+  color: var(--tp-accent);
+  background-color: rgba(var(--tp-tint), .12);
+  border: 1px solid rgba(var(--tp-tint), .28);
+  clip-path: polygon(0 11px, 11px 0, 100% 0, 100% calc(100% - 11px), calc(100% - 11px) 100%, 0 100%);
+  transition: background-color .3s cubic-bezier(.22,.61,.36,1), color .3s cubic-bezier(.22,.61,.36,1);
+}
+
+.tool-piece-glyph{
+  width: clamp(30px, 2.4vw, 34px);
+  height: clamp(30px, 2.4vw, 34px);
+  transition: filter .3s cubic-bezier(.22,.61,.36,1);
+}
+
+.tool-piece-label{
+  max-width: 100%;
+  color: var(--tp-accent);
+  font: 600 .64rem/1.45 var(--font-mono);
+  letter-spacing: .075em;
+  text-align: center;
+  text-transform: uppercase;
+  transition: color .3s cubic-bezier(.22,.61,.36,1);
+}
+
+/* Nivel central — herramienta: nombre y descripción centrados. */
+.tool-piece-name{
+  display: block;
+  margin: clamp(1.05rem, 1.8vw, 1.5rem) 0 .5rem;
+  color: var(--tp-text);
+  font: 650 clamp(1.7rem, 2.6vw, 2.3rem)/1 var(--font-display);
+  letter-spacing: -.055em;
+  text-align: center;
+}
+
+.tool-piece-summary{
+  display: block;
+  max-width: 33ch;
+  margin-inline: auto;
+  color: var(--tp-muted);
+  font-size: clamp(.84rem, .95vw, .93rem);
+  line-height: 1.62;
+  text-align: center;
+  transition: color .3s cubic-bezier(.22,.61,.36,1);
+}
+
+/* Nivel inferior — beneficio: filete existente y texto centrado. */
+.tool-piece-outcome{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .55rem;
+  margin-top: 0;
+  padding-top: clamp(.95rem, 1.5vw, 1.2rem);
+  padding-inline: 6%;
+  border-top: 1px solid var(--tp-divider);
+  color: var(--tp-text);
+  font-size: clamp(.84rem, .95vw, .88rem);
+  line-height: 1.55;
+  font-weight: 550;
+  text-align: center;
+  transition: border-color .3s cubic-bezier(.22,.61,.36,1);
+}
+
+.tool-piece-outcome::before{
+  content: "";
+  flex: none;
+  width: .4rem;
+  height: .4rem;
+  background: var(--tp-accent);
+  transform: rotate(45deg);
+  transition: background-color .3s cubic-bezier(.22,.61,.36,1), transform .3s cubic-bezier(.22,.61,.36,1);
+}
+
+.tool-piece-light{
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 0;
+  height: 68px;
+  pointer-events: none;
+  background: radial-gradient(ellipse 60% 100% at 50% 100%, rgba(var(--tp-tint), .22), transparent 72%);
+  opacity: .45;
+  transition: opacity .3s cubic-bezier(.22,.61,.36,1);
+}
+
+/* ---- Identidad cromática por herramienta ------------------------------ */
+
+.tool-piece--petrol{--tp-accent:#1E6A65;--tp-bright:#2C8C83;--tp-tint:35, 73, 78;}
+.tool-piece--coral{--tp-accent:#BE452A;--tp-bright:#E8542F;--tp-tint:224, 86, 54;}
+.tool-piece--amber{--tp-accent:#8A5A1B;--tp-bright:#C6872C;--tp-tint:196, 136, 48;}
+
+[data-jm-theme="night"] .tool-piece--petrol{--tp-accent:#7ED7CC;--tp-bright:#4FC3B6;--tp-tint:79, 195, 182;}
+[data-jm-theme="night"] .tool-piece--coral{--tp-accent:#FF8A6F;--tp-bright:#FF6A4A;--tp-tint:255, 122, 96;}
+[data-jm-theme="night"] .tool-piece--amber{--tp-accent:#F0C57E;--tp-bright:#E8B769;--tp-tint:232, 183, 105;}
+
+/* ---- Expansión individual (ratón) ------------------------------------- */
+
+@media (hover: hover) and (pointer: fine){
+  .tools-rig:has(.tool-piece-link:hover) .tool-piece:not(:has(.tool-piece-link:hover)){
+    opacity: .84;
+  }
+
+  .tools-rig:has(.tool-piece-link:hover) .tool-piece:not(:has(.tool-piece-link:hover)) .tool-piece-link{
+    transform: scale(.988);
+  }
+
+  .tools-rig:has(.tool-piece-link:hover) .tool-piece:has(.tool-piece-link:hover){
+    z-index: 3;
+    filter: drop-shadow(0 24px 32px rgba(var(--tp-shadow), calc(var(--tp-shadow-alpha) + .09)));
+  }
+
+  .tool-piece-link:hover{
+    transform: translateY(calc(-1 * var(--tp-lift))) scale(1.018);
+    background-color: var(--tp-border-lit);
+  }
+
+  .tool-piece-link:hover::after{opacity: 1;}
+  .tool-piece-link:hover .tool-piece-icon{background-color: rgba(var(--tp-tint), .22); color: var(--tp-bright);}
+  .tool-piece-link:hover .tool-piece-glyph{filter: drop-shadow(0 0 7px rgba(var(--tp-tint), .55));}
+  .tool-piece-link:hover .tool-piece-label{color: var(--tp-bright);}
+  .tool-piece-link:hover .tool-piece-summary{color: color-mix(in srgb, var(--tp-text) 78%, var(--tp-muted));}
+  .tool-piece-link:hover .tool-piece-outcome{border-color: rgba(var(--tp-tint), .45);}
+  .tool-piece-link:hover .tool-piece-outcome::before{background: var(--tp-bright); transform: rotate(45deg) scale(1.18);}
+  .tool-piece-link:hover .tool-piece-light{opacity: 1;}
+  .tool-piece:has(.tool-piece-link:hover)::before{opacity: .8;}
+}
+
+/* ---- Expansión por teclado -------------------------------------------- */
+
+.tool-piece-link:focus-visible{
+  transform: translateY(calc(-1 * var(--tp-lift))) scale(1.018);
+  background-color: var(--tp-bright);
+}
+
+.tool-piece-link:focus-visible::after{opacity: 1;}
+.tool-piece-link:focus-visible::before{inset: 3px;}
+.tool-piece-link:focus-visible::after{inset: 3px;}
+.tool-piece-link:focus-visible .tool-piece-icon{background-color: rgba(var(--tp-tint), .22); color: var(--tp-bright);}
+.tool-piece-link:focus-visible .tool-piece-glyph{filter: drop-shadow(0 0 7px rgba(var(--tp-tint), .55));}
+.tool-piece-link:focus-visible .tool-piece-label{color: var(--tp-bright);}
+.tool-piece-link:focus-visible .tool-piece-summary{color: color-mix(in srgb, var(--tp-text) 78%, var(--tp-muted));}
+.tool-piece-link:focus-visible .tool-piece-outcome{border-color: rgba(var(--tp-tint), .45);}
+.tool-piece-link:focus-visible .tool-piece-outcome::before{background: var(--tp-bright); transform: rotate(45deg) scale(1.18);}
+.tool-piece-link:focus-visible .tool-piece-light{opacity: 1;}
+
+.tool-piece:has(.tool-piece-link:focus-visible){
+  z-index: 3;
+  filter: drop-shadow(0 22px 30px rgba(var(--tp-shadow), calc(var(--tp-shadow-alpha) + .07)));
+}
+
+.tool-piece:has(.tool-piece-link:focus-visible)::before{opacity: .8;}
+
+/* ---- Tablet: tres piezas en línea con menos aire ---------------------- */
+
+@media (min-width: 701px) and (max-width: 960px){
+  .tools-rig{column-gap: 1rem;}
+  .tool-piece-link{
+    --tp-cut: 18px;
+    padding: 1.15rem 1rem 1.25rem;
+  }
+  .tool-piece-head{gap: .6rem;}
+  .tool-piece-icon{width: 56px; height: 56px;}
+  .tool-piece-glyph{width: 30px; height: 30px;}
+  .tool-piece-label{font-size: .55rem; letter-spacing: .05em;}
+  .tool-piece-name{font-size: 1.55rem; margin: .95rem 0 .45rem;}
+  .tool-piece-summary{font-size: .82rem; line-height: 1.56; max-width: 30ch;}
+  .tool-piece-outcome{font-size: .8rem; padding-top: .85rem; padding-inline: 2%;}
+}
+
+/* ---- Móvil: pila vertical, sin hover simulado ------------------------- */
+
+@media (max-width: 700px){
+  .tools-rig{
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    gap: 1rem;
+    padding-bottom: 26px;
+    margin-top: 1.8rem;
+  }
+  .tools-rig::before{display: none;}
+  .tools-rig::after{bottom: 0; height: 26px; opacity: .8;}
+  /* En pila vertical cada pieza recupera su propio flujo. */
+  .tool-piece{
+    display: flex;
+    grid-row: auto;
+  }
+  .tool-piece-link{
+    --tp-cut: 18px;
+    display: flex;
+    flex-direction: column;
+    grid-row: auto;
+    grid-template-rows: none;
+    min-height: 0;
+    padding: 1.2rem 1.15rem 1.25rem;
+  }
+  .tool-piece-head{gap: .6rem;}
+  .tool-piece-icon{width: 58px; height: 58px;}
+  .tool-piece-glyph{width: 30px; height: 30px;}
+  .tool-piece-label{font-size: .6rem;}
+  .tool-piece-name{margin: .9rem 0 .45rem; font-size: 1.7rem;}
+  .tool-piece-summary{max-width: 34ch; font-size: .9rem; line-height: 1.58;}
+  .tool-piece-outcome{margin-top: .95rem; padding-top: .9rem; padding-inline: 2%; font-size: .86rem;}
+  .tool-piece-light{height: 46px;}
+}
+
+@media (hover: none){
+  .tool-piece-link:active{
+    transform: scale(.995);
+    background-color: var(--tp-border-lit);
+  }
+  .tool-piece-link:active::after{opacity: 1;}
+  .tool-piece-link:active .tool-piece-icon{background-color: rgba(var(--tp-tint), .22); color: var(--tp-bright);}
+}
+
+/* ---- Movimiento reducido ---------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce){
+  .tool-piece,
+  .tool-piece-link,
+  .tool-piece-link::after,
+  .tool-piece-icon,
+  .tool-piece-glyph,
+  .tool-piece-label,
+  .tool-piece-summary,
+  .tool-piece-outcome,
+  .tool-piece-outcome::before,
+  .tool-piece-light{
+    transition: none !important;
+  }
+  .tools-rig:has(.tool-piece-link:hover) .tool-piece:not(:has(.tool-piece-link:hover)),
+  .tool-piece-link:hover,
+  .tool-piece-link:focus-visible,
+  .tool-piece-link:active{
+    transform: none !important;
+  }
+}

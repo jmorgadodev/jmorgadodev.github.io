@@ -1,0 +1,64 @@
+/* JMorgado — Ryvolt. Piel de ficha sobre el sistema comun (assets/ficha.css, fx-*).
+
+   Paleta oficial de Ryvolt (tomada de su propio codigo, src/index.css):
+     petroleo profundo  #08272c   fondo del ambiente Rebel
+     turquesa electrico #0098a9   acento del logo oficial
+     gris pizarra      #9d9d9c   subtitulos del logo
+     azul carbon       #031D36   azul profundo heredado
+
+   La ficha usa la tipografia de JMorgado (no las fuentes licenciadas de Ryvolt)
+   y emplea la paleta de la marca como acento, de modo que la dualidad
+   Corporate/Rebel se lea sin inventar una tercera identidad. */
+
+.project-ryvolt-page{
+  --ryvolt-turquesa:#0098a9;
+  --ryvolt-petroleo:#08272c;
+  --ryvolt-gris:#9d9d9c;
+  --ryvolt-carbon:#031D36;
+  /* El acento de la ficha pasa del coral general al turquesa de la marca. */
+  --fx-coral:#0098a9;
+  --fx-olive:#031D36;
+}
+
+/* Presentacion: titulo a la izquierda y una regla de dos segmentos que
+   anticipa los dos registros de la marca. */
+.project-ryvolt-page .fx-hero-left{align-items:flex-start;text-align:left}
+.project-ryvolt-page .fx-hero-title{font-size:clamp(3rem,7.4vw,4.6rem);letter-spacing:-.05em}
+.project-ryvolt-page .fx-hero-left::after{content:"";display:block;width:min(100%,230px);height:2px;margin-top:1.35rem;background:linear-gradient(90deg,var(--ryvolt-gris) 0 46%,var(--ryvolt-turquesa) 46% 100%)}
+.project-ryvolt-page .fx-tags span:nth-child(1){border-left-color:var(--ryvolt-gris)}
+.project-ryvolt-page .fx-tags span:nth-child(2){border-left-color:var(--ryvolt-turquesa)}
+.project-ryvolt-page .fx-portal--external .icon{transform:rotate(-45deg)}
+
+/* Los dos registros: Corporate en claro, Rebel en petroleo. */
+.project-ryvolt-page .fx-modo--1{background:#F7F8F9;border-color:#DFE2E6}
+.project-ryvolt-page .fx-modo--1 .fx-modo-kicker{color:var(--ryvolt-carbon)}
+.project-ryvolt-page .fx-modo--1 .fx-modo-title{color:#0F172A}
+.project-ryvolt-page .fx-modo--1 .fx-modo-text{color:#55606B}
+.project-ryvolt-page .fx-modo--1 .fx-modo-points{color:#33414F}
+.project-ryvolt-page .fx-modo--1 .fx-modo-points li{border-top-color:#DFE2E6}
+
+.project-ryvolt-page .fx-modo--2{background:var(--ryvolt-petroleo);border-color:rgba(0,152,169,.38)}
+.project-ryvolt-page .fx-modo--2 .fx-modo-kicker{color:var(--ryvolt-turquesa);text-shadow:0 0 16px rgba(0,152,169,.45)}
+.project-ryvolt-page .fx-modo--2 .fx-modo-title{color:#F2EFE7}
+.project-ryvolt-page .fx-modo--2 .fx-modo-text{color:rgba(242,239,231,.76)}
+.project-ryvolt-page .fx-modo--2 .fx-modo-points{color:rgba(242,239,231,.88)}
+.project-ryvolt-page .fx-modo--2 .fx-modo-points li{border-top-color:rgba(0,152,169,.28)}
+
+/* El puente entre registros: linea turquesa y etiqueta tecnica. */
+.project-ryvolt-page .fx-modos-puente{border-top-color:rgba(0,152,169,.38)}
+.project-ryvolt-page .fx-modos-puente-label{color:var(--ryvolt-turquesa)}
+
+/* Numeracion y acentos en turquesa, con el azul profundo para texto pequeno. */
+.project-ryvolt-page .fx-item-num{color:var(--ryvolt-carbon)}
+.project-ryvolt-page .fx-lead{border-left-color:var(--ryvolt-turquesa)}
+.project-ryvolt-page .fx-metric{border-left-color:var(--ryvolt-turquesa)}
+.project-ryvolt-page .fx-cierre-jump b{color:var(--ryvolt-turquesa)}
+
+[data-jm-theme="night"] .project-ryvolt-page .fx-modo--1{background:#13292F;border-color:rgba(0,152,169,.26)}
+[data-jm-theme="night"] .project-ryvolt-page .fx-modo--1 .fx-modo-title{color:#F2EFE7}
+[data-jm-theme="night"] .project-ryvolt-page .fx-modo--1 .fx-modo-text{color:rgba(242,239,231,.72)}
+[data-jm-theme="night"] .project-ryvolt-page .fx-modo--1 .fx-modo-points{color:rgba(242,239,231,.82)}
+[data-jm-theme="night"] .project-ryvolt-page .fx-modo--1 .fx-modo-points li{border-top-color:rgba(242,239,231,.14)}
+[data-jm-theme="night"] .project-ryvolt-page .fx-modo--1 .fx-modo-kicker{color:var(--ryvolt-turquesa)}
+
+@media(prefers-reduced-motion:reduce){.project-ryvolt-page *{transition:none!important;animation:none!important}}

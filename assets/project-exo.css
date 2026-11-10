@@ -1,0 +1,74 @@
+/* JMorgado - Exo Dream. Piel de ficha sobre el sistema comun (assets/ficha.css, fx-*).
+
+   Identidad tomada del propio proyecto del cliente (src/index.css y el logotipo):
+     noche        #0A0A0A   lienzo de la marca
+     tinta clara  #F4F7F8   texto sobre noche
+     brillo       #CFE7F2   blanco con matiz frio, como el tubo de neon del logotipo
+     grafito      #1B1B1B   acentos de texto sobre papel
+
+   El logotipo original es un wordmark en currentColor con filtro de neon; en la
+   ficha se usa tal cual, sin redibujarlo. */
+
+.project-exo-page{
+  --exo-noche:#0A0A0A;
+  --exo-tinta:#F4F7F8;
+  --exo-brillo:#CFE7F2;
+  --exo-grafito:#1B1B1B;
+  /* Acentos de la ficha: grafito sobre papel, brillo sobre noche. */
+  --fx-coral:#1B1B1B;
+  --fx-olive:#1B1B1B;
+}
+
+/* Presentacion sobre el lienzo oscuro de la marca, con el wordmark original. */
+.project-exo-page .fx-hero{background:var(--exo-noche);color:var(--exo-tinta);border-bottom-color:rgba(244,247,248,.14)}
+.project-exo-page .fx-hero .fx-crumb{color:rgba(244,247,248,.58)}
+.project-exo-page .fx-hero .fx-eyebrow{color:var(--exo-brillo)}
+.project-exo-page .fx-hero-title{color:var(--exo-tinta);font-size:clamp(2.5rem,5.8vw,3.6rem)}
+.project-exo-page .fx-hero-title .fx-coral{color:var(--exo-brillo);text-shadow:0 0 18px rgba(207,231,242,.55)}
+.project-exo-page .fx-hero-copy{border-top-color:rgba(244,247,248,.14)}
+.project-exo-page .fx-hero-copy p{color:rgba(244,247,248,.86)}
+.project-exo-page .fx-hero-estado{color:rgba(244,247,248,.66)}
+.project-exo-page .fx-tags span{color:rgba(244,247,248,.74);border-left-color:var(--exo-brillo)}
+/* El wordmark es un SVG con fill="currentColor"; dentro de un <img> el color no
+   se hereda, asi que se invierte para que la marca se lea en blanco sobre la noche
+   de la ficha, con el mismo brillo de neon del original. */
+.project-exo-page .fx-hero-logo{width:clamp(9rem,26vw,15rem);height:auto;margin-bottom:clamp(1.1rem,2.2vw,1.6rem);filter:invert(1) drop-shadow(0 0 16px rgba(207,231,242,.45))}
+
+/* Seccion del diagrama: noche de la marca con marco de luz fria. */
+.project-exo-page .fx-archify-section{background:var(--exo-noche)}
+[data-jm-theme="night"] .project-exo-page .fx-archify-section{background:#060606}
+.project-exo-page .fx-archify{border-color:rgba(207,231,242,.22);background:#101418}
+.project-exo-page .fx-archify iframe{background:#101418}
+.project-exo-page .fx-archify-section .fx-eyebrow{color:var(--exo-brillo)}
+.project-exo-page .fx-archify-section h2{color:var(--exo-tinta)}
+.project-exo-page .fx-archify-section .fx-intro{color:rgba(244,247,248,.76)}
+
+/* Bloque de administracion: la columna de contenido y la de medios. */
+.project-exo-page .fx-modos-section{background:var(--exo-noche);color:var(--exo-tinta)}
+.project-exo-page .fx-modos-section .fx-eyebrow{color:var(--exo-brillo)}
+.project-exo-page .fx-modos-section h2{color:var(--exo-tinta)}
+.project-exo-page .fx-modos-section .fx-intro{color:rgba(244,247,248,.76)}
+.project-exo-page .fx-modo{background:#12161A;border-color:rgba(207,231,242,.2)}
+.project-exo-page .fx-modo-kicker{color:var(--exo-brillo)}
+.project-exo-page .fx-modo-title{color:var(--exo-tinta)}
+.project-exo-page .fx-modo-text{color:rgba(244,247,248,.76)}
+.project-exo-page .fx-modo-points{color:rgba(244,247,248,.86)}
+.project-exo-page .fx-modo-points li{border-top-color:rgba(207,231,242,.18)}
+.project-exo-page .fx-modos-puente{border-top-color:rgba(207,231,242,.22)}
+.project-exo-page .fx-modos-puente-label{color:var(--exo-brillo)}
+.project-exo-page .fx-modos-nota{color:rgba(244,247,248,.76)}
+
+/* Bloque de agenda con Google Calendar: noche con acento frio. */
+.project-exo-page .fx-section--dark{background:#0E1116}
+.project-exo-page .fx-section--dark .fx-eyebrow{color:var(--exo-brillo)}
+.project-exo-page .fx-section--dark h2{color:var(--exo-tinta)}
+.project-exo-page .fx-section--dark .fx-intro{color:rgba(244,247,248,.78)}
+
+/* Acentos sobre papel. */
+.project-exo-page .fx-lead{border-left-color:var(--exo-grafito)}
+.project-exo-page .fx-item-num{color:var(--exo-grafito)}
+.project-exo-page .fx-tags span{border-left-color:var(--exo-grafito)}
+.project-exo-page .fx-eyebrow{color:var(--exo-grafito)}
+.project-exo-page .fx-modos-puente-label{color:var(--exo-grafito)}
+
+@media(prefers-reduced-motion:reduce){.project-exo-page *{transition:none!important;animation:none!important}}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Pasarelas de pago">
+<rect x="3" y="4" width="26" height="24" rx="5" fill="#23494E"/>
+<rect x="7" y="11" width="18" height="12" rx="2" fill="#ffffff"/>
+<path d="M7 14.5h18" stroke="#23494E" stroke-width="2"/>
+<rect x="9.5" y="18" width="5" height="2.6" rx="1" fill="#E8B769"/>
+</svg>

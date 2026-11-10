@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Google Sheets">
+<path d="M6 4h13l7 7v17H6z" fill="#217244"/>
+<path d="M19 4l7 7h-7z" fill="#8ecfae"/>
+<g stroke="#cdebd9" stroke-width="1.4" stroke-linecap="round">
+<path d="M10 13h9M10 17h9M10 21h6M13 13v11M18 13v11"/>
+</g>
+</svg>

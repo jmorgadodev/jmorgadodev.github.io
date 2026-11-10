@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Hono">
+<rect x="3" y="4" width="26" height="24" rx="5" fill="#ff5c5c"/>
+<g fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+<path d="M13 11l-5 5 5 5M19 11l5 5-5 5"/>
+</g>
+</svg>

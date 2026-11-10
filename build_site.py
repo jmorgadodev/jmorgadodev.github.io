@@ -6,14 +6,28 @@ No modifica proyectos de clientes, repositorios ni DatosDemoCL.
 from __future__ import annotations
 from html import escape
 from pathlib import Path
+import json
 import re
 from hashlib import sha256
 from urllib.parse import urlsplit
-from site_data import (LEGACY_TOOL_SLUGS, PROJECT_CONTEXT, PROJECT_DECISIONS,
-                       PROJECT_MARKS, PROJECTS, PROJECT_PORTAL_PAGES, SERVICES, TOOLS)
+from site_data import (LEGACY_TOOL_SLUGS, PROJECT_ARCHIVE, PROJECT_CONTEXT, PROJECT_DECISIONS,
+                       PROJECT_MARKS, PROJECTS, PROJECT_PORTAL_PAGES, SERVICE_CONTACT,
+                       SERVICE_EXTRAS, SERVICE_VISUALS, SERVICES, TECNOLOGIAS, TECH_ICON,
+                       TOOLS)
 
 ROOT = Path(__file__).resolve().parent
 PROJ = {p["slug"]: p for p in PROJECTS}
+# Paginas que usan el sistema de fichas (fx-*). El resto mantiene la ficha legacy.
+FICHA_PAGES = ("proyectos/impulsacv", "proyectos/el-cambiometro", "proyectos/conecta", "proyectos/ryvolt", "proyectos/flor-de-almendro", "proyectos/exo-dream", "proyectos/tobys-warehouse", "proyectos/kooke-portal", "proyectos/kooke-rrss")
+# Paginas con diagramas Archify: cargan el modulo generico de integracion.
+FICHA_ARCHIFY_PAGES = ("proyectos/impulsacv", "proyectos/el-cambiometro", "proyectos/conecta", "proyectos/flor-de-almendro", "proyectos/exo-dream", "proyectos/tobys-warehouse", "proyectos/kooke-portal", "proyectos/kooke-rrss")
+# CSS especifico por ficha.
+FICHA_CSS = {"proyectos/ryvolt": "assets/project-ryvolt.css",
+            "proyectos/flor-de-almendro": "assets/project-flor.css",
+            "proyectos/exo-dream": "assets/project-exo.css",
+            "proyectos/tobys-warehouse": "assets/project-hangar.css",
+            "proyectos/kooke-portal": "assets/project-kokeai.css",
+            "proyectos/kooke-rrss": "assets/project-rrss.css"}
 TOOL = {tool["slug"]: tool for tool in TOOLS}
 SERV = {s["slug"]: s for s in SERVICES}
 LINKEDIN = "https://www.linkedin.com/in/jorge-morgado/"
@@ -46,7 +60,7 @@ SYMBOLS = """<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="0
 <symbol id="i-window" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9h18"/></symbol>
 <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M21 11.6a9 9 0 0 1-13.2 8L3 21l1.3-4.7A9 9 0 1 1 21 11.6Z"/><path d="M9.7 7.6c-.4-.7-1-.8-1.5-.2-.9 1-.6 2.6 1 4.5 1.8 2 3.8 3 5.2 2.8.9-.1 1.5-.7 1.5-1.4l-2.2-1.1-.9.9c-1.4-.6-2.4-1.5-3-2.9l.9-.8Z"/></symbol>
 </svg>"""
-def meta(d, title, description, active="", journey=False, *, canonical=None):
+def meta(d, title, description, active="", journey=False, *, canonical=None, jsonld=None):
     nav_items=([("#explorar","Servicios","servicios"),("#trabajos","Proyectos","proyectos"),("#quien-soy","Sobre mí","persona"),("#contacto","Contacto","contacto")] if journey else [("herramientas/","Herramientas","herramientas"),("proyectos/","Proyectos","proyectos"),("servicios/","Servicios","servicios"),("contacto/","Contacto","contacto")])
     links="".join(f'<a href="{e(local(d,u))}"' + (' class="nav-contact"' if section=="contacto" else '')+(' aria-current="page"' if section==active else '')+f'>{e(t)}</a>' for u,t,section in nav_items)
     journey_css=(f'<link rel="stylesheet" href="{e(asset(d,"assets/journey-study.css"))}">'
@@ -63,7 +77,8 @@ def meta(d, title, description, active="", journey=False, *, canonical=None):
                  f'<link rel="stylesheet" href="{e(asset(d,"assets/home-layout-rhythm.css"))}">'
                  f'<link rel="stylesheet" href="{e(asset(d,"assets/home-depth-editorial.css"))}">'
                  f'<link rel="stylesheet" href="{e(asset(d,"assets/home-hierarchy.css"))}">'
-                 f'<link rel="stylesheet" href="{e(asset(d,"assets/home-project-carousel.css"))}">') if journey else ""
+                 f'<link rel="stylesheet" href="{e(asset(d,"assets/home-project-carousel.css"))}">'
+                 f'<link rel="stylesheet" href="{e(asset(d,"assets/home-tools-rig.css"))}">') if journey else ""
     body_class=' class="home-page"' if journey else ''
     header_class=' home-header' if journey else ''
     descriptor='Una forma de resolver' if journey else 'Desarrollo independiente<br>Software, datos y procesos'
@@ -99,11 +114,17 @@ def meta(d, title, description, active="", journey=False, *, canonical=None):
 <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Cambiar a modo noche">Noche</button>
 <nav class="nav" id="main-nav" data-nav aria-label="Navegación principal">{links}</nav>
 </div>{progress}</header>"""
+    if jsonld:
+        bloques = jsonld if isinstance(jsonld, list) else [jsonld]
+        etiquetas = "".join('<script type="application/ld+json">' + json.dumps(bloque, ensure_ascii=False) + "</script>" for bloque in bloques)
+        head=head.replace("</head>", etiquetas + "</head>")
     if journey:
         head=head.replace('</head>',journey_css+'</head>')
     if active=="contacto":
         booking_css=f'<link rel="stylesheet" href="{e(asset(d,"assets/booking.css"))}">'
         head=head.replace('</head>',booking_css+'</head>')
+    if active=="metodo":
+        head=head.replace('</head>', f'<link rel="stylesheet" href="{e(asset(d,"assets/metodo.css"))}"></head>')
     if active=="jugar":
         head=head.replace("</head>", f'<link rel="stylesheet" href="{e(asset(d,"assets/tetris.css"))}"></head>')
     return head
@@ -111,6 +132,8 @@ def foot(d, journey=False, active=""):
     extra=''.join(f'<script src="{e(asset(d,path))}" defer></script>' for path in ['assets/vendor/gsap.min.js','assets/vendor/ScrollTrigger.min.js','assets/journey-study.js']) if journey else ''
     if active=="jugar":
         extra += f'<script src="{e(asset(d,"assets/tetris.js"))}" defer></script>'
+    if active=="metodo":
+        extra += f'<script src="{e(asset(d,"assets/metodo.js"))}" defer></script>'
     if journey or active=="herramientas":
         extra += f'<script src="{e(asset(d,"assets/tool-panel.js"))}" defer></script>'
     if journey:
@@ -147,21 +170,33 @@ def foot(d, journey=False, active=""):
 </div></footer>
 <a class="whatsapp-fab" href="{e(WHATSAPP)}" target="_blank" rel="noopener noreferrer" aria-label="Escribirme por WhatsApp"{fab_hidden}>{icon("whatsapp")}</a>
 <script src="{e(asset(d,'assets/site.js'))}" defer></script>{extra}</body></html>"""
-def page(where,title,description,content,active="",journey=False):
+def page(where,title,description,content,active="",journey=False,jsonld=None):
     target=ROOT / where / "index.html" if where else ROOT / "index.html"
     target.parent.mkdir(parents=True, exist_ok=True)
     depth=len(Path(where).parts) if where else 0
     canonical=SITE_URL+(where.strip("/")+"/" if where else "")
-    head=meta(depth,title,description,active,journey,canonical=canonical)
+    head=meta(depth,title,description,active,journey,canonical=canonical,jsonld=jsonld)
+    archive = where == "proyectos"
+    if archive:
+        head=head.replace("</head>", f'<link rel="stylesheet" href="{e(asset(depth,"assets/project-archive.css"))}"></head>')
+    ficha = where in FICHA_PAGES
+    if ficha:
+        head=head.replace("</head>", f'<link rel="stylesheet" href="{e(asset(depth,"assets/ficha.css"))}"></head>')
+    archify = where in FICHA_ARCHIFY_PAGES
+    if archify:
+        head=head.replace("</head>", f'<link rel="stylesheet" href="{e(asset(depth,"assets/project-archify.css"))}"></head>')
     impulsacv = where == "proyectos/impulsacv"
     if impulsacv:
         head=head.replace("</head>", f'<link rel="stylesheet" href="{e(asset(depth,"assets/project-impulsacv.css"))}"></head>')
+    if where in FICHA_CSS:
+        head=head.replace("</head>", f'<link rel="stylesheet" href="{e(asset(depth,FICHA_CSS[where]))}"></head>')
     output=head+f'<main id="contenido">{content}</main>'+foot(depth,journey,active)
-    if impulsacv:
-        output=output.replace("</body></html>", f'<script src="{e(asset(depth,"assets/project-impulsacv.js"))}" defer></script></body></html>')
+    if archive:
+        output=output.replace("</body></html>", f'<script src="{e(asset(depth,"assets/project-archive.js"))}" defer></script></body></html>')
+    if archify:
+        output=output.replace("</body></html>", f'<script src="{e(asset(depth,"assets/project-archify.js"))}" defer></script></body></html>')
     target.write_text(output,encoding="utf-8")
     print("PAGE",target.relative_to(ROOT))
-
 
 def not_found():
     title = "Página no encontrada"
@@ -254,13 +289,29 @@ def home_project_carousel(d, projects):
     </div>'''
 
 
-def entry(d,p,idx):
-    url=local(d,"proyectos/"+p["slug"]+"/")
+ARCHIVE_FAMILIES = (
+    ("todos", "Todos"),
+    ("software", "Software y plataformas"),
+    ("datos", "Datos e ingeniería"),
+    ("web", "Web y catálogos"),
+    ("automatizacion", "Automatización"),
+)
+
+def archive_entry(d,p,idx):
+    """Fila editorial del Archivo de proyectos. El panel contextual lee estos datos."""
+    entry = PROJECT_ARCHIVE[p["slug"]]
     participation, _ = PROJECT_CONTEXT[p["slug"]]
-    return f"""<a class="project-row" data-project-category="{e(p['category'])}" href="{e(url)}">
-    <span class="index-number">{idx:02d}</span><div><h2>{e(p["title"])}</h2><span class="mono small muted">{e(p["label"])}</span></div>
-    <div class="project-contribution"><p>{e(p["summary"])}</p><p>{e(participation)}</p></div><span class="category">{e(p["state"])}</span>
-    <span class="row-link">{icon("arrow")}</span></a>"""
+    url = local(d,"proyectos/"+p["slug"]+"/")
+    families = " ".join(entry["families"])
+    return f"""<a class="archive-row" href="{e(url)}" data-project-category="{e(families)}" data-archive-index="{idx}"
+      data-name="{e(p["title"])}" data-label="{e(p["label"])}"
+      data-problem="{e(p["problem"])}" data-solution="{e(entry["solution"])}" data-role="{e(participation)}"
+      style="--row-accent:{e(entry["accent"])}" aria-label="Abrir el caso: {e(p["title"])}">
+      <span class="archive-signal" aria-hidden="true"></span>
+      <span class="archive-identity"><h2>{e(p["title"])}</h2><span class="archive-label">{e(p["label"])}</span></span>
+      <span class="archive-brief">{e(entry["brief"])}</span>
+      <span class="archive-go" aria-hidden="true">{icon("arrow")}</span></a>"""
+
 def journey_markup():
     from journey_study import render_study
     return render_study()
@@ -277,6 +328,20 @@ TECH_ART = {
     "Excel": "T01-excel.svg", "Power BI": "T02-power-bi.svg",
     "Power Query": "T03-power-query.svg", "n8n": "T04-n8n.svg",
 }
+
+def tech_chips(d, names):
+    """Chips de tecnologia con icono. Reutiliza el chip compartido del sitio
+    (`.tag.tech-badge`) y los SVG locales de `assets/tech-icons/`."""
+    chips = []
+    for name in names:
+        archivo = TECH_ICON.get(name)
+        imagen = ""
+        if archivo:
+            imagen = (f'<img src="{e(asset(d, "assets/tech-icons/" + archivo))}" alt="" width="26" height="26"'
+                      f' loading="lazy" decoding="async">')
+        chips.append(f'<span class="tag tech-badge tech-badge--icon">{imagen}{e(name)}</span>')
+    return "".join(chips)
+
 
 def tech_badges(d, technologies):
     badges = []
@@ -315,27 +380,60 @@ def tool_sample(d, tool):
         <tr><td>3</td><td>Ovalle</td><td>9.900</td></tr></tbody></table>"""
     return f'<figure class="tool-sample">{content}<figcaption>{e(tool["sample_title"])}</figcaption></figure>'
 
+def tool_links(tool):
+    """Enlaces de la ficha: primero la referencia (codigo, documentacion, versiones)
+    y despues la descarga, que es la accion principal."""
+    reference = [external(tool["repo"], "GitHub")]
+    if tool.get("docs"):
+        label, url = tool["docs"]
+        reference.append(external(url, label))
+    for label, url in tool.get("extra_links", []):
+        reference.append(external(url, label))
+    downloads = []
+    for index, (label, url) in enumerate(tool.get("downloads", [])):
+        downloads.append(external(url, label, "button" if index == 0 else "button outline"))
+    return (f'<div class="tool-links"><div class="tool-links-row">{"".join(reference)}</div>'
+            f'<div class="tool-links-downloads">{"".join(downloads)}</div></div>')
+
+
+def tool_detail_body(d, tool):
+    """Cuerpo de la ficha, en tres bloques: contenido, ficha tecnica y recursos.
+    Es el mismo bloque que se despliega en el panel y el que queda como alternativa
+    sin JavaScript; dentro del panel se reparte en columnas."""
+    facts = " · ".join(e(tool[key]) for key in ("platform", "state"))
+    features = "".join(f"<li>{e(feature)}</li>" for feature in tool["features"])
+    licenses = "".join(f"<dt>{e(scope)}</dt><dd>{e(name)}</dd>" for scope, name in tool["licenses"])
+    note = f'<p class="tool-detail-note">{e(tool["note"])}</p>' if tool.get("note") else ""
+    caution = ""
+    if tool.get("caution"):
+        label, text = tool["caution"]
+        caution = f'<p class="tool-caution"><strong>{e(label)}.</strong> {e(text)}</p>'
+    return f"""<div class="tool-detail-main">
+    <p class="tool-facts mono small">{facts}</p>
+    <p class="tool-detail-summary">{e(tool["description"])}</p>
+    <h3>Qué resuelve</h3><p>{e(tool["problem"])}</p>
+    <h3>Qué incluye</h3><ul class="tool-detail-features">{features}</ul>
+    </div>
+    <aside class="tool-detail-side">
+    <h3>Tecnologías</h3><div class="tag-list">{tech_badges(d,tool["tech"])}</div>
+    <h3>Licencia</h3><dl class="tool-license">{licenses}</dl>
+    {note}{caution}
+    </aside>
+    <div class="tool-detail-resources">
+    <h3>Recursos</h3>{tool_links(tool)}
+    </div>"""
+
+
 def tool_card(d, tool, heading="h3"):
     facts = " · ".join(e(tool[key]) for key in ("platform", "state"))
     name = e(tool["title"])
-    links = [external(tool["repo"], "GitHub")]
-    if tool.get("docs"):
-        links.append(external(tool["docs"], "Documentación"))
-    if tool.get("download"):
-        links.append(external(tool["download"], "Descargar ZIP", "button"))
-    features = "".join(f'<li>{e(feature)}</li>' for feature in tool["features"])
-    license_label = f'<p class="mono small">Licencia {e(tool["license"])}</p>' if tool.get("license") else ""
     return f"""<article class="tool-card tool-{e(tool["tone"])}" id="{e(tool["slug"])}">
     <div class="tool-info">
     <p class="tool-task">{icon(tool["icon"])} {e(tool["task"])}</p>
     <{heading} class="tool-name">{name}</{heading}><p>{e(tool["summary"])}</p>
     <p class="tool-facts mono small">{facts}</p>
     <details class="tool-details"><summary>Ver ficha <span class="sr-only">de {name}</span>{icon("arrow",True)}</summary>
-    <div class="tool-detail-body"><p class="tool-facts mono small">{facts}</p>
-    <p class="tool-detail-summary">{e(tool["summary"])}</p>
-    <h3>Qué resuelve</h3><p>{e(tool["problem"])}</p><h3>Qué incluye</h3><ul>{features}</ul>
-    <h3>Tecnologías</h3><div class="tag-list">{tech_badges(d,tool["tech"])}</div>
-    {license_label}<div class="tool-links">{"".join(links)}</div></div></details></div>
+    <div class="tool-detail-body">{tool_detail_body(d,tool)}</div></details></div>
     {tool_sample(d,tool)}</article>"""
 
 def tool_workbench(d):
@@ -349,20 +447,33 @@ def tool_workbench(d):
     <div class="tool-grid">{"".join(tool_card(d,tool) for tool in TOOLS)}</div></div>"""
 
 def tool_drawer():
+    library = "".join(
+        f'<template data-tool-template="{e(tool["slug"])}" data-tone="{e(tool["tone"])}">'
+        f'<span class="tool-panel-glyph" aria-hidden="true">{tool_glyph(tool["slug"])}</span>'
+        f'<p class="tool-panel-kicker">{e(tool["task"])}</p></template>'
+        for tool in TOOLS)
     return """<dialog class="tool-panel" aria-labelledby="tool-panel-title">
     <div class="tool-panel-surface"><div class="tool-panel-header">
-    <h2 id="tool-panel-title"></h2>
+    <div class="tool-panel-heading">
+    <span class="tool-panel-glyph" data-tool-glyph aria-hidden="true"></span>
+    <div class="tool-panel-titles"><p class="tool-panel-kicker" data-tool-kicker></p>
+    <h2 id="tool-panel-title"></h2></div></div>
     <button type="button" data-tool-close aria-label="Cerrar ficha" autofocus>×</button></div>
-    <div data-tool-content></div></div></dialog>"""
+    <div class="tool-panel-scroll" data-tool-content></div></div>
+    <div class="tool-panel-library" hidden>""" + library + """</div></dialog>"""
 
 def tools_index():
     d = 1
     body = f"""<section class="page-hero tools-intro"><div class="wrap">{crumb(d,[(None,"Herramientas")])}
     <h1>Herramientas<span class="orange">.</span></h1>
-    <p class="lead">Software que hice para registrar una visita técnica, automatizar acciones en Windows y probar con datos sintéticos. Cada ficha reúne el código y los recursos publicados.</p></div></section>
+    <div class="tools-intro-grid">
+    <p class="lead">Software propio que desarrollo y comparto en abierto para registrar una visita técnica, automatizar acciones en Windows y probar con datos sintéticos. Cada ficha reúne el código, la documentación y las versiones disponibles.</p>
+    <aside class="tools-intro-note">
+    <p class="tools-open-note">Software abierto para que puedas revisar el código, utilizarlo, modificarlo y adaptarlo, respetando las condiciones de su licencia.</p>
+    </aside></div></div></section>
     <section class="section tools-catalog"><div class="wrap">
     <div class="tool-grid">{"".join(tool_card(d,tool,"h2") for tool in TOOLS)}</div></div></section>{tool_drawer()}"""
-    page("herramientas", "Herramientas y recursos", "AuditaPC, Nokto y DatosDemoCL. Software propio, documentación y descargas oficiales.", body, "herramientas")
+    page("herramientas", "Herramientas y recursos", "AuditaPC, Nokto y DatosDemoCL. Software propio publicado en abierto, con documentación, licencias y descargas oficiales.", body, "herramientas")
 
 def redirect_legacy_tools():
     for slug in LEGACY_TOOL_SLUGS:
@@ -557,6 +668,44 @@ def home_tetris_visual(d):
       </a>
     </div>"""
 
+TOOL_LABELS = {
+    "auditapc": "Inventario y diagnóstico",
+    "nokto": "Automatización de escritorio",
+    "datosdemocl": "Generación de datos",
+}
+
+TOOL_TONES = {"auditapc": "petrol", "nokto": "coral", "datosdemocl": "amber"}
+
+# Familia de iconos propia: misma retícula de 24, trazo 1,6, radios y densidad.
+# Cada pieza = un panel reconocible + una marca funcional de su propósito.
+TOOL_GLYPHS = {
+    # Monitor con señal de diagnóstico: equipo + análisis técnico.
+    "auditapc": (
+        '<rect x="2.6" y="3.4" width="18.8" height="12.4" rx="1.8"/>'
+        '<path d="M9 20.6h6"/><path d="M12 15.8v4.8"/>'
+        '<path d="M5.2 10.3h2.3l1.2-2.5 2.2 5.4 1.3-2.9h6.2"/>'
+    ),
+    # Ventanas de escritorio encadenadas con ejecución: automatización de una rutina.
+    "nokto": (
+        '<path d="M7.2 10.8H4.1A1.5 1.5 0 0 1 2.6 9.3V4.7A1.5 1.5 0 0 1 4.1 3.2h10.2a1.5 1.5 0 0 1 1.5 1.5v3.1"/>'
+        '<path d="M2.6 6h13.2"/>'
+        '<rect x="8.2" y="9.4" width="13.2" height="11.4" rx="1.5"/>'
+        '<path d="M13.2 12.4l3.4 2.7-3.4 2.7Z" fill="currentColor" stroke-linejoin="round"/>'
+    ),
+    # Registros estructurados + generación de un nuevo lote.
+    "datosdemocl": (
+        '<rect x="2.8" y="3.8" width="13" height="4.4" rx="1.2"/>'
+        '<rect x="2.8" y="9.6" width="13" height="4.4" rx="1.2"/>'
+        '<rect x="2.8" y="15.4" width="13" height="4.4" rx="1.2"/>'
+        '<path d="M18.4 15.4v5.2M15.8 18h5.2"/>'
+    ),
+}
+
+def tool_glyph(slug):
+    return (f'<svg class="tool-piece-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false" '
+            f'fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
+            f'{TOOL_GLYPHS.get(slug, "")}</svg>')
+
 def home_tool_card(d, tool):
     outcomes={
         "auditapc":"Deja el inventario y los informes listos para continuar o compartir los hallazgos.",
@@ -564,23 +713,28 @@ def home_tool_card(d, tool):
         "datosdemocl":"Prepara lotes de prueba repetibles sin trabajar con registros reales."
     }
     name=e(tool["title"])
-    task=e(tool["task"])
+    label=e(TOOL_LABELS.get(tool["slug"], tool["task"]))
+    tone=e(TOOL_TONES.get(tool["slug"], tool["tone"]))
     summary=e(tool["summary"])
     outcome=e(outcomes.get(tool["slug"],tool["problem"]))
     detail=local(d, "herramientas/#" + tool["slug"])
-    return f"""<article class="home-tool-card" id="home-{e(tool["slug"])}">
-      <a class="home-tool-link" href="{e(detail)}" aria-label="Abrir la ficha de {name}">
-        <span class="home-tool-task">{task}</span>
-        <span class="home-tool-name">{name}</span>
-        <span class="home-tool-summary">{summary}</span>
-        <span class="home-tool-outcome">{outcome}</span>
+    return f"""<article class="tool-piece tool-piece--{tone}" id="home-{e(tool["slug"])}">
+      <a class="tool-piece-link" href="{e(detail)}" aria-label="Abrir la ficha de {name}">
+        <span class="tool-piece-head">
+          <span class="tool-piece-icon">{tool_glyph(tool["slug"])}</span>
+          <span class="tool-piece-label">{label}</span>
+        </span>
+        <span class="tool-piece-name">{name}</span>
+        <span class="tool-piece-summary">{summary}</span>
+        <span class="tool-piece-outcome">{outcome}</span>
+        <span class="tool-piece-light" aria-hidden="true"></span>
       </a>
     </article>"""
 
 
 def home_tools_showcase(d):
     cards = "".join(home_tool_card(d, tool) for tool in TOOLS)
-    return f"""<div class="home-tool-list">{cards}</div>"""
+    return f"""<div class="tools-rig" data-tools-rig>{cards}</div>"""
 
 
 def home_savings(d):
@@ -759,16 +913,46 @@ def home():
          "Jorge Morgado desarrolla herramientas, automatizaciones, integraciones y sitios web para resolver necesidades concretas de personas y empresas.",
          journey_markup()+main+tool_drawer(),journey=True)
 
+def archive_inspector(d):
+    """Panel contextual inicial. El JS actualiza sus nodos sin inventar contenido."""
+    p = PROJECTS[0]
+    entry = PROJECT_ARCHIVE[p["slug"]]
+    participation, _ = PROJECT_CONTEXT[p["slug"]]
+    total = len(PROJECTS)
+    return f"""<aside class="archive-inspector" id="archive-inspector" aria-labelledby="archive-inspector-name">
+      <div class="archive-inspector-head"><span>En foco</span><span class="archive-position" id="archive-position">01 / {total:02d}</span></div>
+      <div class="archive-inspector-rule" aria-hidden="true"></div>
+      <div class="archive-inspector-body" id="archive-inspector-body">
+        <p class="archive-kicker" id="archive-inspector-label">{e(p["label"])}</p>
+        <h2 id="archive-inspector-name">{e(p["title"])}</h2>
+        <dl class="archive-facts">
+          <div><dt>Problema</dt><dd id="archive-problem">{e(p["problem"])}</dd></div>
+          <div><dt>Solución</dt><dd id="archive-solution">{e(entry["solution"])}</dd></div>
+          <div><dt>Mi participación</dt><dd id="archive-role">{e(participation)}</dd></div>
+        </dl>
+      </div>
+      <div class="archive-inspector-foot">
+        <a id="archive-link" href="{e(local(d,"proyectos/"+p["slug"]+"/"))}">Explorar el caso {icon("arrow",True)}</a>
+      </div>
+    </aside>"""
+
 def portfolio():
     d=1
-    cats=[("todos","Todos"),("plataformas","Plataformas"),("web","Web y catálogos"),("sistemas","Sistemas")]
-    buttons="".join(f'<button class="filter-btn" type="button" data-filter="{e(k)}" aria-pressed="{"true" if i==0 else "false"}">{e(v)}</button>' for i,(k,v) in enumerate(cats))
-    body=f"""<section class="page-hero project-archive"><div class="wrap">{crumb(d,[("", "Proyectos")])}<h1>Archivo de proyectos<span class="orange">.</span></h1>
-    <p class="lead">Productos web, ingeniería de datos, integraciones y sistemas en tiempo real. Cada ficha reúne el contexto, mi participación y las decisiones del proyecto.</p></div></section>
-    <section class="section project-catalog"><div class="wrap">
-    <div class="project-toolbar"><div class="filter-row" role="group" aria-label="Filtrar proyectos">{buttons}</div>
-    <p class="mono small muted">{len(PROJECTS)} proyectos en el archivo</p></div>
-    <div class="project-index">{''.join(entry(d,p,i) for i,p in enumerate(PROJECTS,1))}</div></div></section>"""
+    buttons="".join(f'<button class="archive-filter" type="button" data-filter="{e(k)}" aria-pressed="{"true" if i==0 else "false"}">{e(v)}</button>' for i,(k,v) in enumerate(ARCHIVE_FAMILIES))
+    total=len(PROJECTS)
+    rows="".join(archive_entry(d,p,i) for i,p in enumerate(PROJECTS,1))
+    body=f"""<div class="project-archive-page" data-archive>
+    <section class="archive-hero"><div class="archive-wrap"><div class="archive-hero-grid">
+      <div class="archive-hero-copy">{crumb(d,[("", "Proyectos")])}<h1>Archivo de proyectos<span class="orange">.</span></h1>
+      <p class="archive-intro">Trabajos que pasaron de una necesidad concreta a una solución. Explora qué se construyó, mi participación y lo que quedó funcionando.</p></div>
+      <div class="archive-count"><strong>{total:02d}</strong><small>Casos documentados</small>
+      <p>Cada proyecto tiene su propia historia y decisiones técnicas.</p></div>
+    </div></div></section>
+    <section class="archive-main"><div class="archive-wrap">
+      <div class="archive-toolbar"><div class="archive-filters" role="group" aria-label="Filtrar proyectos">{buttons}</div>
+      <p class="archive-result" id="archive-count" role="status">{total} proyectos disponibles</p></div>
+      <div class="archive-grid"><div class="archive-list" id="archive-list">{rows}</div>{archive_inspector(d)}</div>
+    </div></section></div>"""
     page("proyectos","Proyectos de desarrollo web, datos, automatización y software","Portafolio de JMorgado: ImpulsaCV, Cambiómetro, Conecta, Ryvolt y otros proyectos con contexto técnico y límites verificables.",body,"proyectos")
 CASE_HEADLINES = {
     'impulsacv':'Un recorrido laboral que no debería estar fragmentado.',
@@ -798,7 +982,7 @@ def portal_dialog(d, *, title, subtitle, url, mode, panel, filter_available=Fals
 def project_portal_pages(slug, title, pages):
     buttons = []
     templates = []
-    sandbox = "allow-scripts allow-same-origin" if slug == "el-cambiometro" else ""
+    sandbox = "allow-scripts allow-same-origin" if slug in ("el-cambiometro", "conecta") else ""
     for index, (key, label, source) in enumerate(pages):
         pressed = "true" if index == 0 else "false"
         buttons.append(f'<button type="button" class="button" data-portal-choice="{key}" aria-pressed="{pressed}">{e(label)}</button>')
@@ -827,59 +1011,188 @@ def project_portal(d, project):
 def impulsacv_detail():
     d=2
     p = PROJ["impulsacv"]
-    participation, result = PROJECT_CONTEXT["impulsacv"]
     portal = project_portal(d, p) if p["site"] else ""
-    arch_src = e(asset(d, "assets/impulsacv-archify-architecture.html"))
-    flow_src = e(asset(d, "assets/impulsacv-archify-workflow.html"))
-    body = f'''<div class="project-impulsacv-page">
-    <section class="ic-hero"><div class="ic-wrap"><div class="ic-hero-topline"><p class="ic-crumb">Archivo <span>/</span> Software y plataformas <span>/</span> ImpulsaCV</p><a class="ic-ver-sitio" href="{e(p["site"])}" data-project-portal>Ver sitio {icon("window",True)}</a></div>
-      <div class="ic-hero-grid"><div><p class="ic-eyebrow">Producto digital · HR Tech</p><h1>Impulsa<br>CV<span class="ic-coral">.</span></h1></div>
-      <div class="ic-hero-copy"><p>{e(p["summary"])}</p><div class="ic-tags"><span>Producto digital</span><span>Infraestructura</span><span>IA aplicada</span></div>
-      <a class="ic-jump" href="#sistema">Explorar cómo funciona <b>↘</b></a></div></div></div></section>
-    <section class="ic-section ic-section--context"><div class="ic-wrap"><p class="ic-eyebrow">El desafío</p>
-      <div class="ic-section-head"><h2>Preparar una postulación no debería ser un trabajo fragmentado<span class="ic-coral">.</span></h2>
-      <p class="ic-intro">{e(p["problem"])}</p></div></div></section>
-    <section class="ic-section ic-section--system" id="sistema"><div class="ic-wrap"><p class="ic-eyebrow">Así funciona ImpulsaCV</p>
-      <div class="ic-system-head"><h2>Una plataforma.<br>Dos perspectivas interactivas<span class="ic-coral">.</span></h2>
-      <p class="ic-intro">Explora cómo funciona el producto y cómo está construida su arquitectura técnica. Selecciona cada componente para ver su función; usa zoom, desplazamiento y el control de animación para recorrer el diagrama. El tema acompaña el del sitio.</p></div>
-      <div class="ic-tabs" role="tablist" aria-label="Perspectiva del sistema">
-        <button type="button" role="tab" aria-selected="true" data-archify-view="workflow" data-src="{flow_src}">Cómo funciona ImpulsaCV</button>
-        <button type="button" role="tab" aria-selected="false" data-archify-view="architecture" data-src="{arch_src}">Arquitectura de ImpulsaCV</button>
-      </div>
-      <div class="ic-archify-frame">
-        <iframe id="archify-frame" data-archify-frame="workflow" src="{flow_src}" title="Diagrama interactivo de ImpulsaCV" loading="lazy" referrerpolicy="origin"></iframe>
-        <iframe id="archify-frame-architecture" data-archify-frame="architecture" title="Diagrama interactivo de arquitectura de ImpulsaCV" loading="lazy" referrerpolicy="origin" hidden></iframe>
-      </div>
-    </div></section>
-    <section class="ic-section"><div class="ic-wrap"><p class="ic-eyebrow">04 · Cómo funciona la plataforma</p>
-      <div class="ic-section-head"><h2>Todo conectado para acompañar cada postulación<span class="ic-coral">.</span></h2><p class="ic-intro">ImpulsaCV reúne distintas herramientas para ayudar a las personas a preparar su currículum y avanzar en sus postulaciones. Conecté sus funciones para que la información y el trabajo realizado tengan continuidad durante todo el proceso.</p></div>
-      <div class="ic-work-grid"><p class="ic-work-lead">Una persona avanza del currículum a la entrevista sin cambiar de solución.</p>
-      <div class="ic-work-list">
-        <article class="ic-work-item"><span class="ic-num">01</span><div><h3>Una experiencia conectada</h3><p>Herramientas para trabajar el currículum, revisar oportunidades y preparar entrevistas.</p></div></article>
-        <article class="ic-work-item"><span class="ic-num">02</span><div><h3>Asistencia inteligente</h3><p>Apoyo de IA para mejorar documentos, adaptar contenidos y orientar durante el proceso.</p></div></article>
-        <article class="ic-work-item"><span class="ic-num">03</span><div><h3>Acceso y planes</h3><p>Servicios que permiten guardar el avance y acceder a funciones adicionales mediante planes premium.</p></div></article>
-      </div></div></div></section>
-    <section class="ic-section ic-section--work"><div class="ic-wrap"><p class="ic-eyebrow">05 · Mi participación</p>
-      <div class="ic-section-head"><h2>De distintas herramientas a una experiencia completa<span class="ic-coral">.</span></h2><p class="ic-intro">Mi trabajo consistió en desarrollar y conectar las distintas herramientas para que ImpulsaCV funcionara como una plataforma integrada. La idea fue que una persona pudiera avanzar desde la organización de su currículum hasta la preparación de sus postulaciones y entrevistas sin tener que trabajar con soluciones desconectadas.</p></div>
-      <div class="ic-result-points" style="margin-top:2rem">
-        <div><strong>Desarrollo</strong><p>Creación de las herramientas que permiten trabajar y mejorar el currículum.</p></div>
-        <div><strong>Integración</strong><p>Conexión de las distintas funciones para dar continuidad al proceso.</p></div>
-        <div><strong>Asistencia</strong><p>Incorporación de herramientas inteligentes que ayudan a orientar y preparar a cada persona.</p></div>
-      </div>
-      <div class="related" style="margin-top:2rem"><p class="ic-eyebrow" style="padding-top:1rem">Seguir explorando</p>
-        <a href="{e(local(d,'proyectos/'))}"><span>Volver al archivo de proyectos</span>{icon("arrow")}</a>
-        <a href="{e(local(d,'contacto/'))}"><span>Conversar sobre un problema parecido</span>{icon("arrow")}</a>
-      </div>
-    </div></section>
-    <section class="ic-end"><div class="ic-wrap"><p class="ic-eyebrow">Continuidad</p><div class="ic-end-row"><div><h2>Una solución construida desde el problema.</h2><p>La ficha definitiva incluye tecnologías verificadas, detalles de integración y enlaces al producto cuando corresponda.</p></div><a class="ic-jump" href="#top">Volver al inicio <b>↑</b></a></div></div></section>
-    </div>{portal}'''
-    page("proyectos/impulsacv", p["title"]+" — ficha técnica y arquitectura", p["summary"]+" Conoce el alcance, la infraestructura, la IA y los pagos de este trabajo de JMorgado.", body, "proyectos")
+    from site_data import FICHAS
+    from ficha import render_ficha
+    spec = FICHAS["impulsacv"]
+    secs = {s["type"]: s for s in spec["sections"]}
+    flow_src = asset(d, "assets/impulsacv-archify-workflow.html")
+    arch_src = asset(d, "assets/impulsacv-archify-architecture.html")
+    secs["perspectivas"]["flow_src"] = flow_src
+    secs["perspectivas"]["arch_src"] = arch_src
+    secs["contacto"]["href"] = local(d, "contacto/")
+    body, title, description = render_ficha(d, "impulsacv")
+    body = body + portal
+    page("proyectos/impulsacv", title, description + " Conoce el alcance, la infraestructura, la IA y los pagos de este trabajo de JMorgado.", body, "proyectos")
+    return
+
+
+def cambiometro_detail():
+    d=2
+    p = PROJ["el-cambiometro"]
+    portal = project_portal(d, p) if p["site"] else ""
+    from site_data import FICHAS
+    from ficha import render_ficha
+    spec = FICHAS["el-cambiometro"]
+    secs = {s["type"]: s for s in spec["sections"]}
+    arch_src = asset(d, "assets/el-cambiometro-archify-architecture.html") + "&embed=1"
+    secs["diagrama"]["src"] = arch_src
+    secs["contacto"]["href"] = local(d, "contacto/")
+    body, title, description = render_ficha(d, "el-cambiometro")
+    body = body + portal
+    page("proyectos/el-cambiometro", title, description, body, "proyectos")
+    return
+
+
+def conecta_detail():
+    d=2
+    p = PROJ["conecta"]
+    portal = project_portal(d, p) if p["site"] else ""
+    from site_data import FICHAS
+    from ficha import render_ficha
+    spec = FICHAS["conecta"]
+    secs = {s["type"]: s for s in spec["sections"]}
+    arch_src = asset(d, "assets/listoporhoy-archify-architecture.html") + "&embed=1"
+    secs["diagrama"]["src"] = arch_src
+    secs["contacto"]["href"] = local(d, "contacto/")
+    body, title, description = render_ficha(d, "conecta")
+    body = body + portal
+    page("proyectos/conecta", title, description, body, "proyectos")
+    return
+
+
+def ryvolt_detail():
+    d=2
+    p = PROJ["ryvolt"]
+    portal = project_portal(d, p) if p["site"] else ""
+    from site_data import FICHAS
+    from ficha import render_ficha
+    spec = FICHAS["ryvolt"]
+    secs = {s["type"]: s for s in spec["sections"]}
+    secs["contacto"]["href"] = local(d, "contacto/")
+    body, title, description = render_ficha(d, "ryvolt")
+    body = body + portal
+    page("proyectos/ryvolt", title, description, body, "proyectos")
+    return
+
+
+def flor_detail():
+    d=2
+    p = PROJ["flor-de-almendro"]
+    portal = project_portal(d, p) if p["site"] else ""
+    from site_data import FICHAS
+    from ficha import render_ficha
+    spec = FICHAS["flor-de-almendro"]
+    secs = {s["type"]: s for s in spec["sections"]}
+    arch_src = asset(d, "assets/flor-de-almendro-archify-flujo.html") + "&embed=1"
+    secs["diagrama"]["src"] = arch_src
+    spec["logo"]["src"] = asset(d, "assets/project-marks/flor-de-almendro.webp")
+    secs["contacto"]["href"] = local(d, "contacto/")
+    body, title, description = render_ficha(d, "flor-de-almendro")
+    body = body + portal
+    page("proyectos/flor-de-almendro", title, description, body, "proyectos")
+    return
+
+
+def exo_dream_detail():
+    d=2
+    from site_data import FICHAS
+    from ficha import render_ficha
+    spec = FICHAS["exo-dream"]
+    secs = {s["type"]: s for s in spec["sections"]}
+    arch_src = asset(d, "assets/exo-dream-archify-arquitectura.html") + "&embed=1"
+    secs["diagrama"]["src"] = arch_src
+    spec["logo"]["src"] = asset(d, "assets/project-marks/exo-dream.svg")
+    secs["contacto"]["href"] = local(d, "contacto/")
+    body, title, description = render_ficha(d, "exo-dream")
+    # Sin portal: el cliente esta adquiriendo el dominio y no hay URL publica confirmada.
+    page("proyectos/exo-dream", title, description, body, "proyectos")
+    return
+
+
+def hangar_detail():
+    d=2
+    p = PROJ["tobys-warehouse"]
+    portal = project_portal(d, p) if p["site"] else ""
+    from site_data import FICHAS
+    from ficha import render_ficha
+    spec = FICHAS["tobys-warehouse"]
+    secs = {s["type"]: s for s in spec["sections"]}
+    arch_src = asset(d, "assets/hangar354-archify-arquitectura.html") + "&embed=1"
+    secs["diagrama"]["src"] = arch_src
+    spec["logo"]["src"] = asset(d, "assets/project-marks/hangar354.svg")
+    secs["contacto"]["href"] = local(d, "contacto/")
+    body, title, description = render_ficha(d, "tobys-warehouse")
+    body = body + portal
+    page("proyectos/tobys-warehouse", title, description, body, "proyectos")
+    return
+
+
+def kokeai_detail():
+    d=2
+    p = PROJ["kooke-portal"]
+    portal = project_portal(d, p) if p["site"] else ""
+    from site_data import FICHAS
+    from ficha import render_ficha
+    spec = FICHAS["kooke-portal"]
+    secs = {s["type"]: s for s in spec["sections"]}
+    flow_src = asset(d, "assets/kokeai-archify-recorrido.html") + "&embed=1"
+    arch_src = asset(d, "assets/kokeai-archify-arquitectura.html") + "&embed=1"
+    # Dos vistas del mismo sistema: la primera es el recorrido, la segunda la arquitectura.
+    diagramas = [s for s in spec["sections"] if s["type"] == "diagrama"]
+    diagramas[0]["src"] = flow_src
+    diagramas[1]["src"] = arch_src
+    spec["logo"]["src"] = asset(d, "assets/project-marks/kokeai-mark.png")
+    secs["contacto"]["href"] = local(d, "contacto/")
+    body, title, description = render_ficha(d, "kooke-portal")
+    body = body + portal
+    page("proyectos/kooke-portal", title, description, body, "proyectos")
+    return
+
+
+def rrss_detail():
+    d=2
+    from site_data import FICHAS
+    from ficha import render_ficha
+    spec = FICHAS["kooke-rrss"]
+    secs = {s["type"]: s for s in spec["sections"]}
+    arch_src = asset(d, "assets/rrss-archify-flujo.html") + "&embed=1"
+    secs["diagrama"]["src"] = arch_src
+    spec["logo"]["src"] = asset(d, "assets/project-marks/rrss.svg")
+    secs["contacto"]["href"] = local(d, "contacto/")
+    body, title, description = render_ficha(d, "kooke-rrss")
+    # El prototipo no tiene interfaz publica: la ficha se explica con el diagrama.
+    page("proyectos/kooke-rrss", title, description, body, "proyectos")
     return
 
 
 def project_detail(p):
     if p["slug"] == "impulsacv":
         impulsacv_detail()
+        return
+    if p["slug"] == "el-cambiometro":
+        cambiometro_detail()
+        return
+    if p["slug"] == "conecta":
+        conecta_detail()
+        return
+    if p["slug"] == "ryvolt":
+        ryvolt_detail()
+        return
+    if p["slug"] == "flor-de-almendro":
+        flor_detail()
+        return
+    if p["slug"] == "exo-dream":
+        exo_dream_detail()
+        return
+    if p["slug"] == "tobys-warehouse":
+        hangar_detail()
+        return
+    if p["slug"] == "kooke-portal":
+        kokeai_detail()
+        return
+    if p["slug"] == "kooke-rrss":
+        rrss_detail()
         return
     d=2
     quick=f'<dt>Tipo</dt><dd>{e(p["label"])}</dd><dt>Estado documental</dt><dd>{e(p["state"])}</dd><dt>Área</dt><dd>{e(p["area"])}</dd>'
@@ -918,90 +1231,603 @@ def project_detail(p):
     <a href="{e(local(d,'proyectos/'))}"><span>Volver al archivo de proyectos</span>{icon("arrow")}</a>
     <a href="{e(local(d,'contacto/'))}"><span>Conversar sobre un problema parecido</span>{icon("arrow")}</a></div></div></section>{portal}"""
     page("proyectos/"+p["slug"],p["title"]+" — proyecto y arquitectura",p["summary"]+" Conoce el alcance, las tecnologías y los límites de este trabajo de JMorgado.",body,"proyectos")
+SERVICE_ICONS = {"automatizacion": "gear", "desarrollo-web": "code", "datos-y-bi": "data",
+                 "integraciones": "network", "ia-aplicada": "branch", "soporte-ti": "support",
+                 "redes-sociales": "grid"}
+
+
+def visual_chain(pasos, clase=""):
+    """Cadena de pasos. Acepta (numero, titulo, descripcion) o (titulo, descripcion)."""
+    items = []
+    for paso in pasos:
+        if len(paso) == 3:
+            num, titulo, desc = paso
+            items.append(f'<li class="visual-step"><span class="visual-num">{e(num)}</span>'
+                          f'<strong>{e(titulo)}</strong><span class="visual-desc">{e(desc)}</span></li>')
+        else:
+            titulo, desc = paso
+            items.append(f'<li class="visual-step"><strong>{e(titulo)}</strong>'
+                          f'<span class="visual-desc">{e(desc)}</span></li>')
+    return f'<ol class="visual-chain {clase}">{"".join(items)}</ol>'
+
+
+def visual_block(vis):
+    """Representación visual propia. Cada servicio tiene una composición distinta."""
+    if not vis:
+        return ""
+    tipo = vis["tipo"]
+    if tipo in ("flujo", "cadena"):
+        cuerpo = visual_chain(vis["pasos"], f"visual-chain--{tipo}")
+    elif tipo == "capas":
+        items = "".join(
+            f'<li class="visual-layer"><strong>{e(titulo)}</strong>'
+            f'<span class="visual-desc">{e(desc)}</span></li>' for titulo, desc in vis["pasos"])
+        cuerpo = f'<ol class="visual-layers">{items}</ol>'
+    elif tipo == "hub":
+        centro, sub = vis["centro"]
+        ramas = "".join(
+            f'<li class="visual-satellite"><strong>{e(titulo)}</strong><span>{e(desc)}</span></li>'
+            for titulo, desc in vis["ramas"])
+        cuerpo = (f'<div class="visual-hub"><div class="visual-core"><strong>{e(centro)}</strong>'
+                  f'<span>{e(sub)}</span></div><ul class="visual-satellites">{ramas}</ul></div>')
+    elif tipo == "ciclo":
+        cuerpo = visual_chain(vis["pasos"], "visual-chain--ciclo")
+        modos = "".join(f'<li>{e(m)}</li>' for m in vis.get("modalidades", []))
+        if modos:
+            cuerpo += f'<ul class="visual-modes">{modos}</ul>'
+    elif tipo == "dos-vias":
+        vias = "".join(
+            f'<div class="visual-track"><p class="visual-track-title">{e(nombre)}</p>'
+            f'<ol class="visual-track-steps">'
+            + "".join(f'<li><strong>{e(paso)}</strong><span>{e(desc)}</span></li>' for paso, desc in pasos)
+            + '</ol></div>' for nombre, pasos in vis["vias"])
+        cuerpo = f'<div class="visual-tracks">{vias}</div>'
+    elif tipo == "orquestacion":
+        cuerpo = visual_chain(vis["pasos"], "visual-chain--orquestacion")
+        capa = "".join(f'<li>{e(c)}</li>' for c in vis["capa"])
+        cuerpo += ('<div class="visual-transversal"><span class="visual-transversal-label">Capa transversal</span>'
+                   f'<ul>{capa}</ul></div>')
+    elif tipo == "escalera":
+        niveles = "".join(
+            f'<li class="visual-level"><strong>{e(titulo)}</strong><span>{e(modo)}</span><em>{e(costo)}</em></li>'
+            for titulo, modo, costo in vis["niveles"])
+        cuerpo = f'<ol class="visual-levels">{niveles}</ol>'
+    else:
+        cuerpo = ""
+    titulo = vis.get("titulo", "")
+    desc = vis.get("desc", "")
+    cabeza = ""
+    if titulo:
+        cabeza = f'<div class="visual-head"><h2>{e(titulo)}</h2><p>{e(desc)}</p></div>'
+    return f'<div class="visual-body visual-body--{tipo}">{cabeza}{cuerpo}</div>'
+
+
+def service_visual(d, s):
+    """Banda visual propia del servicio, entre el hero y el contenido."""
+    vis = SERVICE_VISUALS.get(s["slug"])
+    if not vis:
+        return ""
+    return f'<section class="section service-visual service-visual--{vis["tipo"]}"><div class="wrap">{visual_block(vis)}</div></section>'
+
+
+def service_extras(d, s, numeros):
+    """Apartados propios de un servicio (orquestación, seguridad, costos)."""
+    bloques = []
+    for extra in SERVICE_EXTRAS.get(s["slug"], []):
+        puntos = ""
+        if extra.get("puntos"):
+            puntos = '<ul class="extra-points">' + "".join(f'<li>{e(p)}</li>' for p in extra["puntos"]) + '</ul>'
+        medidas = ""
+        if extra.get("medidas"):
+            medidas = ('<div class="measure-list">' + "".join(
+                f'<div class="measure"><strong>{e(titulo)}</strong><p>{e(desc)}</p></div>'
+                for titulo, desc in extra["medidas"]) + '</div>')
+        visual = visual_block(extra.get("visual"))
+        bloques.append(
+            f'<section class="section service-extra service-section"><div class="wrap">'
+            f'{overline(f"{numeros:02d}", extra["overline"])}'
+            f'<div class="section-head"><h2>{e(extra["titulo"])}</h2><p>{e(extra["cuerpo"])}</p></div>'
+            f'{puntos}{medidas}{visual}</div></section>')
+    return "".join(bloques)
+
+
+def service_others(d, s):
+    """Franja de navegación cruzada: el resto de las áreas."""
+    filas = "".join(
+        f'<a href="{e(local(d, "servicios/" + other["slug"] + "/"))}"><span>{e(other["title"])}</span>{icon("arrow",True)}</a>'
+        for other in SERVICES if other["slug"] != s["slug"])
+    return (f'<section class="section service-others"><div class="wrap">'
+            f'<p class="eyebrow">Otras áreas</p><div class="related">{filas}</div></div></section>')
+
+
+def service_experience(d, s):
+    """Experiencia que respalda el servicio, separada en proyectos y herramientas propias.
+    Las dos categorías reparten el ancho de forma proporcional a su contenido."""
+    def grupo(rotulo, items, span):
+        filas = []
+        for titulo, url, desc in items:
+            if url:
+                filas.append(f'<a href="{e(url)}"><span class="related-item"><strong>{e(titulo)}</strong>'
+                             f'<em>{e(desc)}</em></span>{icon("arrow",True)}</a>')
+            else:
+                filas.append(f'<div class="related-item related-item--note"><strong>{e(titulo)}</strong>'
+                             f'<em>{e(desc)}</em></div>')
+        return (f'<div class="service-experience-group" style="grid-column:span {span}">'
+                f'<p class="eyebrow">{rotulo}</p><div class="related">{"".join(filas)}</div></div>')
+    categorias = [(rotulo, items) for rotulo, items in
+                  (("Proyectos realizados", s["proyectos"]), ("Herramientas propias", s["herramientas"]))
+                  if items]
+    total = sum(len(items) for _r, items in categorias)
+    bloques = []
+    for indice, (rotulo, items) in enumerate(categorias):
+        if len(categorias) == 1:
+            span = 12
+        else:
+            span = round(12 * len(items) / total)
+            resto = 12 - sum(round(12 * len(i) / total) for _r, i in categorias)
+            span += resto
+            span = max(4, min(span, 12 - 4 * (len(categorias) - 1)))
+        bloques.append(grupo(rotulo, items, span))
+    nota = ""
+    if s["herramientas"]:
+        nota = ('<p class="hint service-experience-note">Software propio, publicado en abierto para que puedas revisar el código, '
+                'utilizarlo y adaptarlo respetando las condiciones de su licencia.</p>'
+                f'<p class="service-experience-more">{a(d, "herramientas/", "Ver todas las herramientas " + icon("arrow", True))}</p>')
+    return f'<div class="service-experience">{"".join(bloques)}</div>{nota}'
+
+
+def service_deliverables(d, s):
+    items = "".join(f'<li><strong>{e(titulo)}</strong><p>{e(desc)}</p></li>' for titulo, desc in s["entregables"])
+    return f'<ol class="deliverables">{items}</ol>'
+
+
+def service_jsonld(s):
+    url = SITE_URL + "servicios/" + s["slug"] + "/"
+    return {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": s["title"],
+        "description": s["descripcion"],
+        "url": url,
+        "serviceType": s["title"],
+        "provider": {"@type": "Organization", "name": "JMorgado", "url": SITE_URL},
+        "areaServed": {"@type": "Country", "name": "Chile"},
+    }
+
+
+def breadcrumb_jsonld(slug, nombre):
+    items = [
+        {"@type": "ListItem", "position": 1, "name": "Inicio", "item": SITE_URL},
+        {"@type": "ListItem", "position": 2, "name": "Servicios", "item": SITE_URL + "servicios/"},
+    ]
+    if slug:
+        items.append({"@type": "ListItem", "position": 3, "name": nombre,
+                      "item": SITE_URL + "servicios/" + slug + "/"})
+    return {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": items}
+
+
 def services_index():
-    d=1
-    service_icons={"automatizacion":"gear","desarrollo-web":"code","datos-y-bi":"data","integraciones":"network","ia-aplicada":"branch","soporte-ti":"support","redes-sociales":"grid"}
-    services="".join(f"""<a class="service-line" href="{e(local(d,'servicios/'+s['slug']+'/'))}">
-    <span class="service-no">{i:02d}.</span><h3>{e(s["title"])}</h3><p>{e(s["short"])}</p>{icon(service_icons[s['slug']])}</a>""" for i,s in enumerate(SERVICES,1))
+    d = 1
+    services = "".join(f"""<a class="service-line" href="{e(local(d,'servicios/'+s['slug']+'/'))}">
+    <span class="service-no">{i:02d}.</span><h3>{e(s["title"])}</h3><p>{e(s["short"])}</p>{icon(SERVICE_ICONS[s['slug']])}</a>""" for i,s in enumerate(SERVICES,1))
+    grupos = "".join(
+        f'<div class="ecosystem-group"><h3>{e(rotulo)}</h3><div class="tag-list">{tech_chips(d, items)}</div></div>'
+        for rotulo, items in TECNOLOGIAS)
+    mapa = "".join(
+        f'<li>{icon(SERVICE_ICONS[s["slug"]])}<span>{e(s["title"])}</span></li>' for s in SERVICES)
+    itemlist = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "Áreas de trabajo",
+        "itemListElement": [
+            {"@type": "ListItem", "position": i, "name": s["title"],
+             "url": SITE_URL + "servicios/" + s["slug"] + "/"}
+            for i, s in enumerate(SERVICES, 1)],
+    }
+    contacto = SERVICE_CONTACT
+    pasos = "".join(f'<li><span>{e(num)}</span><strong>{e(titulo)}</strong></li>' for num, titulo in contacto["pasos"])
+    lead = ("Hay tareas que se repiten, sistemas que no se hablan entre sí y datos que nadie mira a tiempo. "
+            "Trabajo en siete áreas para resolver eso: automatización de procesos, desarrollo web y plataformas, "
+            "datos y BI, integraciones, IA aplicada, soporte técnico y gestión de redes sociales. "
+            "Cada ficha explica qué entrego y qué trabajos respaldan esa capacidad.")
     body=f"""<section class="page-hero service-map-hero"><div class="wrap">{crumb(d,[(None,"Servicios")])}
-    {interior_art("modular/S03-marco-abierto.svg","service-map-art")}
+    <div class="service-hero-grid">
+    <div class="service-hero-copy">
     <span class="eyebrow">Soluciones según tu necesidad</span>
     <h1>En qué puedo ayudarte<span class="orange">.</span></h1>
-    <p class="lead">Desarrollo web, datos, automatización, soporte y gestión de redes sociales. Cada servicio explica qué puedo tomar a cargo y qué necesitamos acordar.</p></div></section>
+    <p class="lead">{lead}</p></div>
+    <ul class="service-hero-map">{mapa}</ul></div></div></section>
     <section class="section service-map"><div class="wrap">{overline("01","Áreas de trabajo")}
     <div class="service-index">{services}</div></div></section>
-    <section class="ink-panel"><div class="wrap">{overline("02","Qué incluye el primer contacto")}
-    <div class="statement"><div><h2>La conversación inicial no tiene costo.</h2><p class="lead">Es una orientación para conocer la tarea y sus restricciones. Una auditoría o intervención técnica se acuerda por separado.</p></div>
-    <div>{a(d,"metodo/","Conocer el método "+icon("arrow",True),"button")}</div></div></div></section>"""
-    page("servicios","Servicios de automatización, desarrollo, datos e IA aplicada","Servicios profesionales de JMorgado: automatización con Python, n8n y Make, desarrollo web, dashboards, integraciones, IA aplicada y soporte técnico.",body,"servicios")
-def social_service(s):
+    <section class="section service-ecosystems"><div class="wrap">{overline("02","Tecnologías y ecosistemas")}
+    <div class="ecosystem-grid">{grupos}
+    <p class="hint ecosystem-note">El stack se selecciona según las necesidades de cada proyecto. No todas las tecnologías se utilizan en todos los encargos. Los modelos de ejecución local y los agentes de desarrollo se combinan con los servicios externos según lo que cada tarea necesita.</p></div></section>
+    <section class="ink-panel service-contact-intro"><div class="wrap">{overline("03","Primer contacto")}
+    <div class="contact-grid">
+    <div class="contact-lead"><span class="eyebrow">{e(contacto["eyebrow"])}</span>
+    <h2>{e(contacto["titulo"])}</h2></div>
+    <p class="lead contact-desc">{e(contacto["descripcion"])}</p>
+    <ol class="contact-steps">{pasos}</ol>
+    <div class="contact-actions">
+    {a(d, contacto["cta"][1], contacto["cta"][0] + " " + icon("arrow", True), "button strong")}
+    {a(d, contacto["secundario"][1], contacto["secundario"][0] + " " + icon("arrow", True))}
+    </div></div></div></section>"""
+    page("servicios","Servicios de software, datos y automatización",
+         "Software, datos y automatización en siete áreas: procesos repetitivos, plataformas web, reportes, integraciones, IA aplicada, soporte técnico y contenido.",
+         body,"servicios",jsonld=[itemlist, breadcrumb_jsonld(None, "Servicios")])
+
+
+def service_page(s, hero_clase, extra_social=""):
+    """Ficha de servicio: hero, visual, problema, entregables, apartados, experiencia y cierre."""
     d = 2
-    body = f"""<section class="page-hero social-hero"><div class="wrap">{crumb(d,[("servicios/","Servicios"),(None,s["title"])])}
-    <span class="eyebrow">Servicio editorial</span>
-    <h1>Gestión de redes sociales<span class="orange">.</span></h1>
-    <p class="lead">{e(s["lead"])}</p></div></section>
-    <section class="section social-workflow"><div class="wrap"><div class="section-head">
-    <h2>Que cada publicación tenga un propósito.</h2><p>Partimos por tus perfiles, el público al que quieres llegar y los recursos que ya tienes. Acordamos qué puedo asumir y qué necesita tu aprobación.</p></div>
-    <ol class="social-plan">
-      <li><h3>Planificar</h3><p>Definir temas, formatos y un calendario que puedas sostener.</p></li>
-      <li><h3>Preparar y publicar</h3><p>Apoyar la creación de textos y piezas, organizar los perfiles y coordinar la revisión antes de publicar.</p></li>
-      <li><h3>Revisar</h3><p>Consultar resultados disponibles en cada plataforma y usarlos para ajustar las próximas publicaciones.</p></li>
-    </ol>
-    <p>Cuando tiene sentido, puedo automatizar recordatorios o tareas de preparación. Las decisiones de contenido y la aprobación quedan dentro del proceso acordado.</p>
-    {external(WHATSAPP,"Conversemos "+icon("arrow",True),"button dark")}</div></section>"""
-    page("servicios/redes-sociales", s["title"], s["lead"], body, "servicios")
+    n = 1
+    partes = [f"""<section class="page-hero {hero_clase}"><div class="wrap">{crumb(d,[("servicios/","Servicios"),(None,s["title"])])}
+    <span class="eyebrow">{e(s["eyebrow"])}</span>
+    <div class="hero-split"><h1>{e(s["title"])}<span class="orange">.</span></h1>
+    <p class="lead">{e(s["descripcion"])}</p></div></div></section>"""]
+    partes.append(service_visual(d, s))
+    n += 1
+    partes.append(f"""<section class="section service-detail-brief"><div class="wrap">{overline(f"{n:02d}","Qué problema resuelvo")}
+    <div class="case-layout"><article class="prose"><h2>Qué problema resuelvo.</h2><p>{e(s["situacion"])}</p>
+    <h3>Cómo lo abordo</h3><p>{e(s["enfoque"])}</p></article>
+    <aside><p class="eyebrow">En una línea</p><p class="service-aside">{e(s["aside"])}</p>
+    <p class="eyebrow" style="margin-top:2rem">Tecnologías utilizadas en esta línea</p><div class="tag-list">{tech_chips(d,s["stack"])}</div>
+    <p class="hint">{e(s["nota"])}</p></aside></div></div></section>""")
+    n += 1
+    partes.append(f"""<section class="section service-section" style="background:var(--paper2)"><div class="wrap">{overline(f"{n:02d}","Qué entrego, en concreto")}
+    <div class="section-head"><h2>Qué entrego, en concreto.</h2><p>Cada punto es un entregable que se puede revisar y aceptar por separado.</p></div>
+    {service_deliverables(d,s)}{extra_social}</div></section>""")
+    n += 1
+    extras = service_extras(d, s, n)
+    if extras:
+        partes.append(extras)
+        n += len(SERVICE_EXTRAS.get(s["slug"], []))
+    partes.append(f"""<section class="section service-section"><div class="wrap">{overline(f"{n:02d}","Qué experiencia respalda")}
+    <div class="section-head"><h2>Trabajos y herramientas que aportan contexto.</h2><p>No son promesas de resultados: permiten revisar tipos de sistemas y decisiones técnicas que ya he trabajado.</p></div>
+    {service_experience(d,s)}</div></section>""")
+    n += 1
+    partes.append(f"""<section class="section service-contact"><div class="wrap">{overline(f"{n:02d}","Conversemos")}
+    <div class="contact-board"><div><span class="eyebrow" style="color:var(--ink)">Contacto</span><h2>{e(s["cta_h2"])}</h2></div>
+    <div><p class="contact-meta"><span>Evaluación caso a caso</span><span>Primer diagnóstico conversado: gratuito</span></p>
+    <p>{e(s["cta_p"])}</p>
+    {a(d,"contacto/",s["cta_label"]+" "+icon("arrow",True),"button dark")}</div></div></div></section>""")
+    partes.append(service_others(d, s))
+    page("servicios/"+s["slug"], s["seo_title"], s["meta_description"], "".join(partes), "servicios",
+         jsonld=[service_jsonld(s), breadcrumb_jsonld(s["slug"], s["title"])])
+
+
+def social_service(s):
+    plan = "".join(
+        f'<li><h3>{e(titulo)}</h3><p>{e(desc)}</p></li>'
+        for titulo, desc in [
+            ("Planificar", "Definir temas, formatos y un calendario que puedas sostener."),
+            ("Preparar y publicar", "Apoyar la creación de textos y piezas, organizar los perfiles y coordinar la revisión antes de publicar."),
+            ("Revisar", "Consultar resultados disponibles en cada plataforma y usarlos para ajustar las próximas publicaciones."),
+        ])
+    extra_social = ('<div class="social-workflow"><p class="eyebrow">El ciclo de trabajo</p>'
+                     f'<ol class="social-plan">{plan}</ol></div>')
+    service_page(s, "social-hero", extra_social)
+
 
 def service_detail(s):
     if s["slug"] == "redes-sociales":
         social_service(s)
         return
-    d=2
-    outputs="".join(f'<li>{e(t)}</li>' for t in s["outputs"])
-    links = []
-    for slug in s["examples"]:
-        item = PROJ.get(slug) or TOOL[slug]
-        url = f"proyectos/{slug}/" if slug in PROJ else f"herramientas/#{slug}"
-        links.append(f'<a href="{e(local(d,url))}"><span>{e(item["title"])}</span>{icon("arrow",True)}</a>')
-    flow = tech_badges(d,s["stack"])
-    body=f"""<section class="page-hero service-detail-hero"><div class="wrap">{crumb(d,[("servicios/","Servicios"),(None,s["title"])])}
-    <span class="eyebrow">Soluciones a medida</span><h1>{e(s["title"])}<span class="orange">.</span></h1>
-    <p class="lead">{e(s["lead"])}</p><div class="page-meta"><span>Evaluación caso a caso</span><span>Primer diagnóstico conversado: gratuito</span></div></div></section>
-    <section class="section service-detail-brief"><div class="wrap">{overline("01","Problema y enfoque")}
-    <div class="case-layout"><article class="prose"><h2>Qué situación abordo.</h2><p>{e(s["situation"])}</p>
-    <h3>Cómo decido la solución</h3><p>{e(s["approach"])}</p></article>
-    <aside><p class="eyebrow">Ejemplos de entregables según alcance</p><ul>{outputs}</ul>
-    <p class="eyebrow" style="margin-top:2rem">Tecnologías utilizadas en esta línea</p><div class="tag-list">{flow}</div>
-    <p class="hint">La selección final depende del problema; no todas las herramientas se usan en todos los encargos.</p></aside></div></div></section>
-    <section class="section" style="background:var(--paper2)"><div class="wrap">{overline("02","Experiencia demostrada")}
-    <div class="section-head"><h2>Trabajos que aportan contexto.</h2><p>No son promesas de resultados: permiten revisar tipos de sistemas y decisiones técnicas que ya he trabajado.</p></div>
-    <div class="related">{"".join(links)}</div></div></section>
-    <section class="section"><div class="wrap"><div class="contact-board"><div><span class="eyebrow" style="color:var(--ink)">Contacto</span><h2>¿Tienes un proceso parecido?</h2></div>
-    <div><p>Cuéntame qué haces hoy y qué necesitas cambiar. La primera conversación es gratuita.</p>
-    {a(d,"contacto/","Revisemos tu caso "+icon("arrow",True),"button dark")}</div></div></div></section>"""
-    page("servicios/"+s["slug"],s["title"]+" — JMorgado",s["lead"],body,"servicios")
+    service_page(s, "service-detail-hero")
+
 def method():
-    d=1
-    included=["Escuchar qué necesitas resolver y cuál es la dificultad","Comprender de forma inicial el proceso y sus herramientas","Comentar alternativas posibles y una ruta para continuar"]
-    excluded=["Auditoría exhaustiva de archivos o sistemas","Cambios técnicos, instalaciones o reparación gratuita","Acceso inmediato a credenciales o datos sensibles"]
-    def cells(arr):return "".join(f'<li>{e(item)}</li>' for item in arr)
-    body=f"""<section class="page-hero method-hero"><div class="wrap">{crumb(d,[(None,"Método")])}
-    <span class="eyebrow">Cómo trabajo</span><h1>Empiezo con un caso concreto<span class="orange">.</span></h1>
-    <p class="lead">Me sirve ver la tarea como ocurre hoy. Una fila dudosa, un archivo que siempre hay que corregir o una excepción que sólo conoce quien hace el trabajo.</p></div></section>
-    <section class="section method-example"><div class="wrap method-layout">
-    <div class="method-copy"><p class="eyebrow">Conciliación de pedidos · Caso hipotético</p>
-    <h2>Qué hacemos cuando dos fuentes discrepan.</h2>
-    <p>Primero acordaría qué dato identifica cada pedido y qué fuente manda cuando hay una diferencia. Probaría esas reglas con pedidos duplicados, registros incompletos y montos distintos.</p>
-    <p>Entregaría el resultado junto a una lista de excepciones, una forma de repetir la prueba y las instrucciones para ajustar las reglas.</p>
-    {a(d,"calculadora/","Estimar el tiempo de esta tarea "+icon("arrow",True))}</div>{order_example()}</div></section>
-    <section class="section"><div class="wrap">{overline("02","Diagnóstico inicial gratuito")}
-    <div class="case-layout"><article class="prose"><h2>Qué conversamos primero.</h2>
-    <p>Una orientación para entender la tarea, las herramientas involucradas, la frecuencia y los resultados esperados. No necesitas elegir la tecnología.</p>
-    <h3>Incluye</h3><ul>{cells(included)}</ul></article>
-    <aside><p class="eyebrow">Fuera del diagnóstico gratuito</p><ul>{cells(excluded)}</ul>
-    <p class="hint">El trabajo técnico se propone y acuerda antes de comenzar. No se piden archivos de clientes, accesos, cuentas o datos sensibles en el primer contacto.</p></aside></div></div></section>
-    <section class="section"><div class="wrap"><div class="contact-board"><div><h2>La primera conversación es el inicio.</h2></div>
-    <div><p>Una descripción libre del problema es suficiente para comenzar.</p>{a(d,"contacto/","Escribirme "+icon("arrow",True),"button dark")}</div></div></div></section>"""
-    page("metodo","Cómo trabajo y qué incluye el diagnóstico gratuito","Conoce el método de JMorgado: conversación gratuita, comprensión del proceso, propuesta, acuerdo, desarrollo y entrega documentada.",body,"metodo")
+    d = 1
+    included = ["Escuchar qué necesitas resolver y cuál es la dificultad",
+                "Comprender de forma inicial el proceso y sus herramientas",
+                "Comentar alternativas posibles y una ruta para continuar"]
+    excluded = ["Auditoría exhaustiva de archivos o sistemas",
+                "Cambios técnicos, instalaciones o reparación gratuita",
+                "Acceso inmediato a credenciales o datos sensibles"]
+
+    def cells(arr): return "".join(f'<li>{e(item)}</li>' for item in arr)
+
+    # ---------------- bloques del recorrido de decisión (los seis pasos y los cuatro caminos)
+    pasos = [
+        ("need", "01", "Necesidad", "Escuchar el problema real",
+         "Escuchar el problema en la boca de quien lo vive: qué ocurre hoy, con qué frecuencia, quién lo hace y qué significa que esté bien hecho. Nada de propuestas antes de entender."),
+        ("analysis", "02", "Análisis", "Entender el proceso",
+         "Qué datos entran y salen, qué excepciones existen, qué herramientas están involucradas, cuánto volumen hay y cómo se valida el resultado al final."),
+        ("decision", "03", "Decisión", "Elegir el camino",
+         "El camino se elige aquí: aprovechar lo existente, integrar, automatizar o desarrollar. La tecnología se selecciona después de analizar, nunca antes."),
+        ("implementation", "04", "Implementación", "Construir con una base sólida",
+         "Permisos mínimos, credenciales fuera del código, convenciones ordenadas y una entrega documentada que queda en manos del cliente."),
+        ("validation", "05", "Validación", "Probar con casos reales",
+         "Casos reales e incompletos: duplicados, montos distintos, datos faltantes. Medir antes de dar el ajuste por bueno."),
+        ("evolution", "06", "Evolución", "Un ajuste que crece",
+         "La solución queda lista para una nueva capacidad, integración o infraestructura adicional, solo cuando el uso lo pida."),
+    ]
+
+    caminos = [
+        ("camino1", "01", "Camino 1 · Aprovechar lo existente", "Lo que ya usas",
+         "Planillas, CRM, correo, ERP y archivos: el camino más barato y el que menos mantención exige.",
+         "Reutilizar las herramientas que ya dominas es el primer camino que evalúo: resolver hoy sin crear otro sistema."),
+        ("camino2", "02", "Camino 2 · Integrar", "Conectar sistemas",
+         "Que las plataformas intercambien datos sin paso manual, con autenticación adecuada y manejo de errores.",
+         "Conectar sistemas en uso para que hablen entre sí: conservas tus herramientas y ganas tiempo en cada traspaso."),
+        ("camino3", "03", "Camino 3 · Automatizar", "Eliminar los pasos repetidos",
+         "Reglas, validaciones y disparos automáticos sobre el flujo que ya existe.",
+         "Menos clics, mismos datos y mismo resultado: la automatización cubre el tramo mecánico y deja el criterio en manos del cliente."),
+        ("camino4", "04", "Camino 4 · Desarrollar", "Solución propia",
+         "Cuando ninguna de las anteriores cubre la necesidad, se diseña y construye lo que falta.",
+         "El software a medida es el último recurso, no el punto de partida: llega cuando la necesidad lo justifica y con una base lista para crecer."),
+    ]
+
+    def step_button(key, num, nombre, sub, detalle):
+        special = ' met-step--decision' if key == "decision" else ""
+        tag = '<span class="met-step-tag">4 caminos</span>' if key == "decision" else ""
+        return (f'<li><button class="met-step{special}" type="button" data-step="{key}" '
+                f'data-title="{e(nombre)}" data-kicker="Paso {num}" data-detail="{e(detalle)}">'
+                f'<span class="met-step-num">{num}</span>'
+                f'<span class="met-step-body"><strong>{e(nombre)}</strong><small>{e(sub)}</small></span>'
+                f'{tag}</button></li>')
+
+    pasos_html = "".join(step_button(*p) for p in pasos)
+
+    def camino_button(key, num, titulo, nombre, frase, detalle):
+        return (f'<button class="met-path" type="button" data-path="{key}" data-title="{e(titulo)}" '
+                f'data-kicker="{e(titulo.split("·")[0].strip())}" data-detail="{e(detalle)}">'
+                f'<span class="met-path-num">{num}</span>'
+                f'<span class="met-path-body"><strong>{e(nombre)}</strong><small>{e(frase)}</small></span>'
+                f'</button>')
+
+    caminos_html = "".join(camino_button(*c) for c in caminos)
+
+    # ---------------- recursos: 5 tipos de tarea → 5 recursos
+    tareas = [
+        ("repetitiva", "Automatizar lo repetitivo", "Planillas, correos y pasos mecánicos que se repiten",
+         "Automatización convencional", "Reglas, flujos y scripts. Sin invocar un modelo para lo que un flujo resuelve.",
+         ["Reglas y flujos", "Scripts", "Integraciones nativas"],
+         ["Costo: mínimo", "Velocidad: inmediata", "Complejidad: baja", "Privacidad: sin salir del entorno", "Mantenimiento: mínimo"],
+         "El trabajo mecánico no necesita un modelo de IA para resolverse bien."),
+
+        ("tecnica", "Trabajo técnico complejo", "Arquitectura, refactor, depuración y funcionalidades",
+         "Agente de desarrollo", "Trabajo de ingeniería con contexto amplio, donde el juicio es parte del resultado.",
+         ["Claude Code", "OpenCode", "Antigravity", "Codex", "Traycer"],
+         ["Costo: medio", "Velocidad: alta", "Complejidad: alta", "Privacidad: según el entorno", "Mantenimiento: medio"],
+         "Tareas con contexto amplio: vale pagar más capacidad cuando el juicio es parte del trabajo."),
+
+        ("costo", "Presupuesto y cuota ajustada", "Mucho volumen o márgenes delgados",
+         "Modelo eficiente o local", "El de menor costo que cumple: cuotas y suscripciones primero.",
+         ["Qwen", "DeepSeek", "MiniMax", "Modelos locales"],
+         ["Costo: mínimo", "Velocidad: media", "Complejidad: media", "Privacidad: alta (local)", "Mantenimiento: bajo"],
+         "Un modelo más barato que cumple rinde más que uno caro usado para todo."),
+
+        ("privada", "Información sensible o confidencial", "Credenciales, datos de clientes, código privado",
+         "Ejecución local o entorno controlado", "El modelo va al dato, no el dato al modelo.",
+         ["Modelos locales", "Entornos privados", "Permisos mínimos"],
+         ["Costo: medio", "Velocidad: media", "Complejidad: media", "Privacidad: máxima", "Mantenimiento: medio"],
+         "La privacidad manda: el modelo se acerca al dato, no al revés."),
+
+        ("especifica", "Necesidad puntual y estricta", "Un formato, un servicio o una integración externa",
+         "Servicio o API externa", "Se consume lo justamente necesario, sin instalar infraestructura.",
+         ["APIs por uso", "Suscripciones", "Servicios en la nube"],
+         ["Costo: por uso", "Velocidad: inmediata", "Complejidad: baja–media", "Privacidad: según el proveedor", "Mantenimiento: mínimo"],
+         "Para una necesidad puntual no se instala una plataforma: se contrata justo lo que hace falta."),
+    ]
+
+    def tarea_row(key, titulo, sub, recurso, rec_frase, herramientas, factores, nota):
+        tools = "|".join(herramientas)
+        factors = "|".join(factores)
+        return (f'<button class="met-matrix-row" type="button" data-kind="{key}" role="tab" aria-selected="false" '
+                f'data-name="{e(recurso)}" data-desc="{e(rec_frase)}" '
+                f'data-tools="{e(tools)}" data-factors="{e(factors)}" data-note="{e(nota)}">'
+                f'<span class="met-matrix-task"><b>{e(titulo)}</b><small>{e(sub)}</small></span>'
+                f'<span class="met-matrix-arrow" aria-hidden="true">→</span>'
+                f'<span class="met-matrix-res"><b>{e(recurso)}</b></span>'
+                f'</button>')
+
+    tareas_html = "".join(tarea_row(*t) for t in tareas)
+
+    # ---------------- seguridad: seis controles en un rail transversal
+    controles = [
+        ("01", "Permisos mínimos", "Cada persona y cada proceso accede solo a lo necesario."),
+        ("02", "Accesos controlados", "Roles y credenciales separadas por responsabilidad."),
+        ("03", "Credenciales protegidas", "Secretos fuera del código y de los repositorios."),
+        ("04", "Entradas validadas", "La información se verifica antes de procesarla."),
+        ("05", "Datos protegidos", "Sensibilidad y contexto definen el nivel de resguardo."),
+        ("06", "Operación registrada", "Cada operación queda con un registro verificable."),
+    ]
+    controles_html = "".join(
+        f'<li><span class="met-shield-num">{n}</span><b>{e(t)}</b><span>{e(d)}</span></li>'
+        for n, t, d in controles)
+
+    # ---------------- ejemplos: criterio demostrable por proyecto
+    ejemplos = [
+        ("proyectos/el-cambiometro/", "El Cambiómetro", "Integrar ≠ construir",
+         "Fuentes públicas integradas y validadas antes de construir una plataforma de consulta."),
+        ("proyectos/impulsacv/", "ImpulsaCV", "Recorrido, no etapas sueltas",
+         "Del análisis del CV a su preparación: varias etapas conectadas en un solo flujo."),
+        ("proyectos/conecta/", "ListoPorHoy", "Conectar, no replicar",
+         "Marcas, medios, calendarios y plataformas sociales en un solo lugar, con las herramientas que ya usan."),
+        ("proyectos/exo-dream/", "Exo Dream", "Ordenar, no acumular",
+         "Fuentes de información, catálogo y herramientas de gestión en una sola administración."),
+    ]
+    ejemplos_html = "".join(
+        f'<article class="met-example"><p class="met-example-kicker">{e(kicker)}</p><b>{e(titulo)}</b>'
+        f'<p>{e(caso)}</p>{a(d, href, "Ver la ficha " + icon("arrow", True), "met-example-link")}</article>'
+        for href, titulo, kicker, caso in ejemplos)
+
+    # ---------------- etapas de evolución
+    etapas = [
+        ("0", "01", "Resolver", "Resolver lo de hoy", "Construido para el problema concreto.", "desde cero"),
+        ("1", "02", "Consolidar", "Base confiable", "Orden, validación y estructura.", "suma orden y validación"),
+        ("2", "03", "Escalar", "Capacidad a la base", "Integraciones e infraestructura bajo demanda.", "suma capacidad sin rehacer"),
+    ]
+    etapas_html = '<span class="met-stage-line" aria-hidden="true"></span><span class="met-stage-progress" aria-hidden="true"></span>' + "".join(
+        f'<button class="met-stage" type="button" data-stage="{idx}" style="--i:{idx}" '
+        f'aria-expanded="{"true" if idx == "0" else "false"}">'
+        f'<span class="met-stage-big" aria-hidden="true">{num}</span>'
+        f'<span class="met-stage-kicker">{num} · {e(nombre.upper())}</span>'
+        f'<strong>{e(titulo)}</strong>'
+        f'<span class="met-stage-sub">{e(sub)}</span>'
+        f'<span class="met-stage-delta">{e(delta)}</span>'
+        f'</button>'
+        for idx, num, nombre, titulo, sub, delta in etapas)
+
+    paneles = [
+        ("01 · RESOLVER",
+         "Construir lo necesario para el problema concreto que tienes hoy: sin capas por adelantado, sin infraestructura vacía. La base debe ser sólida, ordenada y preparada para crecer.",
+         [("Base de la solución, lo que resuelve hoy", True),
+          ("Registros y documentación mínima desde el primer día", False)]),
+        ("02 · CONSOLIDAR",
+         "Ordenar, validar y estabilizar: procesos claros, resultados medidos y una estructura que resiste el uso diario. Tú operas la solución sin depender de quien la construyó.",
+         [("Documentación de reglas y excepciones", True),
+          ("Validación y monitoreo de los resultados", True),
+          ("Estructura y convenciones mantenibles", True)]),
+        ("03 · ESCALAR",
+         "Incorporar capacidades cuando el crecimiento lo requiera: integraciones, infraestructura y recursos adicionales, sin demoler lo que ya funciona.",
+         [("Nuevas integraciones y módulos sobre la misma base", True),
+          ("Infraestructura escalada bajo demanda", True),
+          ("Automatizaciones y controles adicionales", True)]),
+    ]
+
+    paneles_html = "".join(
+        f'<div class="met-evo-panel" data-met-evo-panel{"" if i == 0 else " hidden"}>'
+        f'<div class="met-evo-copy"><h3>{e(k)}</h3><p>{e(txt)}</p></div>'
+        f'<ul class="met-evo-modules">'
+        + "".join(f'<li class="{"is-new" if nuevo else ""}" style="--d:{n}"><b>{e(txt2)}</b></li>' if nuevo else f'<li style="--d:{n}">{e(txt2)}</li>'
+                  for n, (txt2, nuevo) in enumerate(mods))
+        + '</ul></div>'
+        for i, (k, txt, mods) in enumerate(paneles))
+
+    body = f"""<section class="page-hero method-hero"><div class="wrap">{crumb(d, [(None, "Método")])}
+    <div class="met-hero-grid"><div><span class="eyebrow">Cómo trabajo</span>
+    <h1>Mejores decisiones desde el principio<span class="orange">.</span></h1>
+    <p class="lead">No siempre necesitas más tecnología para conseguir una mejor solución. Empiezo por entender el problema, aprovecho lo que ya tienes y solo incorporo complejidad cuando aporta valor real.</p></div>
+    <aside class="met-hero-quote"><p>Una buena arquitectura permite comenzar simple y ampliar escala cuando el proyecto lo pide.</p><span>El criterio, antes que el stack</span></aside></div>
+    <ol class="met-principles">
+      <li><span>01</span><p>Empiezo con los recursos y tecnologías realmente necesarios.</p></li>
+      <li><span>02</span><p>No incorporo complejidad que todavía no aporta valor.</p></li>
+      <li><span>03</span><p>Aprovecho las herramientas e infraestructura que ya usas.</p></li>
+      <li><span>04</span><p>Construyo una base sólida, ordenada y preparada para crecer.</p></li>
+      <li><span>05</span><p>Administro los recursos económicos, tecnológicos y de ejecución.</p></li>
+      <li><span>06</span><p>Escalo cuando las necesidades reales del proyecto lo justifican.</p></li>
+    </ol></div></section>
+
+    <section class="section"><div class="wrap">{overline("01", "Dos formas de trabajar")}
+    <div class="met-dual-head"><h2>Sobredimensionar<br>o construir<br>con criterio.</h2>
+    <p>El mismo problema admite dos respuestas. La diferencia es cuándo llega cada tecnología y por qué.</p></div>
+    <div class="met-compare-tabs" role="group" aria-label="Elegir enfoque">
+      <button class="met-compare-tab" type="button" data-pane-tab="a" aria-pressed="false">A · Sobredimensionar</button>
+      <button class="met-compare-tab" type="button" data-pane-tab="b" aria-pressed="true">B · Construir con criterio</button>
+    </div>
+    <div class="met-compare" data-met-compare data-active="b">
+      <article class="met-pane met-pane--a" data-pane="a" tabindex="0" aria-label="Enfoque A: sobredimensionar desde el inicio">
+        <header class="met-pane-head"><span class="met-pane-tag">Enfoque A</span><span class="met-pane-state">Complejidad antes que valor</span></header>
+        <h3>Sobredimensionar<br>desde el inicio</h3>
+        <ul>
+          <li>Tecnologías innecesarias desde el día uno.</li>
+          <li>Costos que crecen antes de necesitarlo.</li>
+          <li>Dependencias y complejidad difíciles de mantener.</li>
+          <li>Infraestructura que todavía no aporta valor.</li>
+        </ul>
+        <footer class="met-pane-foot"><span>Arranque<b>costo alto</b></span><span>Capacidad usada<b>parcial</b></span><span>Mantenimiento<b>alto</b></span></footer>
+      </article>
+      <div class="met-compare-axis" aria-hidden="true"><span class="met-compare-line"></span><span class="met-compare-vs">vs</span><span class="met-compare-line"></span></div>
+      <article class="met-pane met-pane--b" data-pane="b" tabindex="0" aria-label="Enfoque B: construir con criterio">
+        <header class="met-pane-head"><span class="met-pane-tag">Enfoque B</span><span class="met-pane-state">Proporcional y creciente</span></header>
+        <h3>Construir<br>con criterio</h3>
+        <ul>
+          <li>Empiezo por la necesidad real, no por el stack.</li>
+          <li>Aprovecho las herramientas que ya tienes.</li>
+          <li>Una base proporcional, ordenada y mantenible.</li>
+          <li>Nuevas capacidades cuando el proyecto las necesita.</li>
+        </ul>
+        <footer class="met-pane-foot"><span>Arranque<b>justo</b></span><span>Capacidad usada<b>completa</b></span><span>Mantenimiento<b>bajo</b></span></footer>
+      </article>
+    </div>
+    <p class="met-foot-note">Empezar con menos tecnología no es entregar una solución inferior: es evitar costos, dependencias y mantenimiento innecesarios. La base queda lista para comenzar simple y crecer cuando corresponda.</p>
+    </div></section>
+
+    <section class="section" style="background:var(--paper2)"><div class="wrap">{overline("02", "Cómo se toma la decisión")}
+    <div class="section-head"><h2>La tecnología se elige después de entender el problema.</h2>
+    <p>Seis pasos, un punto de decisión. El detalle aparece al pasar por cada etapa.</p></div>
+    <div class="met-flow2" data-met-flow data-active="decision">
+      <ol class="met-steps" aria-label="Recorrido de toma de decisión">
+        {pasos_html}
+      </ol>
+      <aside class="met-flow2-panel" aria-live="polite">
+        <p class="met-flow2-kicker"><span data-kicker>Paso 03</span><span class="met-flow2-kicker-sep" aria-hidden="true">/</span><span data-kicker-of>Decisión</span></p>
+        <h3 data-title>El camino se elige aquí</h3>
+        <p data-body>La tecnología se selecciona después de analizar, nunca antes.</p>
+        <div class="met-flow2-paths" data-paths>
+          <p class="met-flow2-paths-label">Cuatro caminos posibles, un mismo criterio</p>
+          {caminos_html}
+        </div>
+      </aside>
+    </div>
+    </div></section>
+
+    <section class="section"><div class="wrap">{overline("03", "Resolver, consolidar y escalar")}
+    <div class="section-head"><h2>De la solución inicial a la que crece.</h2>
+    <p>Una base proporcional al problema de hoy, lista para volverse más capaz cuando el uso lo pida.</p></div>
+    <div class="met-evo2" data-met-evolution data-active="0">
+      <div class="met-evo2-track">
+        {etapas_html}
+      </div>
+      {paneles_html}
+    </div>
+    </div></section>
+
+    <section class="section" style="background:var(--paper2)"><div class="wrap">{overline("04", "Gestión inteligente de recursos")}
+    <div class="section-head"><h2>El recurso correcto para cada tarea.</h2>
+    <p>No siempre uso los mismos agentes ni los mismos modelos. El panel muestra el recurso que resuelve mejor cada tipo de tarea.</p></div>
+    <div class="met-matrix" data-met-matrix data-active="tecnica">
+      <div class="met-matrix-rows" role="tablist" aria-label="Tipos de tarea">
+        <p class="met-matrix-label">Tipo de tarea <span aria-hidden="true">→</span> Recurso recomendado</p>
+        {tareas_html}
+      </div>
+      <aside class="met-matrix-panel" aria-live="polite">
+        <p class="met-matrix-kicker">Recurso a medida de la tarea</p>
+        <h3 data-name>…</h3>
+        <p data-desc>…</p>
+        <div class="met-matrix-tools" data-tools></div>
+        <ul class="met-matrix-factors" data-factors></ul>
+        <p class="met-matrix-note" data-note>…</p>
+      </aside>
+    </div>
+    <p class="met-foot-note">Elegir la herramienta también es parte de desarrollar bien. Un modelo más caro que el necesario no mejora el resultado: encarece el proceso y gasta cuotas que rinden más en la siguiente tarea.</p>
+    </div></section>
+
+    <section class="section"><div class="wrap">{overline("05", "La seguridad acompaña cada etapa")}
+    <div class="met-shield-head"><h2>La seguridad no se agrega al final.</h2>
+    <p>Es el suelo del recorrido completo: se decide desde el diseño y se verifica en cada entrega.</p></div>
+    <ol class="met-shield-rail" aria-label="Seis prácticas de seguridad transversales">
+      {controles_html}
+    </ol>
+    <p class="met-shield-foot">Sin certificaciones ni auditorías afirmadas: el compromiso es con prácticas verificables en cada entrega. Cada control se documenta, se prueba y queda en el registro.</p>
+    </div></section>
+
+    <section class="section" style="background:var(--paper2)"><div class="wrap">{overline("06", "Aplicado, no solo teoría")}
+    <div class="section-head"><h2>Contrástala con proyectos reales.</h2>
+    <p>Cuatro casos, un mismo criterio aplicado cuatro veces. Cada uno enlaza a su ficha.</p></div>
+    <div class="met-examples">{ejemplos_html}</div>
+    </div></section>
+
+    <section class="section"><div class="wrap">{overline("07", "Diagnóstico inicial gratuito")}
+    <div class="met-diag">
+      <div class="met-diag-col met-diag-col--in"><h2>Qué conversamos primero.</h2>
+      <p class="met-diag-lead">Una orientación para entender la tarea, las herramientas, la frecuencia y los resultados esperados. No necesitas elegir la tecnología.</p>
+      <h3>Qué incluye</h3><ul>{cells(included)}</ul></div>
+      <div class="met-diag-col met-diag-col--out"><h2>Lo que queda fuera.</h2>
+      <p class="met-diag-lead">Este trabajo se propone y se acuerda por separado, antes de comenzar.</p>
+      <h3>Qué queda fuera</h3><ul>{cells(excluded)}</ul>
+      <p class="hint">El trabajo técnico se propone y acuerda antes de comenzar. No se piden archivos de clientes, accesos, cuentas o datos sensibles en el primer contacto.</p></div>
+    </div></div></section>
+
+    <section class="section met-close"><div class="wrap"><div class="contact-board"><div><h2>La primera conversación es el inicio.</h2></div>
+    <div><p>Una descripción libre del problema es suficiente para comenzar.</p>{a(d, "contacto/", "Escribirme " + icon("arrow", True), "button dark")}</div></div></div></section>"""
+
+    page("metodo", "Método de trabajo: criterio antes que tecnología",
+         "Cómo trabajo: entender el problema antes de elegir herramientas, aprovechar lo que ya existe, construir una base proporcional y escalar cuando el proyecto lo pide. Diagnóstico inicial gratuito.",
+         body, "metodo")
+
+
 def calc():
     d=1
     before_h, before_m = divmod(ORDER_CASE["before"], 60)

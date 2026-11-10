@@ -1,0 +1,41 @@
+/* JMorgado - Flor de Almendro. Piel de ficha sobre el sistema comun (assets/ficha.css, fx-*).
+
+   Paleta tomada del propio sitio del cliente (src/App.jsx) y de su logotipo:
+     dorado        #C5A059   acento de la marca (oro del badge)
+     verde botanico #4F6F52  color de texto y navegacion en modo claro
+     verde profundo #3A4D39  titulares sobre papel
+     marfil        #FDFCF8   lienzo claro
+     noche         #0E1110   lienzo oscuro
+
+   La tipografia es la de JMorgado: la ficha explica el desarrollo, no la joyeria. */
+
+.project-flor-page{
+  --flor-dorado:#C5A059;
+  --flor-verde:#4F6F52;
+  --flor-verde-hondo:#3A4D39;
+  --flor-marfil:#FDFCF8;
+  --flor-noche:#0E1110;
+  /* Acento de la ficha: el dorado de la marca para lo grafico, el verde para el texto. */
+  --fx-coral:#C5A059;
+  --fx-olive:#3A4D39;
+}
+
+/* Presentacion: el logo original de la marca abre la ficha. */
+.project-flor-page .fx-hero-left{align-items:flex-start;text-align:left}
+.project-flor-page .fx-hero-logo{width:clamp(4.75rem,7.5vw,6.25rem);height:auto;border-radius:50%;box-shadow:0 14px 34px rgba(24,32,26,.16)}
+.project-flor-page .fx-hero-title{font-size:clamp(2.7rem,6.4vw,4.1rem);letter-spacing:-.045em}
+.project-flor-page .fx-portal:hover,.project-flor-page .fx-portal:focus-visible{color:var(--flor-verde-hondo)}
+.project-flor-page .fx-tags span{border-left-color:var(--flor-dorado)}
+.project-flor-page .fx-item-num{color:var(--flor-verde-hondo)}
+.project-flor-page .fx-lead{border-left-color:var(--flor-dorado)}
+.project-flor-page .fx-metric{border-left-color:var(--flor-dorado)}
+.project-flor-page .fx-cierre-jump b{color:var(--flor-verde-hondo)}
+
+/* El diagrama, sobre un lienzo de la marca en vez del petroleo general. */
+.project-flor-page .fx-archify-section{background:var(--flor-noche)}
+[data-jm-theme="night"] .project-flor-page .fx-archify-section{background:#0A0D0B}
+.project-flor-page .fx-archify{background:#12201C;border-color:rgba(197,160,89,.28)}
+.project-flor-page .fx-archify iframe{background:#12201C}
+.project-flor-page .fx-archify-section .fx-eyebrow{color:var(--flor-dorado)}
+
+@media(prefers-reduced-motion:reduce){.project-flor-page *{transition:none!important;animation:none!important}}

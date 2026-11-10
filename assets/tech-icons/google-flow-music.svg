@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Google Flow Music">
+<path d="M4 21c4 0 4-7 8-7s4 7 8 7 4-7 8-7" fill="none" stroke="#4285f4" stroke-width="2.3" stroke-linecap="round"/>
+<path d="M24 7l4 6-4 6" fill="none" stroke="#34a853" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.5 8.5v7.2" fill="none" stroke="#fbbc04" stroke-width="2.1" stroke-linecap="round"/>
+<circle cx="10.4" cy="16.2" r="2.4" fill="#fbbc04"/>
+</svg>

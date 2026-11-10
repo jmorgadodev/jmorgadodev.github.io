@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Google Apps Script">
+<path d="M6 3h14l6 6v20H6z" fill="#376bbb"/>
+<path d="M20 3l6 6h-6z" fill="#a9c6ee"/>
+<g stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M12 16l-3 3 3 3M20 16l3 3-3 3"/>
+</g>
+</svg>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Python">
+<rect x="3" y="3" width="26" height="26" rx="7" fill="#2b6595"/>
+<path d="M3 16c4-3 7 3 11 0s7-3 11 0v5c-4-3-7 3-11 0S7 18 3 21z" fill="#f5c542"/>
+<circle cx="11" cy="10" r="1.7" fill="#f5c542"/>
+</svg>

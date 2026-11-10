@@ -118,8 +118,7 @@
   background:color-mix(in srgb,var(--jm-stone) 10%,var(--jm-bg));
 }
 .tool-panel .tool-panel-header {
-  padding-bottom:1rem;
-  border-bottom-color:var(--jm-coral);
+  border-bottom-color:var(--tool-color,var(--jm-coral));
 }
 
 /* Portafolio — four folios of different widths, with the original marks. */

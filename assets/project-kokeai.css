@@ -1,0 +1,53 @@
+/* JMorgado - kokeAI. Piel de ficha sobre el sistema comun (assets/ficha.css, fx-*).
+
+   Paleta tomada del propio portal del cliente (public/index.html):
+     fondo oscuro   #050508   lienzo del portal
+     cian de marca  #00f2ff   acento en modo oscuro
+     cian claro     #0ea5e9   acento en modo claro
+     texto claro    #f5f7fa   informacion primaria
+
+   El logotipo original es el monograma K con brillo de neon sobre fondo negro. */
+
+.project-kokeai-page{
+  --koke-noche:#050508;
+  --koke-cian:#00f2ff;
+  --koke-cian-claro:#0ea5e9;
+  --koke-tinta:#f5f7fa;
+  /* Acentos de la ficha: el cian de la marca sobre papel y el brillo original en las superficies oscuras. */
+  --fx-coral:#0ea5e9;
+  --fx-olive:#1F2937;
+}
+
+/* Presentacion sobre el lienzo del portal, con el monograma original. */
+.project-kokeai-page .fx-hero{background:var(--koke-noche);color:var(--koke-tinta);border-bottom-color:rgba(0,242,255,.18)}
+.project-kokeai-page .fx-hero .fx-crumb{color:rgba(245,247,250,.58)}
+.project-kokeai-page .fx-hero .fx-eyebrow{color:var(--koke-cian)}
+.project-kokeai-page .fx-hero-title{color:var(--koke-tinta);font-size:clamp(2.8rem,6.4vw,4.2rem)}
+.project-kokeai-page .fx-hero-title .fx-coral{color:var(--koke-cian);text-shadow:0 0 16px rgba(0,242,255,.45)}
+.project-kokeai-page .fx-hero-copy{border-top-color:rgba(245,247,250,.14)}
+.project-kokeai-page .fx-hero-copy p{color:rgba(245,247,250,.86)}
+.project-kokeai-page .fx-tags span{color:rgba(245,247,250,.74);border-left-color:var(--koke-cian)}
+.project-kokeai-page .fx-hero-logo{width:clamp(3.6rem,5.6vw,4.6rem);height:auto;margin-bottom:clamp(1rem,1.9vw,1.35rem);border-radius:.55rem}
+
+/* Secciones del diagrama: el cian de marca sobre el fondo del portal. */
+.project-kokeai-page .fx-archify-section{background:var(--koke-noche)}
+[data-jm-theme="night"] .project-kokeai-page .fx-archify-section{background:#030304}
+.project-kokeai-page .fx-archify{border-color:rgba(0,242,255,.24);background:#0b0e14}
+.project-kokeai-page .fx-archify iframe{background:#0b0e14}
+.project-kokeai-page .fx-archify-section .fx-eyebrow{color:var(--koke-cian)}
+.project-kokeai-page .fx-archify-section h2{color:var(--koke-tinta)}
+.project-kokeai-page .fx-archify-section .fx-intro{color:rgba(245,247,250,.76)}
+
+/* Bloque de la experiencia de lectura: misma superficie, acento de marca. */
+.project-kokeai-page .fx-section--dark{background:#080b12}
+.project-kokeai-page .fx-section--dark .fx-eyebrow{color:var(--koke-cian)}
+.project-kokeai-page .fx-section--dark h2{color:var(--koke-tinta)}
+.project-kokeai-page .fx-section--dark .fx-intro{color:rgba(245,247,250,.78)}
+
+/* Acentos sobre papel. */
+.project-kokeai-page .fx-item-num{color:#0b6c80}
+.project-kokeai-page .fx-lead{border-left-color:var(--koke-cian-claro)}
+.project-kokeai-page .fx-tags span{border-left-color:var(--koke-cian-claro)}
+.project-kokeai-page .fx-cierre-jump b{color:var(--koke-cian-claro)}
+
+@media(prefers-reduced-motion:reduce){.project-kokeai-page *{transition:none!important;animation:none!important}}

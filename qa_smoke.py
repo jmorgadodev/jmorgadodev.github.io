@@ -3,7 +3,7 @@ from pathlib import Path
 import functools, http.server, os, threading
 from urllib.parse import urlsplit
 from xml.etree.ElementTree import parse
-from site_data import LEGACY_TOOL_SLUGS, PROJECTS, SERVICES, TOOLS
+from site_data import LEGACY_TOOL_SLUGS, PROJECT_ARCHIVE, PROJECTS, SERVICES, TOOLS
 from playwright.sync_api import sync_playwright, expect
 from bs4 import BeautifulSoup
 
@@ -296,26 +296,56 @@ def portfolio(browser):
     assert page.get_by_role("heading",name="El Cambiómetro").count() == 1
     assert not page.get_by_role("heading",name="AuditaPC",exact=True).count()
     assert not page.get_by_role("heading",name="Nokto",exact=True).count()
-    for category in ("plataformas","web","sistemas","todos"):
+    for category in ("software","datos","web","automatizacion","todos"):
         page.locator(f'[data-filter="{category}"]').click()
-        expected = sum(category == "todos" or project["category"] == category for project in PROJECTS)
+        expected = sum(category == "todos" or category in PROJECT_ARCHIVE[project["slug"]]["families"] for project in PROJECTS)
         assert page.locator("[data-project-category]:visible").count() == expected
+        label = "1 proyecto disponible" if expected == 1 else f"{expected} proyectos disponibles"
+        assert page.locator("#archive-count").inner_text() == label
+    page.locator('[data-filter="todos"]').click()
+    page.locator(".archive-row").nth(1).hover()
+    assert page.locator("#archive-inspector-name").inner_text() == PROJECTS[1]["title"]
+    page.locator(".archive-row").nth(2).focus()
+    assert page.locator("#archive-inspector-name").inner_text() == PROJECTS[2]["title"]
+    assert page.locator("#archive-link").get_attribute("href").endswith(f"proyectos/{PROJECTS[2]['slug']}/")
     page.goto(base+"herramientas/")
     for item in TOOLS:
         card = page.locator("#"+item["slug"])
         trigger = card.locator("summary")
-        trigger.click()
+        opener = card.locator(".tool-card-open")
+        # toda la tarjeta abre la ficha
+        assert opener.count() == 1
+        opener.click()
         panel = page.get_by_role("dialog", name=item["title"])
         expect(panel).to_be_visible()
+        # la ficha no ocupa mas de la mitad de la ventana
+        half = page.evaluate("() => window.innerWidth / 2")
+        ancho = page.evaluate("() => document.querySelector('.tool-panel').getBoundingClientRect().width")
+        assert ancho <= half + 1, "el panel excede la mitad de la ventana"
         assert panel.get_by_role("link",name="GitHub",exact=True).get_attribute("href") == item["repo"]
-        assert panel.get_by_role("link",name="Documentación",exact=True).get_attribute("href") == item["docs"]
-        downloads = panel.get_by_role("link",name="Descargar ZIP")
-        assert downloads.count() == bool(item.get("download"))
-        if item.get("download"):
-            assert downloads.get_attribute("href") == item["download"]
+        doc_label, doc_url = item["docs"]
+        assert panel.get_by_role("link",name=doc_label,exact=True).get_attribute("href") == doc_url
+        assert panel.get_by_role("link",name="Descargar ZIP").count() == 0
+        for label, url in item.get("downloads", []):
+            assert panel.get_by_role("link",name=label,exact=True).get_attribute("href") == url
+        for label, url in item.get("extra_links", []):
+            assert panel.get_by_role("link",name=label,exact=True).get_attribute("href") == url
+        licenses = panel.locator(".tool-license")
+        assert licenses.count() == 1
+        assert licenses.locator("dd").count() == len(item["licenses"])
+        for scope, name in item["licenses"]:
+            assert licenses.locator("dt", has_text=scope).count() == 1
+            assert licenses.locator("dd", has_text=name).count() == 1
+        assert panel.locator(".tool-detail-summary").inner_text() == item["description"]
         page.keyboard.press("Escape")
         expect(panel).not_to_be_visible()
-        expect(trigger).to_be_focused()
+        expect(opener).to_be_focused()
+        # la ruta de teclado sigue funcionando sobre el resumen
+        trigger.focus()
+        page.keyboard.press("Enter")
+        expect(page.get_by_role("dialog", name=item["title"])).to_be_visible()
+        page.keyboard.press("Escape")
+        expect(page.get_by_role("dialog", name=item["title"])).not_to_be_visible()
     for slug in LEGACY_TOOL_SLUGS:
         page.goto(base+"proyectos/"+slug+"/")
         page.wait_for_url(base+"herramientas/#"+slug)

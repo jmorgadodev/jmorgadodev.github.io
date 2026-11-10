@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Looker Studio">
+<rect x="3" y="4" width="26" height="24" rx="4" fill="#ffffff"/>
+<g>
+<rect x="8" y="16" width="4" height="8" rx="1" fill="#4285f4"/>
+<rect x="14" y="11" width="4" height="13" rx="1" fill="#ea4335"/>
+<rect x="20" y="7" width="4" height="17" rx="1" fill="#fbbc04"/>
+</g>
+<path d="M3 8a4 4 0 0 1 4-4h18a4 4 0 0 1 4 4v2H3z" fill="#34a853" opacity=".9"/>
+</svg>

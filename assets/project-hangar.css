@@ -1,0 +1,61 @@
+/* JMorgado - Hangar354. Piel de ficha sobre el sistema comun (assets/ficha.css, fx-*).
+
+   Tokens tomados del sistema de diseno del propio proyecto (.interface-design/system.md):
+     pit-canvas     #07090d   fondo mas profundo
+     pit-deck       #0b0e14   panel principal
+     pit-console    #10151d   controles y tarjetas
+     signal-red     #e10600   vivo y accion principal
+     marshal-amber  #f2a52b   revision y posicion lider
+     track-green    #39d98a   dato confirmado
+     text           #f5f7fa   informacion primaria
+
+   El color comunica estado: el rojo marca lo vivo, el verde lo confirmado y el ambar
+   la revision. No se introducen acentos nuevos. */
+
+.project-hangar-page{
+  --hangar-canvas:#07090d;
+  --hangar-deck:#0b0e14;
+  --hangar-console:#10151d;
+  --hangar-red:#e10600;
+  --hangar-amber:#f2a52b;
+  --hangar-green:#39d98a;
+  --hangar-text:#f5f7fa;
+  --hangar-muted:#9aa3af;
+  /* Acentos de la ficha: rojo de la marca para lo vivo, grafito para el texto sobre papel. */
+  --fx-coral:#e10600;
+  --fx-olive:#2A3038;
+}
+
+/* Presentacion sobre el lienzo del paddock. */
+.project-hangar-page .fx-hero{background:var(--hangar-canvas);color:var(--hangar-text);border-bottom-color:rgba(245,247,250,.14)}
+.project-hangar-page .fx-hero .fx-crumb{color:rgba(245,247,250,.58)}
+.project-hangar-page .fx-hero .fx-eyebrow{color:var(--hangar-amber)}
+.project-hangar-page .fx-hero-title{color:var(--hangar-text);font-size:clamp(2.7rem,6.2vw,4rem)}
+.project-hangar-page .fx-hero-title .fx-coral{color:var(--hangar-red)}
+.project-hangar-page .fx-hero-copy{border-top-color:rgba(245,247,250,.14)}
+.project-hangar-page .fx-hero-copy p{color:rgba(245,247,250,.86)}
+.project-hangar-page .fx-tags span{color:rgba(245,247,250,.74);border-left-color:var(--hangar-red)}
+.project-hangar-page .fx-hero-logo{width:clamp(3.5rem,5.4vw,4.4rem);height:auto;margin-bottom:clamp(1rem,1.9vw,1.35rem)}
+
+/* Seccion del diagrama: el estado en vivo se lee en rojo. */
+.project-hangar-page .fx-archify-section{background:var(--hangar-canvas)}
+[data-jm-theme="night"] .project-hangar-page .fx-archify-section{background:#05070a}
+.project-hangar-page .fx-archify{border-color:rgba(225,6,0,.32);background:var(--hangar-console)}
+.project-hangar-page .fx-archify iframe{background:var(--hangar-console)}
+.project-hangar-page .fx-archify-section .fx-eyebrow{color:var(--hangar-red)}
+.project-hangar-page .fx-archify-section h2{color:var(--hangar-text)}
+.project-hangar-page .fx-archify-section .fx-intro{color:rgba(245,247,250,.76)}
+
+/* Bloque de Lapbook: dato confirmado del piloto. */
+.project-hangar-page .fx-section--dark{background:var(--hangar-deck)}
+.project-hangar-page .fx-section--dark .fx-eyebrow{color:var(--hangar-green)}
+.project-hangar-page .fx-section--dark h2{color:var(--hangar-text)}
+.project-hangar-page .fx-section--dark .fx-intro{color:rgba(245,247,250,.78)}
+
+/* Acentos sobre papel. */
+.project-hangar-page .fx-item-num{color:#A82605}
+.project-hangar-page .fx-lead{border-left-color:var(--hangar-red)}
+.project-hangar-page .fx-metric{border-left-color:var(--hangar-red)}
+.project-hangar-page .fx-cierre-jump b{color:var(--hangar-red)}
+
+@media(prefers-reduced-motion:reduce){.project-hangar-page *{transition:none!important;animation:none!important}}

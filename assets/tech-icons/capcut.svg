@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="CapCut">
+<rect x="3" y="7" width="26" height="18" rx="3" fill="#111418"/>
+<g fill="#2b3138">
+<rect x="5.5" y="9.5" width="4" height="3"/><rect x="5.5" y="14.5" width="4" height="3"/><rect x="5.5" y="19.5" width="4" height="3"/>
+</g>
+<path d="M15 11l9 5-9 5z" fill="#ffffff"/>
+<path d="M25 9v14" stroke="#f5c518" stroke-width="1.8" stroke-linecap="round"/>
+</svg>
