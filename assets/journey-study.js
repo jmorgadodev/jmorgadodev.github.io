@@ -27,12 +27,182 @@ const skip=root.querySelector('.intro-skip'),copies=[...root.querySelectorAll('[
 const prefersReduced=matchMedia('(prefers-reduced-motion: reduce)');
 const mqMobile=matchMedia('(max-width:900px)');
 let W=0,H=0,DPR=1,idleDPR=1,wordPoints=[],play={t:0},master,trigger,resizeId;
+// C · Cadencia propia de la capa ambiental: 29,4 fps en escritorio y 23,8 fps
+// en pantallas estrechas. No se cambia el valor: ya está dentro del rango
+// pedido y forma parte de la sensación de profundidad del reposo.
+const ambientInterval=()=>W<700?42:34;
+// C · Cache de las capas del fondo, una por escena. El fondo completo ya no se
+// cachea como imagen fija: el color base se mezcla en cada fotograma y las
+// capas se componen con el mismo crossfade que ya hacia el motor.
+const capaCanvasA=document.createElement('canvas');
+const capaCanvasB=document.createElement('canvas');
+const capaCtxA=capaCanvasA.getContext('2d',{alpha:true});
+const capaCtxB=capaCanvasB.getContext('2d',{alpha:true});
+let capaTramoA=-1,capaTramoB=-1,capaTema='',capaAncho=0,capaAlto=0,capaDPR=0,capaListoA=false,capaListoB=false;
+function capaClaveValida(){
+ return capaTema===(night()?'night':'day')&&capaAncho===W&&capaAlto===H&&capaDPR===DPR;
+}
+function capaInvalidar(){
+ capaListoA=false;capaListoB=false;capaTramoA=-1;capaTramoB=-1;
+}
+function capaGenerar(scene,destino,destinoCtx){
+ if(scene<0||scene>7)return false;
+ const pw=Math.max(1,Math.round(W*DPR)),ph=Math.max(1,Math.round(H*DPR));
+ destino.width=pw;destino.height=ph;
+ destinoCtx.setTransform(1,0,0,1,0,0);
+ destinoCtx.clearRect(0,0,pw,ph);
+ destinoCtx.setTransform(DPR,0,0,DPR,0,0);
+ const anterior=fondoCtx;
+ fondoCtx=destinoCtx;
+ try{ drawBackdropLayer(scene,PAL[night()?'night':'day'],1); }
+ finally{ fondoCtx=anterior; }
+ return true;
+}
+// D · Control del área de renderizado.
+//
+// El coste de rasterización es proporcional al área del lienzo, así que la
+// palanca más directa sobre el intervalo entre fotogramas es la resolución
+// interna. El tamaño en CSS no cambia nunca: sólo cambia cuántos píxeles
+// reales se pintan por cada píxel de la pantalla.
+//
+//   1. Un tope por defecto según el tipo de dispositivo y su potencia.
+//   2. Un ajuste en vivo: el motor mide el intervalo real entre fotogramas y
+//      baja la resolución interna en escalones cuando el equipo no sostiene
+//      el ritmo, con histeresis y enfriamiento para que la calidad no oscile.
+// Niveles de resolucion interna. El suelo es 0,85: por debajo el grafico
+// pierde nitidez y el equipo tampoco gana fluidez suficiente.
+const DPR_NIVELES=[0.85,1,1.25,1.5];
+let dprNivel=-1,dprTope=-1,frameSonda=0,frameAnterior=0;
+let frameMuestras=[],frameEnfriamiento=0,frameEstable=0;
+
+// Tope por defecto: nunca se supera el límite anterior de 1,65, de modo que la
+// calidad visual no puede empeorar respecto del estado previo en ningún equipo.
+function dprCapBase(){
+ // El lado corto de la pantalla es el que delata un equipo estrecho: en un
+ // movil en vertical, el alto es mayor que el ancho.
+ const corto=Math.min(innerWidth||0,innerHeight||0);
+ const largo=Math.max(innerWidth||0,innerHeight||0);
+ const nucleos=navigator.hardwareConcurrency||4;
+ const memoria=navigator.deviceMemory||4;
+ const tactil=matchMedia('(pointer:coarse)').matches;
+ if(tactil||corto<900)return(nucleos>=8&&memoria>=6)?1.25:1;
+ return(nucleos>=8&&memoria>=8&&largo>=1600)?1.5:1.25;
+}
+function dprInicializar(){
+ if(dprNivel>=0)return;
+ const base=dprCapBase();
+ // El mayor nivel que no supera el tope: nunca se baja de la resolucion
+ // basandose en el orden del array, sino en el limite real del equipo.
+ let indice=0;
+ for(let n=0;n<DPR_NIVELES.length;n++){
+  if(DPR_NIVELES[n]<=base+0.1)indice=n;
+ }
+ dprNivel=indice;dprTope=indice;
+}
+function dprCap(){dprInicializar();return DPR_NIVELES[dprNivel]}
+function dprAjustable(){
+ // El ajuste en vivo se reserva a los equipos donde el area es el factor
+ // dominante. En escritorio, la medicion demuestra que reducir el area no
+ // mejora el intervalo: ahi el cuello es el numero de operaciones de dibujo.
+ // El nivel ya se inicializa antes de esta comprobacion.
+ const corto=Math.min(innerWidth||0,innerHeight||0);
+ return matchMedia('(pointer:coarse)').matches||corto<900;
+}
+
+// El sondeo usa un unico callback propio: sus ejecuciones son una por
+// fotograma, de modo que la diferencia entre dos Sellos es el intervalo real.
+function frameSondaTick(sello){
+ if(frameAnterior){
+  const delta=sello-frameAnterior;
+  if(delta>0&&delta<2000)frameMuestras.push(delta);
+  if(frameMuestras.length>40)frameMuestras.shift();
+ }
+ frameAnterior=sello;
+ frameSonda=requestAnimationFrame(frameSondaTick);
+}
+function ajustarResolucion(){
+ if(!dprAjustable()||prefersReduced.matches||dprNivel<0)return;
+ const ahora=performance.now();
+ if(ahora<frameEnfriamiento)return;
+ if(frameMuestras.length<12)return;
+ const orden=frameMuestras.slice().sort((a,b)=>a-b);
+ const mediana=orden[orden.length>>1];
+ let nivel=dprNivel;
+ if(mediana>55&&nivel>0)nivel--;
+ else if(mediana<20&&nivel<dprTope){
+  frameEstable++;
+  if(frameEstable>=8)nivel++;
+ }else frameEstable=0;
+ if(nivel===dprNivel)return;
+ dprNivel=nivel;
+ frameMuestras.length=0;
+ frameEstable=0;
+ frameEnfriamiento=ahora+(nivel<dprTope?1500:6000);
+ resize();
+}
 const seedPulse={value:0},introReveal={value:1},sceneAmbient={value:0},idleMotion={value:0,time:0};
 const homeReturn={scale:1,turn:0,lift:0,glow:0,ring:0,opacity:1};
 let seedPulseTween=null,introTween=null,introTextTween=null,sceneAmbientTimer=0,homeReturnTween=null;
-let idleFrameId=0,idleLastRender=0,idleLastFrame=0,idleClock=0,idleRunning=false;
+let idleLastRender=0,idleLastFrame=0,idleClock=0,ambientRunning=false;
 const pointer={x:0,y:0,energy:0,active:false,down:false,dirX:0,dirY:0,speed:0,lastMoveAt:0,lastSpeedUpdateAt:0,hasPosition:false};
 let pointerTween=null,pointerFade=null,scrollIdle=true,scrollIdleTimer=0;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Arquitectura del motor
+//
+//   A · Motor narrativo     → capa 'narrative'. Las siete escenas, sus estados,
+//                              geometrías y transiciones. No sabe nada del pintado.
+//   B · Motor de interacción → el puntero. Anota la posición; no dibuja.
+//   C · Capas visuales      → capa 'ambient'. Atmósferas y profundidad del
+//                              reposo. Tiene su propio ritmo y su propio lienzo.
+//   D · Control de rendimiento → invalidez, visibilidad y cadencia.
+//
+// Un único ciclo de fotogramas (el ticker de GSAP) recorre las capas. Cada capa
+// declara si necesita repintado: así una capa nunca obliga a redibujar a otra.
+// El ambiente respira sin forzar el relato, y el relato sólo se repinta cuando
+// su estado ha cambiado de verdad.
+//
+// Para añadir una capa nueva no hay que tocar las escenas: se registra aquí con
+// su propio ritmo, su propia visibilidad y su propia invalidez.
+// ═══════════════════════════════════════════════════════════════════════════
+// C · Contexto de destino del bloque de fondo. Apunta al lienzo principal
+// salvo mientras se rasteriza un bitmap de capas, de modo que el mismo
+// codigo sirve para pintar en el lienzo y en la cache.
+let fondoCtx=ctx;
+
+const layers={};
+function registerLayer(layer){layers[layer.id]=layer;return layer}
+function invalidate(id){const l=layers[id];if(l)l.dirty=true}
+function invalidateAll(){for(const id in layers)layers[id].dirty=true}
+
+// A · La capa narrativa sólo se repinta si algo del relato ha cambiado:
+// cambio de tramo, puntero, pulso de semilla, tema, tamaño o entrada inicial.
+const narrativeLayer=registerLayer({
+ id:'narrative',dirty:true,
+ due(){return this.dirty},
+ paint(){this.dirty=false;paintNarrative()}
+});
+// C · La capa ambiental tiene su propio ritmo (24-30 fps) y su propia
+// visibilidad. Nunca provoca un repintado completo del motor principal.
+const ambientLayer=registerLayer({
+ id:'ambient',dirty:false,
+ due(now){return this.dirty||(ambientRunning&&now-idleLastRender>=ambientInterval())},
+ paint(now){this.dirty=false;drawIdleAmbient(now);idleLastRender=now}
+});
+
+// B · El puntero anota la posición y la aplica una sola vez por ciclo de
+// fotogramas, con el último valor recibido. Un ratón rápido genera un
+// repintado por fotograma, no uno por evento.
+const pendingPointer={clientX:0,clientY:0,pointerType:'mouse',has:false};
+let pointerDirty=false;
+function queuePointer(event){
+ pendingPointer.clientX=event.clientX;
+ pendingPointer.clientY=event.clientY;
+ pendingPointer.pointerType=event.pointerType;
+ pendingPointer.has=true;
+ pointerDirty=true;
+}
+function invalidateNarrative(){narrativeLayer.dirty=true}
 const N=3600,particles=[],PHI=(1+Math.sqrt(5))/2;
 const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
 const lerp=(a,b,t)=>a+(b-a)*t;
@@ -47,7 +217,15 @@ function pointerInfluenceAt(x,y,reach){
  return {strength:proximity*proximity*pointer.energy*directional,
   proximity,dx,dy,distance,speed,direction};
 }
-const hash=n=>{const v=Math.sin(n*127.1+83.17)*43758.5453;return v-Math.floor(v)};
+const hashCache=new Map();
+const hash=n=>{
+ let valor=hashCache.get(n);
+ if(valor!==undefined)return valor;
+ const v=Math.sin(n*127.1+83.17)*43758.5453;
+ valor=v-Math.floor(v);
+ hashCache.set(n,valor);
+ return valor;
+};
 const rad=Math.PI/180;
 for(let i=0;i<N;i++)particles.push({r:hash(i*2),s:hash(i*2+1),k:hash(i*3+7)});
 const PAL={
@@ -59,8 +237,27 @@ const PAL={
  night:{bg:['#111B20','#1A3030','#F45A3A','#263536','#0B141C','#1A3239','#353129','#0B141C'],
  ink:'#F3F0E8',cream:'#F3F0E8',petrol:'#477982',coral:'#FF785C',amber:'#EEC47D',olive:'#ADB29C',stone:'#818578',ash:'#B5B19F',clay:'#DDA294'}
 };
-const rgb=h=>h.startsWith('rgb')?h.match(/[\d.]+/g).slice(0,3).map(Number):[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
-const mix=(a,b,u)=>{const A=rgb(a),B=rgb(b);return 'rgb('+A.map((v,i)=>Math.round(lerp(v,B[i],u))).join(',')+')'};
+// D · Cache de operaciones puras. El motor repite estas cuatro llamadas
+// decenas de miles de veces por fotograma y todas son deterministas.
+const rgbCache=new Map();
+const rgb=h=>{
+ const clave=h;
+ let valor=rgbCache.get(clave);
+ if(valor)return valor;
+ valor=h.startsWith('rgb')?h.match(/[\d.]+/g).slice(0,3).map(Number):[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+ rgbCache.set(clave,valor);
+ return valor;
+};
+const mixCache=new Map();
+const mix=(a,b,u)=>{
+ const clave=a+'|'+b+'|'+Math.round(u*100);
+ let valor=mixCache.get(clave);
+ if(valor)return valor;
+ const A=rgb(a),B=rgb(b);
+ valor='rgb('+A.map((v,k)=>Math.round(lerp(v,B[k],u))).join(',')+')';
+ mixCache.set(clave,valor);
+ return valor;
+};
 const rgba=(color,alpha)=>'rgba('+rgb(color).map(Math.round).join(',')+','+alpha+')';
 // Grano físico determinista: una sola textura repetible, no ruido nuevo por fotograma.
 const grainTile=document.createElement('canvas');
@@ -76,6 +273,26 @@ for(let i=0;i<grainImage.data.length;i+=4){
 }
 grainContext.putImageData(grainImage,0,0);
 const grainPattern=ctx.createPattern(grainTile,'repeat');
+// El grano es una textura estatica: se rasteriza una sola vez en un bitmap
+// del tamano del lienzo y se compone con un unico drawImage. Antes se
+// muestreaba el patron repetido sobre toda la superficie en cada fotograma,
+// en modo soft-light, y era el mayor coste individual del fondo.
+const grainCanvas=document.createElement('canvas');
+const grainCtx=grainCanvas.getContext('2d',{alpha:true});
+let grainReady=false;
+function rebuildGrain(){
+ if(!W||!H)return;
+ const pw=Math.max(1,Math.round(W*DPR)),ph=Math.max(1,Math.round(H*DPR));
+ grainCanvas.width=pw;grainCanvas.height=ph;
+ grainCtx.setTransform(1,0,0,1,0,0);
+ grainCtx.clearRect(0,0,pw,ph);
+ const patron=grainCtx.createPattern(grainTile,'repeat');
+ if(patron){
+  grainCtx.fillStyle=patron;
+  grainCtx.fillRect(0,0,pw,ph);
+ }
+ grainReady=true;
+}
 function contrastFor(background){
  const channels=background.startsWith('rgb')?background.match(/\d+/g).slice(0,3).map(Number):rgb(background);
  const linear=channels.map(v=>{const c=v/255;return c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4)});
@@ -144,33 +361,33 @@ function drawBeveledBlock(x,y,w,h,r,color,p,ambient=0,depthMultiplier=1){
 }
 function drawBackdropWash(x,y,r,color,opacity){
  if(opacity<=.001)return;
- const gradient=ctx.createRadialGradient(x,y,0,x,y,r);
+ const gradient=fondoCtx.createRadialGradient(x,y,0,x,y,r);
  gradient.addColorStop(0,rgba(color,opacity));
  gradient.addColorStop(.36,rgba(color,opacity*.48));
  gradient.addColorStop(.74,rgba(color,opacity*.12));
  gradient.addColorStop(1,rgba(color,0));
- ctx.fillStyle=gradient;ctx.fillRect(0,0,W,H);
+ fondoCtx.fillStyle=gradient;fondoCtx.fillRect(0,0,W,H);
 }
 function drawSoftEllipse(x,y,rx,ry,color,opacity){
  if(opacity<=.001)return;
- ctx.save();ctx.translate(x,y);ctx.scale(1,ry/rx);
- const gradient=ctx.createRadialGradient(0,0,0,0,0,rx);
+ fondoCtx.save();fondoCtx.translate(x,y);fondoCtx.scale(1,ry/rx);
+ const gradient=fondoCtx.createRadialGradient(0,0,0,0,0,rx);
  gradient.addColorStop(0,rgba(color,opacity));
  gradient.addColorStop(.42,rgba(color,opacity*.42));
  gradient.addColorStop(1,rgba(color,0));
- ctx.fillStyle=gradient;ctx.beginPath();ctx.arc(0,0,rx,0,Math.PI*2);ctx.fill();
- ctx.restore();
+ fondoCtx.fillStyle=gradient;fondoCtx.beginPath();fondoCtx.arc(0,0,rx,0,Math.PI*2);fondoCtx.fill();
+ fondoCtx.restore();
 }
 function drawSurfaceMaterial(scene,p){
  const isNight=night(),extent=Math.max(W,H);
  if(!isNight){
   // Luz de superficie: un plano claro arriba y una caída tonal real hacia el borde.
-  const plane=ctx.createLinearGradient(0,0,W,H);
+  const plane=fondoCtx.createLinearGradient(0,0,W,H);
   plane.addColorStop(0,rgba(p.cream,.30));
   plane.addColorStop(.28,rgba(p.cream,.11));
   plane.addColorStop(.66,rgba(p.ink,.018));
   plane.addColorStop(1,rgba(p.ink,.115));
-  ctx.fillStyle=plane;ctx.fillRect(0,0,W,H);
+  fondoCtx.fillStyle=plane;fondoCtx.fillRect(0,0,W,H);
   if(scene===0){
    // Papel mineral neutro: el modo día necesita contraste de volumen, no un velo ámbar.
    drawBackdropWash(W*.49,H*.65,extent*.63,p.petrol,.115);
@@ -206,22 +423,26 @@ function drawSurfaceMaterial(scene,p){
   }
  }
  // La textura se compone en soft-light: material visible, sin patrón ornamental.
+ // La textura se compone en soft-light: material visible, sin patron ornamental.
+ // Se aplica aqui, una sola vez por fotograma, sobre el fondo ya compuesto.
  if(grainPattern){
-  ctx.save();ctx.globalCompositeOperation='soft-light';
-  ctx.globalAlpha*=isNight?.055:.145;
-  ctx.fillStyle=grainPattern;ctx.fillRect(0,0,W,H);ctx.restore();
+  fondoCtx.save();fondoCtx.globalCompositeOperation='soft-light';
+  fondoCtx.globalAlpha*=isNight?.055:.145;
+  if(grainReady)fondoCtx.drawImage(grainCanvas,0,0,W,H);
+  else{fondoCtx.fillStyle=grainPattern;fondoCtx.fillRect(0,0,W,H);}
+  fondoCtx.restore();
  }
 }
 function drawBackdropLayer(scene,p,alpha=1){
  if(alpha<=.002)return;
  const isNight=night(),extent=Math.max(W,H);
- ctx.save();ctx.globalAlpha*=alpha;
+ fondoCtx.save();fondoCtx.globalAlpha*=alpha;
  // Una luz diagonal común mantiene la identidad del recorrido sin uniformar sus escenas.
- const directional=ctx.createLinearGradient(0,0,W,H);
+ const directional=fondoCtx.createLinearGradient(0,0,W,H);
  directional.addColorStop(0,rgba(p.cream,isNight?.035:.18));
  directional.addColorStop(.48,rgba(p.cream,0));
  directional.addColorStop(1,rgba(isNight?'#050B10':p.ink,isNight?.075:.075));
- ctx.fillStyle=directional;ctx.fillRect(0,0,W,H);
+ fondoCtx.fillStyle=directional;fondoCtx.fillRect(0,0,W,H);
  if(scene===0){
   // En noche, contraluz cálida; en día, profundidad fría con un reflejo bajo.
   const phase=idleMotion.time,idle=idleMotion.value;
@@ -239,12 +460,12 @@ function drawBackdropLayer(scene,p,alpha=1){
   drawBackdropWash(W*.50,H*.58,extent*.28,p.amber,isNight?.055:.12);
  }else if(scene===2){
   // El coral conserva su protagonismo, pero gana luz central y profundidad periférica.
-  const ember=ctx.createRadialGradient(W*.50,H*.64,0,W*.50,H*.64,extent*.70);
+  const ember=fondoCtx.createRadialGradient(W*.50,H*.64,0,W*.50,H*.64,extent*.70);
   ember.addColorStop(0,rgba(p.amber,isNight?.22:.20));
   ember.addColorStop(.30,rgba(p.coral,.035));
   ember.addColorStop(.68,rgba('#9E3A2C',isNight?.08:.065));
   ember.addColorStop(1,rgba('#6F2D27',isNight?.15:.12));
-  ctx.fillStyle=ember;ctx.fillRect(0,0,W,H);
+  fondoCtx.fillStyle=ember;fondoCtx.fillRect(0,0,W,H);
  }else if(scene===3){
   // Superficie mineral: la luz oliva acompaña la palabra sin competir con CRECER.
   const phase=idleMotion.time,idle=idleMotion.value;
@@ -255,11 +476,11 @@ function drawBackdropLayer(scene,p,alpha=1){
   // Luz de ambiente y horizonte suave: el piso conserva su retícula y perspectiva.
   drawBackdropWash(W*.50,H*.57,extent*.58,p.petrol,isNight?.16:.11);
   drawBackdropWash(W*.50,H*.73,extent*.45,p.cream,isNight?.06:.08);
-  const horizon=ctx.createLinearGradient(0,H*.66,0,H);
+  const horizon=fondoCtx.createLinearGradient(0,H*.66,0,H);
   horizon.addColorStop(0,rgba(p.petrol,0));
   horizon.addColorStop(.48,rgba(p.petrol,isNight?.075:.045));
   horizon.addColorStop(1,rgba(p.petrol,0));
-  ctx.fillStyle=horizon;ctx.fillRect(0,0,W,H);
+  fondoCtx.fillStyle=horizon;fondoCtx.fillRect(0,0,W,H);
  }else if(scene===5){
   // Piedra fría: cuatro luces locales relacionan cada plataforma con su acento.
   const radius=extent*.25,phase=idleMotion.time,idle=idleMotion.value;
@@ -275,28 +496,23 @@ function drawBackdropLayer(scene,p,alpha=1){
   drawBackdropWash(W*.50,H*.42,extent*.36,p.petrol,isNight?.045:.13);
  }else if(scene===7){
   // A restrained band of light focuses the last composition on the seed.
-  const waveBand=ctx.createLinearGradient(0,H*.42,0,H*.84);
+  const waveBand=fondoCtx.createLinearGradient(0,H*.42,0,H*.84);
   waveBand.addColorStop(0,rgba(p.petrol,0));
   waveBand.addColorStop(.48,rgba(p.petrol,isNight?.095:.055));
   waveBand.addColorStop(1,rgba(p.petrol,0));
-  ctx.fillStyle=waveBand;ctx.fillRect(0,0,W,H);
+  fondoCtx.fillStyle=waveBand;fondoCtx.fillRect(0,0,W,H);
   drawBackdropWash(W*.50,H*.62,extent*.72,p.petrol,isNight?.13:.075);
   drawBackdropWash(W*.50,H*.74,extent*.28,p.coral,isNight?.055:.045);
  }
  const edgeColor=isNight?'#050B10':p.ink;
  drawSurfaceMaterial(scene,p);
- const vignette=ctx.createRadialGradient(W*.50,H*.48,Math.min(W,H)*.27,
+ const vignette=fondoCtx.createRadialGradient(W*.50,H*.48,Math.min(W,H)*.27,
   W*.50,H*.48,extent*.78);
  vignette.addColorStop(0,rgba(edgeColor,0));
  vignette.addColorStop(.68,rgba(edgeColor,isNight?.025:.025));
  vignette.addColorStop(1,rgba(edgeColor,isNight?.12:.075));
- ctx.fillStyle=vignette;ctx.fillRect(0,0,W,H);
- ctx.restore();
-}
-function drawSceneBackdrop(scene,p,dissolve){
- const blend=clamp(dissolve);
- drawBackdropLayer(scene,p,1-blend);
- if(scene<7&&blend>.001)drawBackdropLayer(scene+1,p,blend);
+ fondoCtx.fillStyle=vignette;fondoCtx.fillRect(0,0,W,H);
+ fondoCtx.restore();
 }
 function drawSceneAtmosphere(scene,p){
  const value=sceneAmbient.value;
@@ -455,7 +671,7 @@ function drawIdleSceneAmbient(scene,u,p,t){
 function drawIdleAmbient(now){
  idleCtx.setTransform(idleDPR,0,0,idleDPR,0,0);
  idleCtx.clearRect(0,0,W,H);
- if(!idleRunning||prefersReduced.matches||!root.classList.contains('is-linked'))return;
+ if(!ambientRunning||prefersReduced.matches||!root.classList.contains('is-linked'))return;
  const t=idleMotion.time;
  const scene=Math.min(7,Math.floor(clamp(play.t,0,7.9999)));
  const raw=clamp(play.t-scene);
@@ -501,7 +717,17 @@ function drawHairlines(c,brightness=.15){
 }
 /* Todas las escenas comparten la misma familia modular: proporciones variadas,
    sin fichas rígidas ni logos explicativos. El índice mantiene identidad y color. */
-const modulePalette=p=>[night()?'#5A9D72':'#347953',p.amber,p.petrol,p.coral,p.clay,p.olive,p.stone,p.ash];
+// La paleta se construye una vez por tema en lugar de en cada pieza.
+const modulePalettes={};
+function modulePalette(p){
+ const clave=night()?'night':'day';
+ let valor=modulePalettes[clave];
+ if(!valor){
+  valor=[night()?'#5A9D72':'#347953',p.amber,p.petrol,p.coral,p.clay,p.olive,p.stone,p.ash];
+  modulePalettes[clave]=valor;
+ }
+ return valor;
+}
 function sceneDisorderColor(i,p){
  const colors=modulePalette(p),batch=Math.floor(i/colors.length),slot=i%colors.length;
  // Cada bloque de ocho piezas contiene toda la paleta, pero en un orden distinto.
@@ -622,14 +848,19 @@ function cloudPoint(i,count){
 }
 const MODULE_COUNT=56;
 const CHART_COUNTS=[9,8,4,5,9,9,6,6];
-function moduleMeta(i){
- let offset=i;
- for(let column=0;column<CHART_COUNTS.length;column++){
-  if(offset<CHART_COUNTS[column])return {column,row:offset};
-  offset-=CHART_COUNTS[column];
+const MODULE_META=(()=>{
+ const tabla=[];
+ for(let i=0;i<MODULE_COUNT;i++){
+  let offset=i,column=0,row=0;
+  for(column=0;column<CHART_COUNTS.length;column++){
+   if(offset<CHART_COUNTS[column]){row=offset;break;}
+   offset-=CHART_COUNTS[column];
+  }
+  tabla.push({column,row});
  }
- return {column:7,row:5};
-}
+ return tabla;
+})();
+function moduleMeta(i){return MODULE_META[i]||{column:7,row:5}};
 function stackPoint(i,chart=false){
  const mobile=W<700,m=moduleMeta(i),aspect=barAspect();
  // Las ocho columnas comparten el centro geométrico del lienzo en ambas
@@ -1325,7 +1556,7 @@ function drawModuleTransition(scene,u,p){
   drawModule(i,x,y,size*1.08,p,opacity,rotation,aspect,colorOverride,scene!==4,pose);
  }
 }
-function localPointer(event){
+function applyPointer(event){
  const rect=canvas.getBoundingClientRect();
  const x=clamp(event.clientX-rect.left,0,W),y=clamp(event.clientY-rect.top,0,H);
  const now=performance.now();
@@ -1344,26 +1575,26 @@ function localPointer(event){
  pointer.active=true;
  pointerTween?.kill();pointerFade?.kill();pointerFade=null;
  if(pointer.energy<.98){
-  pointerTween=gsap.to(pointer,{energy:1,duration:.22,ease:'power2.out',onUpdate:render});
- }else render();
+  pointerTween=gsap.to(pointer,{energy:1,duration:.22,ease:'power2.out',onUpdate:invalidateNarrative});
+ }else invalidateNarrative();
 }
 function fadePointer(){
  pointerTween?.kill();pointerFade?.kill();pointerFade=null;
  pointerTween=gsap.to(pointer,{energy:0,duration:.62,ease:'power2.out',
-  onUpdate:render,onComplete:()=>{
+  onUpdate:invalidateNarrative,onComplete:()=>{
    pointer.active=false;pointer.down=false;pointer.speed=0;pointer.hasPosition=false;
-   pointer.dirX=0;pointer.dirY=0;render();
+   pointer.dirX=0;pointer.dirY=0;invalidateNarrative();
   }});
 }
 canvas.addEventListener('pointermove',event=>{
  if(prefersReduced.matches||!root.classList.contains('is-linked'))return;
  if(event.pointerType==='touch'&&!pointer.down)return;
- localPointer(event);
+ queuePointer(event);
 },{passive:true});
 canvas.addEventListener('pointerdown',event=>{
  if(prefersReduced.matches||!root.classList.contains('is-linked'))return;
  pointer.down=true;pointerFade?.kill();pointerFade=null;
- localPointer(event);
+ queuePointer(event);
 },{passive:true});
 window.addEventListener('pointerup',event=>{
  if(!pointer.down)return;
@@ -1373,47 +1604,44 @@ window.addEventListener('pointerup',event=>{
 canvas.addEventListener('pointercancel',()=>{pointer.down=false;fadePointer()},{passive:true});
 canvas.addEventListener('pointerleave',()=>{if(!pointer.down)fadePointer()},{passive:true});
 function stopSceneAmbient(){
- clearTimeout(sceneAmbientTimer);
- idleRunning=false;cancelAnimationFrame(idleFrameId);idleFrameId=0;
- idleLastFrame=0;idleLastRender=0;
- if(W&&H){idleCtx.setTransform(idleDPR,0,0,idleDPR,0,0);idleCtx.clearRect(0,0,W,H)}
+  clearTimeout(sceneAmbientTimer);
+  ambientRunning=false;idleLastFrame=0;idleLastRender=0;
+  if(W&&H){idleCtx.setTransform(idleDPR,0,0,idleDPR,0,0);idleCtx.clearRect(0,0,W,H)}
 }
 function startSceneAmbient(){
- if(idleRunning||prefersReduced.matches||document.hidden||!document.hasFocus()||
-  !root.classList.contains('is-linked'))return;
- const bounds=root.getBoundingClientRect();
- if(bounds.bottom<=0||bounds.top>=innerHeight)return;
- idleRunning=true;idleLastRender=0;idleLastFrame=0;
- idleFrameId=requestAnimationFrame(idleAmbientFrame);
+  if(ambientRunning||prefersReduced.matches||document.hidden||!document.hasFocus()||
+   !root.classList.contains('is-linked'))return;
+  const bounds=root.getBoundingClientRect();
+  if(bounds.bottom<=0||bounds.top>=innerHeight)return;
+  ambientRunning=true;idleLastRender=0;idleLastFrame=0;
 }
-function idleAmbientFrame(now){
- if(!idleRunning)return;
- if(document.hidden||!document.hasFocus()||prefersReduced.matches||!root.classList.contains('is-linked')){
-  stopSceneAmbient();return;
- }
- const bounds=root.getBoundingClientRect();
- if(bounds.bottom<=0||bounds.top>=innerHeight){stopSceneAmbient();return}
- // El reloj sólo avanza mientras la escena está visible. Al volver a ella,
- // la fase continúa donde quedó, sin saltar ni comenzar otro ciclo.
- const interval=W<700?42:34;
- const delta=idleLastFrame?Math.min(.08,Math.max(0,(now-idleLastFrame)/1000)):0;
- idleClock+=delta;
- idleLastFrame=now;
- idleMotion.time=idleClock;
- // Durante el scroll el movimiento permanece casi imperceptible; al detenerse
- // gana presencia con una interpolación temporal, nunca con un reinicio.
- const target=scrollIdle?.84:.18;
- const response=1-Math.exp(-delta/(scrollIdle?.72:.30));
- idleMotion.value=lerp(idleMotion.value,target,response);
- if(now-idleLastRender>=interval){
-  const breathing=.50+.50*Math.sin(idleClock*.90);
-  sceneAmbient.value=idleMotion.value*(.35+.58*breathing);
-  drawIdleAmbient(now);
-  render();
-  idleLastRender=now;
- }
- idleFrameId=requestAnimationFrame(idleAmbientFrame);
+// C · La capa ambiental avanza su propio reloj y respira a su propio ritmo.
+// No llama a paintNarrative: el ambiente nunca obliga a redibujar el relato.
+function ambientTick(now){
+  if(!ambientRunning)return;
+  if(document.hidden||!document.hasFocus()||prefersReduced.matches||!root.classList.contains('is-linked')){
+   stopSceneAmbient();return;
+  }
+  const bounds=root.getBoundingClientRect();
+  if(bounds.bottom<=0||bounds.top>=innerHeight){stopSceneAmbient();return}
+  // El reloj sólo avanza mientras la escena está visible. Al volver a ella,
+  // la fase continúa donde quedó, sin saltar ni comenzar otro ciclo.
+  const delta=idleLastFrame?Math.min(.08,Math.max(0,(now-idleLastFrame)/1000)):0;
+  idleClock+=delta;
+  idleLastFrame=now;
+  idleMotion.time=idleClock;
+  // Durante el scroll el movimiento permanece casi imperceptible; al detenerse
+  // gana presencia con una interpolación temporal, nunca con un reinicio.
+  const target=scrollIdle?.84:.18;
+  const response=1-Math.exp(-delta/(scrollIdle?.72:.30));
+  idleMotion.value=lerp(idleMotion.value,target,response);
+  if(now-idleLastRender>=ambientInterval()){
+   const breathing=.50+.50*Math.sin(idleClock*.90);
+   sceneAmbient.value=idleMotion.value*(.35+.58*breathing);
+   invalidate('ambient');
+  }
 }
+
 function scheduleSceneAmbient(delay=350){
  clearTimeout(sceneAmbientTimer);
  sceneAmbientTimer=setTimeout(()=>{
@@ -2315,7 +2543,7 @@ function syncSeedPulse(){
  const active=play.t>=7&&play.t<=8&&!prefersReduced.matches;
  if(active&&!seedPulseTween){
   seedPulseTween=gsap.to(seedPulse,{value:1,duration:1.55,repeat:-1,yoyo:true,
-   ease:'sine.inOut',onUpdate:render});
+   ease:'sine.inOut',onUpdate:invalidateNarrative});
  }else if(!active&&seedPulseTween){
   seedPulseTween.kill();seedPulseTween=null;seedPulse.value=0;
  }
@@ -2333,16 +2561,32 @@ function drawScene(i,u,p){
 function resize(){
  const box=canvas.getBoundingClientRect();
  W=Math.max(1,box.width);H=Math.max(1,box.height);
- DPR=Math.min(1.65,window.devicePixelRatio||1);
+ DPR=Math.min(dprCap(),window.devicePixelRatio||1);
  canvas.width=Math.round(W*DPR);canvas.height=Math.round(H*DPR);
- idleDPR=Math.min(1.2,DPR);
+ // La capa ambiental es decorativa: su resolución interna puede ser menor
+ // sin que se note, y así deja de competir con el relato por el ancho de banda.
+ idleDPR=Math.min(1,DPR);
+ rebuildGrain();
+ capaInvalidar();
  idleCanvas.width=Math.round(W*idleDPR);idleCanvas.height=Math.round(H*idleDPR);
  idleCtx.setTransform(idleDPR,0,0,idleDPR,0,0);
  ctx.setTransform(DPR,0,0,DPR,0,0);
- render();
- if(idleRunning)drawIdleAmbient(performance.now());
+ // El lienzo principal se repinta aquí porque ha cambiado su tamaño de respaldo;
+ // el resto de capas recalculan su geometría por su propia cuenta.
+ paintNarrative();
+ invalidate('ambient');
 }
-function render(){
+// C · El grano, por separado: se aplica una sola vez por fotograma sobre el
+// fondo ya compuesto, con el mismo modo y la misma opacidad que antes.
+function pintarGrano(c){
+ c.save();c.globalCompositeOperation='soft-light';
+ c.globalAlpha*=night()?.055:.145;
+ if(grainReady)c.drawImage(grainCanvas,0,0,W,H);
+ else{c.fillStyle=grainPattern;c.fillRect(0,0,W,H);}
+ c.restore();
+}
+
+function paintNarrative(){
  if(!W||!H)return;
  const now=performance.now();
  if(pointer.speed>.001){
@@ -2368,9 +2612,34 @@ function render(){
   root.style.setProperty('--ui-color',contrast);
   root.style.setProperty('--copy-contrast',contrast);
  }
+ // El fondo se reutiliza desde el cache cuando el tramo no esta en
+ // transicion; en transicion se repinta en vivo porque el color base se mueve.
+ // El color base se mezcla en cada fotograma; las capas del fondo salen de
+ // la cache por escena y se componen con el mismo crossfade que hacia el
+ // motor, de modo que la transicion tambien pasa a ser un par de blits.
+ ctx.clearRect(0,0,W,H);
  ctx.fillStyle=background;
  ctx.fillRect(0,0,W,H);
- drawSceneBackdrop(i,p,dissolve);
+ if(!capaClaveValida()){
+  capaTema=night()?'night':'day';capaAncho=W;capaAlto=H;capaDPR=DPR;
+  capaInvalidar();
+ }
+ if(!capaListoA||capaTramoA!==i){
+  capaGenerar(i,capaCanvasA,capaCtxA);capaTramoA=i;capaListoA=true;
+ }
+ if(i<7){
+  if(!capaListoB||capaTramoB!==i+1){
+   capaGenerar(i+1,capaCanvasB,capaCtxB);capaTramoB=i+1;capaListoB=true;
+  }
+ }else{capaListoB=false;capaTramoB=-1;}
+ ctx.globalAlpha=1-dissolve;
+ ctx.drawImage(capaCanvasA,0,0,W,H);
+ if(capaListoB&&dissolve>.001){
+  ctx.globalAlpha=dissolve;
+  ctx.drawImage(capaCanvasB,0,0,W,H);
+ }
+ ctx.globalAlpha=1;
+ pintarGrano(ctx);
  drawSceneAtmosphere(i,p);
  // La primera escena comienza mezclada y el propio scroll lleva las piezas
  // hasta su composición ordenada; no hay una animación automática que la adelante.
@@ -2389,7 +2658,8 @@ function render(){
   drawScene(i,u,p);
  }
 }
-function syncTheme(){themeButton.textContent=night()?'Modo día':'Modo noche';render()}
+// El tema afecta a todas las capas: cada una lee su paleta en su propio pintado.
+function syncTheme(){themeButton.textContent=night()?'Modo día':'Modo noche';invalidateAll()}
 themeButton.addEventListener('click',()=>{siteTheme?.click();syncTheme()});
 document.addEventListener('click',e=>{if(e.target.closest('[data-theme-toggle]'))requestAnimationFrame(syncTheme)});
 window.addEventListener('storage',syncTheme);
@@ -2413,7 +2683,7 @@ function animateHomeReturn(){
  if(prefersReduced.matches)return;
  homeReturnTween?.kill();
  gsap.set(homeReturn,{scale:.42,turn:-1.18,lift:-1.08,glow:0,ring:0,opacity:0});
- homeReturnTween=gsap.timeline({onUpdate:render,onComplete:()=>{homeReturnTween=null}});
+ homeReturnTween=gsap.timeline({onUpdate:invalidateNarrative,onComplete:()=>{homeReturnTween=null}});
  homeReturnTween
   .to(homeReturn,{scale:1.12,turn:.16,lift:.16,glow:1,ring:1,opacity:1,
    duration:.88,ease:'power3.out'},0)
@@ -2443,7 +2713,7 @@ function goToHomeStart(event){
  ScrollTrigger.update();
  trigger.update();
  master.progress(1);
- syncSceneState();render();navStatus();
+ syncSceneState();invalidateNarrative();navStatus();
  requestAnimationFrame(()=>{
   trigger.scrubDuration(.42);
   html.style.scrollBehavior=previousScrollBehavior;
@@ -2499,7 +2769,7 @@ function setup(){
  }
  root.classList.remove('all-copies');
  master=gsap.timeline({paused:true,onUpdate:()=>{
-  render();syncSeedPulse();syncSceneState();
+  invalidateNarrative();syncSeedPulse();syncSceneState();
  }});
  play.t=0;
  // El ritmo reserva tiempo para que cada transformación se complete y pueda leerse.
@@ -2548,7 +2818,7 @@ function setup(){
  introTextTween.to(rule,{scaleX:1,duration:.38,ease:'sine.out'},.52);
  if(desc)introTextTween.to(desc,{opacity:1,y:0,duration:.46,ease:'power2.out'},.70);
  if(window.scrollY>16)introTextTween.progress(1);
- introTween=gsap.to(introReveal,{value:1,duration:2.68,ease:'none',onUpdate:render});
+ introTween=gsap.to(introReveal,{value:1,duration:2.68,ease:'none',onUpdate:invalidateNarrative});
  scheduleSceneAmbient(1100);
 }
 let resizeTick=0;
@@ -2558,6 +2828,33 @@ window.addEventListener('resize',()=>{
 prefersReduced.addEventListener('change',setup);
 mqMobile.addEventListener('change',setup);
 document.fonts.ready.then(()=>{buildWord();resize();ScrollTrigger.refresh()});
+
+// D · Ciclo de fotogramas del motor. Un solo ciclo gobierna todas las capas:
+// el puntero se aplica una vez, el ambiente respira a su ritmo y el relato se
+// repinta sólo cuando ha cambiado. Cuando la escena está detenida el motor no
+// mantiene trabajo de pintado: si nada está sucio, no se pinta nada.
+function engineTick(){
+ // El reloj propio del navegador. El tiempo que entrega el ticker de GSAP es un
+ // tiempo de animación relativo y puede saltar hacia atrás al corregir el retardo
+ // (lag smoothing), así que no sirve para medir cadencias.
+ const now=performance.now();
+ if(pointerDirty){pointerDirty=false;applyPointer(pendingPointer)}
+ ambientTick(now);
+ ajustarResolucion();
+ // C · El ambiente se pinta a su propio ritmo y nunca arrastra al relato.
+ if(ambientLayer.due(now))ambientLayer.paint(now);
+ // A · El relato sólo se repinta si su estado ha cambiado de verdad.
+ if(narrativeLayer.due(now))narrativeLayer.paint(now);
+}
+gsap.ticker.add(engineTick);
+ // El sondeo arranca una sola vez y mide el intervalo real entre fotogramas.
+ // El nivel de resolucion se inicializa ANTES de decidir: dprAjustable()
+ // depende de el y, al evaluarse antes, el sondeo nunca llegaba a arrancar.
+ dprInicializar();
+ if(dprAjustable()&&!frameSonda){
+  frameSonda=requestAnimationFrame(frameSondaTick);
+ }
+
 setup();
 window.addEventListener('scroll',navStatus,{passive:true});
 if(location.hash==='#home-start'){
