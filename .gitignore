@@ -15,3 +15,35 @@ _site/
 .env
 .env.*
 *.log
+
+# --- Punto de restauración (2026-11-10) -------------------------------------
+# Material interno del laboratorio local: NUNCA debe entrar en el repositorio.
+# Motivo: contiene datos de clientes, hallazgos internos de seguridad y
+# respaldos voluminosos que no forman parte del sitio publicado.
+
+# Documento marcado "USO INTERNO. NO PUBLICAR" (brechas de seguridad de
+# proyectos en produccion). Excluido de forma nominal, no por carpeta.
+REVISION-SERVICIOS/MATRIZ-SEGURIDAD-INTERNAL.md
+
+# Paquetes de entrega comprimidos (binarios).
+REVISION-*/ENTREGA/
+
+# Artefactos generados de Archify (HTML/JSON de diagramas, ~12 MB).
+REVISION-PROYECTOS/proyectos/*/diagramas/
+
+# Laboratorios, respaldos historicos, kits y zips de Herramientas/.
+# Se conservan solo el script de QA y la demo de referencia del sistema fx-*.
+# El patron es insensible a mayusculas: en disco la carpeta es "Herramientas",
+# pero el indice Git la guarda como "herramientas" (ya existia en el repo).
+[Hh]erramientas/*
+![Hh]erramientas/qa_fichas.py
+![Hh]erramientas/ficha-ejemplo/
+![Hh]erramientas/respaldo_textos_originales_verificados_20261107/
+
+# Estado local de la herramienta Archify.
+.diagram-design
+
+# Previsualizaciones y diagramas huerfanos: no los referencia ninguna ruta
+# servida por el sitio (verificado contra build_site.py, site_data.py y HTML).
+assets/project-previews/visor-*.jpg
+assets/impulsacv-archify-sequence.html
