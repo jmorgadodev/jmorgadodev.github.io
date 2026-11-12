@@ -71,7 +71,7 @@ body {
 }
 
 .qr-links a,
-.qr-panel button {
+.qr-panel-action {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -85,7 +85,7 @@ body {
 }
 
 .qr-links .qr-whatsapp,
-.qr-panel button {
+.qr-panel-action {
   border-color: var(--jm-petrol-deep);
   background: var(--jm-petrol-deep);
   color: #fcfaf5;
@@ -131,46 +131,14 @@ body {
   line-height: 1.15;
 }
 
-.qr-panel form,
-.qr-field {
-  display: grid;
-  gap: .875rem;
-}
-
-.qr-field {
-  gap: .3rem;
-}
-
-.qr-field label {
-  font-weight: 600;
-}
-
-.qr-field input,
-.qr-field textarea {
-  width: 100%;
-  min-height: 2.75rem;
-  padding: .5rem .75rem;
-  border: 1px solid var(--line);
-  border-radius: .375rem;
-  background: var(--paper);
-  color: var(--ink);
-  font: inherit;
-}
-
-.qr-field textarea {
-  resize: vertical;
-}
-
-#qr-form-note {
-  margin: 0;
+.qr-panel p {
+  margin: 0 0 1.25rem;
   color: var(--muted);
-  font-size: .875rem;
 }
 
-.qr-panel button {
+.qr-panel-action {
   min-height: 3rem;
   font: 700 1rem/1.25 var(--font-text);
-  cursor: pointer;
 }
 
 .qr-brand:focus-visible,
@@ -181,7 +149,7 @@ body {
 
 @media (hover: hover) {
   .qr-links a:hover strong,
-  .qr-panel button:hover {
+  .qr-panel-action:hover {
     text-decoration: underline;
     text-underline-offset: .2em;
   }

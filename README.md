@@ -26,7 +26,7 @@ Los cambios en `main` disparan publicaciones automáticas. No se incluyen creden
 
 ## Contacto del QR
 
-El QR apunta a `https://jmorgado.pages.dev/qr/`. Esta página se accede por enlace directo y lleva la indicación `noindex` para los buscadores. Tras publicarla, haz un primer envío desde el formulario y confirma el correo de activación de [FormSubmit](https://formsubmit.co/faq) en la bandeja de destino. Después comprueba la recepción con un envío de prueba.
+El QR apunta a `https://jmorgado.pages.dev/qr/`. Se accede a esta página por enlace directo y lleva la indicación `noindex` para los buscadores. El panel de contacto dirige a WhatsApp mientras se actualiza el formulario.
 
 ## Ranking de Tetris
 

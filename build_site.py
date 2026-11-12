@@ -1999,7 +1999,6 @@ def qr_contact():
     d = 1
     home_url = e(local(d))
     email = e(CONTACT_EMAIL)
-    form_url = e(f"https://formsubmit.co/{CONTACT_EMAIL}")
     html = f"""<!doctype html>
 <html lang="es-CL">
 <head>
@@ -2035,23 +2034,8 @@ def qr_contact():
     </section>
     <section class="qr-panel" aria-labelledby="qr-form-title">
       <h2 id="qr-form-title">Envíame un mensaje</h2>
-      <form action="{form_url}" method="post" aria-describedby="qr-form-note">
-        <input type="hidden" name="_subject" value="Consulta desde el QR de JMorgado">
-        <div class="qr-field">
-          <label for="qr-name">Tu nombre</label>
-          <input id="qr-name" name="nombre" autocomplete="name" maxlength="120" required>
-        </div>
-        <div class="qr-field">
-          <label for="qr-email">Tu correo</label>
-          <input id="qr-email" name="email" type="email" autocomplete="email" maxlength="254" required>
-        </div>
-        <div class="qr-field">
-          <label for="qr-message">¿En qué te puedo ayudar?</label>
-          <textarea id="qr-message" name="mensaje" rows="4" maxlength="3000" required></textarea>
-        </div>
-        <p id="qr-form-note">Usaré tus datos para responder a tu consulta. El envío se procesa a través de FormSubmit.</p>
-        <button type="submit">Enviar mensaje {icon()}</button>
-      </form>
+      <p>El formulario está en actualización. Puedes enviarme tu consulta por WhatsApp.</p>
+      <a class="qr-panel-action" href="{e(WHATSAPP)}">Abrir WhatsApp {icon('whatsapp')}</a>
     </section>
   </main>
 </body>
