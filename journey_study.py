@@ -1,43 +1,49 @@
-"""Introducción JMorgado: siete capítulos accesibles sobre motion graphics Canvas.
-El lienzo contiene solo gráficos; títulos y botones son HTML semántico.
+"""Introducción JMorgado — narrativa definitiva: tres actos y una transición.
+
+El texto es semántico y accesible; el lienzo sólo contiene gráficos.
+La identidad tipográfica de cierre (JMorgado.) es la existente del sitio:
+no se inventa un nuevo logotipo ni se modifica la marca.
 """
 from html import escape
 
+# (linea 1, linea 2). La segunda línea, cuando existe, es la acentuada («key»).
 TITLES = [
-    ("Hay algo que podría", "funcionar mejor."),
-    ("Antes de cambiar algo,", "hay que entenderlo."),
-    ("Empezar por algo", "que funcione."),
-    ("Lo que funciona puede", ""),
-    ("Una buena base abre", "nuevos caminos."),
-    ("Cada pieza encuentra", "su lugar."),
     ("Todo comienza", "con una idea."),
+    ("Le damos", "forma."),
+    ("Lo que funciona", "puede crecer."),
+    ("JMorgado.", ""),
 ]
 DESCRIPTIONS = [
-    "Una tarea que pesa. Una idea que todavía no encuentra su forma.",
-    "Comprender las relaciones cambia la manera de resolver.",
-    "Una solución pequeña también puede transformar el trabajo.",
-    "Una buena idea se desarrolla sin empezar otra vez.",
-    "Cada nueva capacidad amplía las posibilidades.",
-    "Las partes se convierten en un conjunto.",
-    "",
+    "Una necesidad puede convertirse en una oportunidad.",
+    "Conectamos desarrollo, datos y procesos.",
+    "Una buena base permite crecer sin rehacerlo todo.",
+    "Desarrollo web, datos y automatización.",
 ]
+# La identidad de cierre usa el wordmark existente: el punto va en coral.
+CLOSING_HTML = '<span class="study-wordmark">JMorgado<span class="study-period">.</span></span>'
+
 
 def render_study():
-    chapters=[]
-    for i,(one,two) in enumerate(TITLES):
+    chapters = []
+    for i, (one, two) in enumerate(TITLES):
         tag = "h1" if i == 0 else "h2"
-        description = (f'<p class="study-description">{escape(DESCRIPTIONS[i])}</p>'
-                       if DESCRIPTIONS[i] else "")
+        if i == 3:
+            aria = ' aria-label="JMorgado."'
+            heading = f'<{tag} id="journey-title-{i}"{aria}>{CLOSING_HTML}</{tag}>'
+        else:
+            aria = ' aria-label="%s"' % escape(" ".join((one, two)))
+            heading = (f'<{tag} id="journey-title-{i}"{aria}>'
+                       f'<span class="study-mask"><span>{escape(one)}</span></span>'
+                       f'<span class="study-mask study-key"><span>{escape(two)}</span></span>'
+                       f'</{tag}>')
+        description = f'<p class="study-description">{escape(DESCRIPTIONS[i])}</p>'
         chapters.append(
             f'<section class="study-copy copy-{i}" data-copy="{i}" aria-labelledby="journey-title-{i}">'
             '<div class="study-heading">'
-            f'<{tag} id="journey-title-{i}"' + (' aria-label="Lo que funciona puede crecer."' if i == 3 else '') + '>'
-            f'<span class="study-mask"><span>{escape(one)}</span></span>'
-            + (f'<span class="study-mask study-key"><span>{escape(two)}</span></span>' if two else '')
-            + f'</{tag}>'
+            + heading +
             '<span class="study-rule" aria-hidden="true"></span>'
             '</div>'
-            +description+
+            + description +
             '</section>'
         )
     return (
@@ -52,7 +58,7 @@ def render_study():
         ' aria-label="Cambiar tema">Modo noche</button>'
         '<a class="intro-skip" href="#explorar">Ir al sitio ↗</a></div></div>'
         '<div class="study-stage"><canvas class="study-canvas" aria-hidden="true"></canvas></div>'
-        +''.join(chapters)+
+        + ''.join(chapters) +
         '<p class="study-invitation"><span class="study-cue-line" aria-hidden="true"></span>'
         'Desplázate para continuar <span aria-hidden="true">↓</span></p>'
         '</div></section>'
