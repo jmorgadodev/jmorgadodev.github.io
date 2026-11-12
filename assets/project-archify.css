@@ -9,13 +9,41 @@
 .fx-archify-section h2{color:#F2EFE7}
 .fx-archify-section .fx-intro{color:rgba(242,239,231,.78)}
 
-.fx-archify{margin-top:clamp(1.6rem,3vw,2.4rem);border:1px solid rgba(230,236,228,.22);background:#18333A}
+.fx-archify{position:relative;margin-top:clamp(1.6rem,3vw,2.4rem);border:1px solid rgba(230,236,228,.22);background:#18333A}
 [data-jm-theme="night"] .fx-archify{background:#122A30}
 .fx-archify iframe{display:block;width:100%;height:auto;min-height:440px;border:0;background:#18333A}
 [data-jm-theme="night"] .fx-archify iframe{background:#122A30}
 .fx-archify iframe[hidden]{display:none}
 
 .fx-archify-note{margin:1rem 0 0;font:600 .72rem/1.6 var(--font-mono);color:rgba(242,239,231,.66);max-width:70ch}
+
+/* Panel del componente: explica que hace y con que se relaciona. Comparte
+   la identidad del sitio (petroleo, coral y monoespaciada) y aparece solo
+   cuando el visitante selecciona un nodo del diagrama. */
+.jm-node-panel{
+  position:absolute;left:1rem;bottom:1rem;z-index:6;
+  width:min(19rem,calc(100% - 2rem));
+  padding:1.05rem 1.15rem 1.1rem 1.25rem;
+  border:1px solid rgba(230,236,228,.2);border-left:2px solid var(--jm-coral,#F45A3A);
+  background:#12262C;color:#F2EFE7;
+  box-shadow:0 20px 46px rgba(6,16,20,.46);
+  animation:jm-node-panel-in .28s cubic-bezier(.22,1,.36,1) both;
+}
+.jm-node-panel[hidden]{display:none}
+@keyframes jm-node-panel-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.jm-node-panel-close{
+  position:absolute;top:.4rem;right:.45rem;width:1.6rem;height:1.6rem;
+  border:0;background:transparent;color:rgba(242,239,231,.6);
+  font:1.1rem/1 var(--font-text);cursor:pointer;
+}
+.jm-node-panel-close:hover,.jm-node-panel-close:focus-visible{color:var(--jm-coral,#F45A3A)}
+.jm-node-panel-kind{margin:0 0 .35rem;font:600 .6rem/1.4 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--jm-amber,#E8B769)}
+.jm-node-panel-title{margin:0 0 .45rem;font:650 1.08rem/1.2 var(--font-text);letter-spacing:-.02em;color:#F2EFE7}
+.jm-node-panel-purpose{margin:0;font-size:.82rem;line-height:1.55;color:rgba(242,239,231,.82)}
+.jm-node-panel-links{margin:.7rem 0 0;padding-top:.6rem;border-top:1px solid rgba(230,236,228,.16);font-size:.74rem;line-height:1.5;color:rgba(242,239,231,.72)}
+.jm-node-panel-links[hidden]{display:none}
+.jm-node-panel-links-label{display:block;font:600 .58rem/1.4 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:rgba(242,239,231,.5);margin-bottom:.2rem}
+.jm-node-panel-links-list{color:#F2EFE7}
 
 @media(max-width:900px){
   .fx-archify{margin-top:1.5rem}
@@ -27,4 +55,7 @@
   .fx-archify{overflow-x:auto;overscroll-behavior-x:contain}
   .fx-archify iframe{min-width:680px;min-height:260px}
 }
-@media(prefers-reduced-motion:reduce){.fx-archify *{transition:none!important;animation:none!important}}
+@media(max-width:760px){
+  .jm-node-panel{position:static;width:auto;margin:1rem 0 0}
+}
+@media(prefers-reduced-motion:reduce){.fx-archify *,.jm-node-panel{transition:none!important;animation:none!important}}
