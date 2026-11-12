@@ -563,7 +563,14 @@ try:
         urls = {entry.text for entry in sitemap.findall(".//{*}loc")}
         assert urls == {"https://jmorgado.pages.dev/"+route for route in routes
                         if route not in [f"proyectos/{slug}/" for slug in LEGACY_TOOL_SLUGS]}
+        assert page.request.get(base + 'qr/').status == 200
+        qr = BeautifulSoup((ROOT / '_site' / 'qr' / 'index.html').read_text(encoding='utf-8'), 'html.parser')
+        assert 'noindex' in qr.select_one('meta[name="robots"]')['content']
+        assert 'https://jmorgado.pages.dev/qr/' not in urls
+        assert qr.select_one('a[href="https://wa.me/56933904330"]')
+        assert qr.select_one('a[href="mailto:jorge.morgado.b@gmail.com"]')
+        assert qr.select_one('form[method="post"][action="https://formsubmit.co/jorge.morgado.b@gmail.com"]')
         browser.close()
-        print('26 rutas, 24 canónicas, calculadora, JS deshabilitado y movimiento reducido OK')
+        print('27 rutas, 24 canónicas, contacto QR, calculadora, JS deshabilitado y movimiento reducido OK')
 finally:
     server.shutdown()

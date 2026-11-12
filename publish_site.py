@@ -17,8 +17,8 @@ canonical = [
     *(f"servicios/{service['slug']}" for service in SERVICES),
 ]
 redirects = [f"proyectos/{slug}" for slug in LEGACY_TOOL_SLUGS]
-routes = canonical + redirects
-assert len(routes) == len(set(routes)) == 26, "El sitio debe conservar sus 26 rutas"
+routes = canonical + redirects + ["qr"]
+assert len(routes) == len(set(routes)) == 27, "El sitio debe conservar sus 27 rutas"
 
 urls = Element("urlset", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
 for route in routes:
@@ -35,4 +35,4 @@ ElementTree(urls).write(OUT / "sitemap.xml", encoding="utf-8", xml_declaration=T
 (OUT / "robots.txt").write_text("User-agent: *\nAllow: /\nSitemap: https://jmorgado.pages.dev/sitemap.xml\n", encoding="utf-8")
 (OUT / "_routes.json").write_text('{"version":1,"include":["/api/tetris/ranking"],"exclude":[]}\n', encoding="utf-8")
 (OUT / ".nojekyll").touch()
-print(f"Salida pública: _site/ ({len(canonical)} páginas, {len(redirects)} redirecciones)")
+print(f"Salida pública: _site/ ({len(canonical)} páginas canónicas, {len(redirects)} redirecciones y 1 página para el QR)")

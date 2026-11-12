@@ -2,7 +2,7 @@
 
 **Contexto y decisiones vigentes:** [Contexto maestro del proyecto](docs/CONTEXTO_MAESTRO_JMORGADO.md). Para continuar el inicio, seguir el [plan operativo de mejoras de escenas](docs/PLAN_MEJORA_ESCENAS_INICIO_JMORGADO.md). Para agentes, leer también [AGENTS.md](AGENTS.md) y el [encargo de identidad de secciones interiores](docs/ENCARGO_AGENTE_IDENTIDAD_INTERIOR_JMORGADO.md).
 
-Fuente de la web estática de Jorge Morgado. Python estándar genera 24 páginas canónicas y 2 redirecciones (26 rutas); no se requiere instalar dependencias para publicar.
+Fuente de la web estática de Jorge Morgado. Python estándar genera 24 páginas canónicas, 2 redirecciones y 1 página de contacto para el QR (27 rutas). La generación usa la biblioteca estándar.
 
 ## Generación
 
@@ -23,6 +23,10 @@ La salida pública se escribe en `_site/`, con HTML, recursos, sitemap y robots.
 - Las URL canónicas y el sitemap apuntan a Cloudflare Pages.
 
 Los cambios en `main` disparan publicaciones automáticas. No se incluyen credenciales ni servicios de pago. Los estilos, scripts y contenido editorial se mantienen en sus archivos existentes.
+
+## Contacto del QR
+
+El QR apunta a `https://jmorgado.pages.dev/qr/`. Esta página se accede por enlace directo y lleva la indicación `noindex` para los buscadores. Tras publicarla, haz un primer envío desde el formulario y confirma el correo de activación de [FormSubmit](https://formsubmit.co/faq) en la bandeja de destino. Después comprueba la recepción con un envío de prueba.
 
 ## Ranking de Tetris
 

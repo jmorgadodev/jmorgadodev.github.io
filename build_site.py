@@ -33,6 +33,7 @@ TOOL = {tool["slug"]: tool for tool in TOOLS}
 SERV = {s["slug"]: s for s in SERVICES}
 LINKEDIN = "https://www.linkedin.com/in/jorge-morgado/"
 WHATSAPP = "https://wa.me/56933904330"
+CONTACT_EMAIL = "jorge.morgado.b@gmail.com"
 BOOKING_URL = "https://calendar.google.com/calendar/appointments/schedules/AcZssZ3nJEkpRw3rSiFc6ldUwwIPkAhPsU7OYKU8sa3XNiW_B1-6MrMRT9YLVTwZir0YJCvPp57moGoW"
 SITE_URL = "https://jmorgado.pages.dev/"
 SOCIAL_IMAGE = "assets/social-preview.png"
@@ -1992,10 +1993,80 @@ def contact():
     <div class="statement statement-contact"><h2>Una pregunta es suficiente para comenzar.</h2>
     <p class="lead">¿Qué parte de tu trabajo requiere tiempo que podría dedicarse a algo más útil? Si no lo tienes claro, también podemos revisarlo.</p></div></div></section>"""
     page("contacto","Agenda una conversación","Agenda una conversación inicial gratuita de 45 minutos con JMorgado. Reserva directamente desde la web mediante Google Calendar.",body,"contacto")
+
+
+def qr_contact():
+    d = 1
+    home_url = e(local(d))
+    email = e(CONTACT_EMAIL)
+    form_url = e(f"https://formsubmit.co/{CONTACT_EMAIL}")
+    html = f"""<!doctype html>
+<html lang="es-CL">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, follow">
+  <title>Contacto | Jorge Morgado</title>
+  <link rel="icon" href="{e(asset(d, 'assets/favicon.svg'))}" type="image/svg+xml">
+  <script src="{e(asset(d, 'assets/theme-init.js'))}"></script>
+  <link rel="stylesheet" href="{e(asset(d, 'assets/themes.css'))}">
+  <link rel="stylesheet" href="{e(asset(d, 'assets/qr-contact.css'))}">
+</head>
+<body>
+  {SYMBOLS}
+  <header class="qr-header">
+    <a class="qr-brand" href="{home_url}" aria-label="Inicio de JMorgado">JM<span aria-hidden="true">.</span></a>
+  </header>
+  <main class="qr-main">
+    <section aria-labelledby="qr-title">
+      <h1 id="qr-title">Jorge Morgado</h1>
+      <p class="qr-intro">Desarrollo web, datos y automatización. Cuéntame qué necesitas resolver.</p>
+      <ul class="qr-links">
+        <li><a class="qr-whatsapp" href="{e(WHATSAPP)}">
+          <span><strong>WhatsApp</strong><span>+56 9 3390 4330</span></span>{icon('whatsapp')}
+        </a></li>
+        <li><a href="mailto:{email}">
+          <span><strong>Correo</strong><span>{email}</span></span>{icon()}
+        </a></li>
+        <li><a href="{home_url}">
+          <span><strong>Visitar el sitio</strong><span>Servicios y proyectos</span></span>{icon()}
+        </a></li>
+      </ul>
+    </section>
+    <section class="qr-panel" aria-labelledby="qr-form-title">
+      <h2 id="qr-form-title">Envíame un mensaje</h2>
+      <form action="{form_url}" method="post" aria-describedby="qr-form-note">
+        <input type="hidden" name="_subject" value="Consulta desde el QR de JMorgado">
+        <div class="qr-field">
+          <label for="qr-name">Tu nombre</label>
+          <input id="qr-name" name="nombre" autocomplete="name" maxlength="120" required>
+        </div>
+        <div class="qr-field">
+          <label for="qr-email">Tu correo</label>
+          <input id="qr-email" name="email" type="email" autocomplete="email" maxlength="254" required>
+        </div>
+        <div class="qr-field">
+          <label for="qr-message">¿En qué te puedo ayudar?</label>
+          <textarea id="qr-message" name="mensaje" rows="4" maxlength="3000" required></textarea>
+        </div>
+        <p id="qr-form-note">Usaré tus datos para responder a tu consulta. El envío se procesa a través de FormSubmit.</p>
+        <button type="submit">Enviar mensaje {icon()}</button>
+      </form>
+    </section>
+  </main>
+</body>
+</html>
+"""
+    target = ROOT / "qr" / "index.html"
+    target.parent.mkdir(exist_ok=True)
+    target.write_text(html, encoding="utf-8")
+    print("qr/index.html")
+
+
 if __name__=="__main__":
     home();portfolio();tools_index();game_page();redirect_legacy_tools()
     for p in PROJECTS:project_detail(p)
     services_index()
     for s in SERVICES:service_detail(s)
-    method();calc();contact();not_found()
+    method();calc();contact();qr_contact();not_found()
     print("RUTAS PUBLICAS", len(sitemap()))
