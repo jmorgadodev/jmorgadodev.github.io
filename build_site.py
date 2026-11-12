@@ -34,7 +34,7 @@ SERV = {s["slug"]: s for s in SERVICES}
 LINKEDIN = "https://www.linkedin.com/in/jorge-morgado/"
 WHATSAPP = "https://wa.me/56933904330"
 BOOKING_URL = "https://calendar.google.com/calendar/appointments/schedules/AcZssZ3nJEkpRw3rSiFc6ldUwwIPkAhPsU7OYKU8sa3XNiW_B1-6MrMRT9YLVTwZir0YJCvPp57moGoW"
-SITE_URL = "https://jmorgadodev.github.io/"
+SITE_URL = "https://jmorgado.pages.dev/"
 SOCIAL_IMAGE = "assets/social-preview.png"
 ORDER_CASE = {"before": 60, "after": 12, "runs_per_week": 5}
 def e(value): return escape(str(value), quote=True)
@@ -115,6 +115,12 @@ def meta(d, title, description, active="", journey=False, *, canonical=None, jso
 <meta property="og:image:alt" content="Jorge Morgado · Desarrollo web, datos y automatización. Composición con piezas modulares de JMorgado.">
 {canonical_meta}
 <link rel="icon" type="image/svg+xml" href="{e(local(d,'assets/favicon.svg'))}">
+<link rel="icon" href="{e(local(d,'assets/favicon.ico'))}" sizes="any">
+<link rel="icon" type="image/png" sizes="16x16" href="{e(local(d,'assets/favicon-16x16.png'))}">
+<link rel="icon" type="image/png" sizes="32x32" href="{e(local(d,'assets/favicon-32x32.png'))}">
+<link rel="icon" type="image/png" sizes="48x48" href="{e(local(d,'assets/favicon-48x48.png'))}">
+<link rel="apple-touch-icon" href="{e(local(d,'assets/apple-touch-icon.png'))}">
+<link rel="manifest" href="{e(local(d,'assets/site.webmanifest'))}">
 {fonts}
 <script src="{e(local(d,'assets/theme-init.js'))}"></script>
 <link rel="stylesheet" href="{e(asset(d,'assets/site.css'))}">
@@ -544,7 +550,7 @@ def redirect_legacy_tools():
         destination = f"../../herramientas/#{slug}"
         target.write_text(f"""<!doctype html><html lang="es"><head><meta charset="utf-8">
 <meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url={destination}">
-<link rel="canonical" href="https://jmorgadodev.github.io/herramientas/">
+<link rel="canonical" href="https://jmorgado.pages.dev/herramientas/">
 <meta name="description" content="{e('Consulta ' + TOOL[slug]['title'] + ' en Herramientas y recursos de JMorgado.')}">
 <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 <title>{e(TOOL[slug]["title"])} | Herramientas de JMorgado</title></head>

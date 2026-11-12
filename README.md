@@ -15,12 +15,12 @@ La salida pública se escribe en `_site/`, con HTML, recursos, sitemap y robots.
 ## Publicación
 
 - Repositorio: https://github.com/jmorgadodev/jmorgadodev.github.io
-- GitHub Pages: https://jmorgadodev.github.io/ (principal)
-- Cloudflare Pages: https://jmorgado.pages.dev/ (secundario), proyecto `jmorgado` conectado directamente al mismo repositorio.
+- GitHub Pages: https://jmorgadodev.github.io/ (legado; la dirección anterior dejó de ser canónica)
+- Cloudflare Pages: https://jmorgado.pages.dev/ (canónico), proyecto `jmorgado` conectado directamente al mismo repositorio.
 - Rama de producción: `main`.
-- GitHub Actions: `.github/workflows/pages.yml` genera y publica `_site/` en cada push a main.
+- GitHub Actions: `.github/workflows/pages.yml` genera `_site/`.
 - Cloudflare Pages: directorio raíz vacío, comando `python3 publish_site.py`, salida `_site`.
-- Las URL canónicas y el sitemap apuntan a GitHub Pages en ambos alojamientos.
+- Las URL canónicas y el sitemap apuntan a Cloudflare Pages.
 
 Los cambios en `main` disparan publicaciones automáticas. No se incluyen credenciales ni servicios de pago. Los estilos, scripts y contenido editorial se mantienen en sus archivos existentes.
 

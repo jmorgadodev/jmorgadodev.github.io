@@ -106,7 +106,7 @@ def main():
     readme = io.open(base / "README.md", "w", encoding="utf-8", newline="\n")
     W = readme.write
     W("# %s\n\n" % args.titulo)
-    W("**Proyecto:** JMorgado · `jmorgadodev.github.io`  \n")
+    W("**Proyecto:** JMorgado · `jmorgado.pages.dev`  \n")
     W("**Paquete:** `%s`  \n" % zip_path.name)
     W("**Generado:** %s  \n" % datetime.now().strftime("%Y-%m-%d %H:%M"))
     W("**Base del trabajo:** `63e45ea86597f318f4e1ff869ab315ce078ff4ef` (checkpoint aprobado)\n\n")

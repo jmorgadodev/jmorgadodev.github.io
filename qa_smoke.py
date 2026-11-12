@@ -542,7 +542,7 @@ try:
                 assert document.select_one('.jm-footer-links a[href$="herramientas/"]')
                 assert document.select_one('.jm-footer-links a[href$="servicios/"]')
         urls = {entry.text for entry in sitemap.findall(".//{*}loc")}
-        assert urls == {"https://jmorgadodev.github.io/"+route for route in routes
+        assert urls == {"https://jmorgado.pages.dev/"+route for route in routes
                         if route not in [f"proyectos/{slug}/" for slug in LEGACY_TOOL_SLUGS]}
         browser.close()
         print('26 rutas, 24 canónicas, calculadora, JS deshabilitado y movimiento reducido OK')
