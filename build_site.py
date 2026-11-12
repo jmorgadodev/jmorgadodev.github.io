@@ -104,6 +104,7 @@ def meta(d, title, description, active="", journey=False, *, canonical=None, jso
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">"""
     robots = "index,follow" if canonical else "noindex,follow"
     canonical_meta = f'<link rel="canonical" href="{e(canonical)}"><meta property="og:url" content="{e(canonical)}">' if canonical else ""
+    verification_meta = '<meta name="google-site-verification" content="hHd4vlBbAzxS41fGfWXyyyvDGZZUD3fHaHm_vEqBiGU">' if journey else ""
     head = f"""<!doctype html><html lang="es"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{e(title)} | JMorgado</title><meta name="description" content="{e(description)}">
@@ -114,6 +115,7 @@ def meta(d, title, description, active="", journey=False, *, canonical=None, jso
 <meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Jorge Morgado · Desarrollo web, datos y automatización. Composición con piezas modulares de JMorgado.">
 {canonical_meta}
+{verification_meta}
 <link rel="icon" type="image/svg+xml" href="{e(local(d,'assets/favicon.svg'))}">
 <link rel="icon" href="{e(local(d,'assets/favicon.ico'))}" sizes="any">
 <link rel="icon" type="image/png" sizes="16x16" href="{e(local(d,'assets/favicon-16x16.png'))}">
