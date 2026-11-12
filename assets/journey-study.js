@@ -150,8 +150,8 @@ let narrativeLastPaint=0;
 // La cadencia del relato cuando sólo late el mundo: 30 fps en escritorio,
 // 24 fps en pantallas estrechas.
 const narrativeInterval=()=>W<700?42:33;
-const pointer={x:0,y:0,energy:0,active:false,down:false,dirX:0,dirY:0,speed:0,lastMoveAt:0,lastSpeedUpdateAt:0,hasPosition:false};
-let pointerTween=null,pointerFade=null,scrollIdle=true,scrollIdleTimer=0;
+const pointer={x:0,y:0,tx:0,ty:0,energy:0,active:false,down:false,dirX:0,dirY:0,speed:0,lastMoveAt:0,lastSpeedUpdateAt:0,hasPosition:false};
+let pointerTween=null,pointerFade=null,scrollIdle=true,scrollIdleTimer=0,pointerFrameAt=0;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Arquitectura del motor
@@ -239,8 +239,10 @@ const PAL={
  // Cada capítulo conserva la misma familia cromática, pero tiene una superficie propia.
  // Las diferencias son tonales y materiales: papel, salvia, coral, mineral, petróleo,
  // piedra fría, arena y cierre profundo. La pareja día/noche mantiene el mismo mapa.
- day:{bg:['#E9E3D8','#E2DCCE','#D3CDC0','#BDB6A6','#08272C','#10333A','#C9C3B4','#F0EDE6'],
- ink:'#222327',cream:'#FCFAF5',petrol:'#23494E',coral:'#F45A3A',amber:'#E8B769',olive:'#737B69',stone:'#C9C8B7',ash:'#A5A18D',clay:'#D99B89'},
+ // El dia trabaja sobre piedra calida: un papel un punto mas oscuro y neutro
+ // que el beige, donde las piezas siguen teniendo presencia.
+ day:{bg:['#C6D2CF','#BDCAC7','#B2C0BD','#A7B5B2','#08272C','#10333A','#BFCBC9','#F0EDE6'],
+  ink:'#222327',cream:'#FCFAF5',petrol:'#23494E',coral:'#F45A3A',amber:'#E8B769',olive:'#737B69',stone:'#C9C8B7',ash:'#A5A18D',clay:'#D99B89'},
  night:{bg:['#131E23','#18262C','#1F2D33','#25353C','#08272C','#10333A','#16242A','#111B20'],
  ink:'#F3F0E8',cream:'#F3F0E8',petrol:'#477982',coral:'#FF785C',amber:'#EEC47D',olive:'#ADB29C',stone:'#818578',ash:'#B5B19F',clay:'#DDA294'}
 };
@@ -325,10 +327,12 @@ function drawSurfaceMaterial(scene,p){
  if(!isNight){
   // Luz de superficie: un plano claro arriba y una caída tonal real hacia el borde.
   const plane=fondoCtx.createLinearGradient(0,0,W,H);
-  plane.addColorStop(0,rgba(p.cream,.26));
-  plane.addColorStop(.28,rgba(p.cream,.09));
-  plane.addColorStop(.66,rgba(p.ink,.018));
-  plane.addColorStop(1,rgba(p.ink,.10));
+  // Un degradado muy suave: la luz entra por arriba a la izquierda y el
+  // papel se apila hacia el borde inferior. Da profundidad sin ruido.
+  plane.addColorStop(0,rgba(p.cream,.20));
+  plane.addColorStop(.34,rgba(p.cream,.06));
+  plane.addColorStop(.68,rgba(p.ink,.05));
+  plane.addColorStop(1,rgba(p.ink,.17));
   fondoCtx.fillStyle=plane;fondoCtx.fillRect(0,0,W,H);
  }else if(acto===0){
   const sombra=fondoCtx.createLinearGradient(0,0,0,H);
@@ -361,7 +365,7 @@ function drawBackdropLayer(scene,p,alpha=1){
   const phase=idleMotion.time,idle=idleMotion.value;
   const lightX=W*(.66+Math.sin(phase*.10)*.02*idle);
   drawBackdropWash(lightX,H*.60,extent*.55,isNight?p.amber:p.petrol,isNight?.16:.10);
-  drawBackdropWash(W*.16,H*.24,extent*.46,p.cream,isNight?.06:.20);
+  drawBackdropWash(W*.16,H*.24,extent*.46,p.cream,isNight?.06:.12);
   if(!isNight)drawBackdropWash(W*.78,H*.86,extent*.48,p.olive,.055);
  }else if(acto===1){
   // Neutro en transición: la materia gana profundidad antes de encenderse.
@@ -477,7 +481,7 @@ function applyPointer(event){
  const x=clamp(event.clientX-rect.left,0,W),y=clamp(event.clientY-rect.top,0,H);
  const now=performance.now();
  if(pointer.hasPosition){
-  const dx=x-pointer.x,dy=y-pointer.y,distance=Math.hypot(dx,dy);
+  const dx=x-pointer.tx,dy=y-pointer.ty,distance=Math.hypot(dx,dy);
   if(distance>.75){
    const elapsed=Math.max(8,now-pointer.lastMoveAt);
    pointer.dirX=lerp(pointer.dirX,dx/distance,.38);
@@ -486,8 +490,11 @@ function applyPointer(event){
   }
  }else{
   pointer.dirX=0;pointer.dirY=0;pointer.speed=0;pointer.hasPosition=true;
+  pointer.x=x;pointer.y=y;
  }
- pointer.x=x;pointer.y=y;pointer.lastMoveAt=now;pointer.lastSpeedUpdateAt=now;
+ // El puntero marca el objetivo; la escena persigue esa posicion con
+ // inercia. La respuesta es continua: nunca hay un salto.
+ pointer.tx=x;pointer.ty=y;pointer.lastMoveAt=now;pointer.lastSpeedUpdateAt=now;
  pointer.active=true;
  pointerTween?.kill();pointerFade?.kill();pointerFade=null;
  if(pointer.energy<.98){
@@ -580,6 +587,23 @@ function drawScene(i,u,p){
  // el avance global del recorrido.
  pioneerDibujar(p);
 }
+// A · El texto de apoyo de la tercera escena se situa a partir de los limites
+// reales de la palabra: la banda que ocupa CRECER, el margen de la pieza mas
+// grande y el hueco que se quiere dejar libre.
+function colocarApoyo(){
+ const bloque=copies[2];
+ if(!bloque)return;
+ const campo=pioneerCampo('CRECER');
+ const ancho=Math.min(W*(W<700?.88:.70),860);
+ const alto=ancho*campo.aspecto;
+ const centro=H*(W<700?.44:.50);
+ // La pieza mayor sobresale unas decenas de pixeles del trazo.
+ const margenPieza=Math.max(14,Math.round(Math.min(W,H)*.022));
+ // El hueco libre se mide sobre el lado corto de la pantalla.
+ const hueco=Math.round(Math.min(W,H)*(W<700?.115:.085));
+ const bajo=centro+alto*.5+margenPieza+hueco;
+ bloque.style.setProperty('--apoyo-top',Math.round(bajo-bloque.offsetTop)+'px');
+}
 function resize(){
  const box=canvas.getBoundingClientRect();
  W=Math.max(1,box.width);H=Math.max(1,box.height);
@@ -595,6 +619,7 @@ function resize(){
  ctx.setTransform(DPR,0,0,DPR,0,0);
  // El lienzo principal se repinta aquí porque ha cambiado su tamaño de respaldo;
  // el resto de capas recalculan su geometría por su propia cuenta.
+ colocarApoyo();
  paintNarrative();
  invalidate('ambient');
 }
@@ -646,6 +671,7 @@ const pioneerFase=new Float32Array(PIONEER_N);
 const pioneerIdx=new Uint8Array(PIONEER_N);
 const pioneerWx=new Float32Array(PIONEER_N);
 const pioneerWy=new Float32Array(PIONEER_N);
+const pioneerChispa=new Float32Array(PIONEER_N);
 const PIONEER_CUERPO=56,PIONEER_BANDA=24,PIONEER_ENVOLVENTE=16;
 
 // El resplandor interior es un sprite cacheado: un único gradiente radial.
@@ -730,40 +756,48 @@ function pioneerCampo(palabra){
  c.clearRect(0,0,1400,340);c.fillStyle='#fff';c.textAlign='center';c.textBaseline='middle';
  c.font='800 268px "Instrument Sans",sans-serif';c.fillText(palabra,700,172,1380);
  const data=c.getImageData(0,0,1400,340).data;
- const bruto=[];
+ const bruto=[],contorno=[];
  let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
- for(let y=6;y<334;y+=3)for(let x=4;x<1396;x+=3){
+ // Muestreo fino: la silueta necesita puntos suficientes para leerse.
+ for(let y=5;y<335;y+=2)for(let x=3;x<1397;x+=2){
   if(data[(y*1400+x)*4+3]>120){
    bruto.push({x,y});
+   // El borde de la letra: por fuera no hay tinta. Sirve para reforzar el
+   // contorno sin volver la palabra un recorte rigido.
+   const lado=data[(y*1400+Math.min(x+3,1399))*4+3]<=120
+    ||data[(Math.min(y+3,339)*1400+x)*4+3]<=120;
+   if(lado)contorno.push({x,y});
    if(x<minX)minX=x; if(x>maxX)maxX=x;
    if(y<minY)minY=y; if(y>maxY)maxY=y;
   }
  }
  const ancho=Math.max(1,maxX-minX),alto=Math.max(1,maxY-minY);
  const cx0=(minX+maxX)/2,cy0=(minY+maxY)/2;
- const pts=new Array(bruto.length);
- for(let i=0;i<bruto.length;i++)pts[i]={x:(bruto[i].x-cx0)/ancho,y:(bruto[i].y-cy0)/alto};
- v={pts,aspecto:alto/ancho};
+ const normalizar=(lista)=>{
+  const out=new Array(lista.length);
+  for(let i=0;i<lista.length;i++)out[i]={x:(lista[i].x-cx0)/ancho,y:(lista[i].y-cy0)/alto};
+  return out;
+ };
+ const pts=normalizar(bruto);
+ v={pts,borde:contorno.length?normalizar(contorno):pts,aspecto:alto/ancho};
  pioneerCampos[palabra]=v;
  return v;
 }
-function pioneerCampoPunto(campo,i){
- const pts=campo.pts;
- if(!pts.length)return{x:0,y:0};
- return pts[(i*73+Math.floor(hash(i*7+3)*pts.length))%pts.length];
-}
 
 // Las partículas de polvo: la misma materia que los fragmentos, a otra escala.
-const DUST_N=780;
+const DUST_N=900;
 const dustX=new Float32Array(DUST_N);
 const dustY=new Float32Array(DUST_N);
 const dustS=new Float32Array(DUST_N);
 const dustTinte=new Uint8Array(DUST_N);
 const dustAlpha=new Float32Array(DUST_N);
+const dustCorte=new Uint8Array(DUST_N);
 const DUST_LEVELS=6;
 const dustBucket=new Uint8Array(DUST_N);
 function pioneerPolvo(e,p,fondo){
  const tiempo=prefersReduced.matches?0:idleMotion.time;
+ // El fondo decide el tratamiento: en modo dia la materia necesita mas peso.
+ const oscuro=pioneerOscuro(fondo);
  const cx=W*.5,cy=H*(W<700?.44:.485);   // la palabra CRECER vive junto al titular
  const palabra='CRECER';
  const campo=pioneerCampo(palabra);
@@ -784,10 +818,20 @@ function pioneerPolvo(e,p,fondo){
   const baseY=H*(.40+h3*.34)+derivaY*H*.04;
   if(aCrecer>.001||aCaida>.001){
    // Acto 3/4 · el polvo converge y escribe CRECER en el centro.
-   // El reparto es un barrido uniforme: cada partícula toma su propia
-   // posición de la silueta, de modo que las letras quedan cubiertas.
-  const total=campo.pts.length;
-  const punto=campo.pts[Math.floor(i*(total-1)/(DUST_N-1))];
+   // El reparto combina el cuerpo de la letra con su contorno: las letras
+   // quedan cubiertas y el borde se reinforceza.
+  // El cuerpo de la letra y su contorno: el contorno recibe mas materia y
+   // particulas mayores, asi la palabra se recorta contra el fondo.
+   const nBorde=Math.floor(DUST_N*.30);
+   let punto;
+   if(i<nBorde&&campo.borde.length){
+    const tb=campo.borde.length;
+    punto=campo.borde[Math.floor(i*(tb-1)/Math.max(1,nBorde-1))];
+    dustCorte[i]=1;
+   }else{
+    const total=campo.pts.length;
+    punto=campo.pts[Math.floor((i-nBorde)*(total-1)/Math.max(1,DUST_N-nBorde-1))];
+   }
   const dx=cx+punto.x*destinoW;
   const dy=cy+punto.y*destinoH;
   const cp=clamp((e.crecer-h2*.30)/.70,0,1);
@@ -795,7 +839,7 @@ function pioneerPolvo(e,p,fondo){
   x=baseX+(dx-baseX)*ease;
   y=baseY+(dy-baseY)*ease;
   if(aCaida>0){y+=aCaida*(.22+.62*h3)*H;x+=(h2-.5)*W*.10*aCaida;}
-  tam=(2.4+2.6*h4)*(1+aCrecer*.28)*(Math.min(W,H)<520?.62:1);
+  tam=(2.4+2.6*h4)*(1+aCrecer*.42)*(dustCorte[i]?1.45:1.18)*(Math.min(W,H)<520?.62:1);
   tinta=h4<.40?2:h4<.70?1:0;
   surge=aCrecer*(.34+.58*h4)+aCaida*(.62+.34*h4)*(1-aCaida*.55);
  }else{
@@ -810,9 +854,10 @@ function pioneerPolvo(e,p,fondo){
   }
   tam=(2.6+2.6*h4)*(Math.min(W,H)<520?.62:1);
   tinta=h4<.30?2:h4<.62?0:1;
-  surge=(i<150?aIdea*(.26+.60*h4):0);
+  surge=(i<DUST_N*.24?aIdea*(oscuro?.26+.60*h4:.34+.62*h4):0);
  }
- dustX[i]=x;dustY[i]=y;dustS[i]=tam;dustTinte[i]=tinta;
+  dustCorte[i]=dustCorte[i]&&aCrecer>.001?1:0;
+  dustX[i]=x;dustY[i]=y;dustS[i]=tam;dustTinte[i]=tinta;
  dustAlpha[i]=surge;
 }
 }
@@ -837,7 +882,11 @@ function pioneerClave(valores,g){
 }
 function pioneerEstado(){
  const g=clamp(play.t/8,0,1);
+ // Acto 1 · carga y ensamblaje. La materia entra condensada y tensa, el
+ // montaje la libera pieza a pieza y un latido la separa antes de encajar.
+ const carga=1-smooth(.00,.085,g);
  const orden=smooth(.04,.28,g);
+ const montaje=smooth(.02,.10,g)*(1-smooth(.26,.48,g));
  const activacion=smooth(.28,.44,g);
  const expansion=smooth(.42,.62,g);
  const apertura=smooth(.60,.80,g);
@@ -846,13 +895,13 @@ function pioneerEstado(){
  const crecer=smooth(.50,.65,g);
  const tiempo=prefersReduced.matches?0:idleMotion.time;
  return {
-  g,orden,activacion,expansion,apertura,huida,crecer,
+  g,orden,activacion,expansion,apertura,huida,crecer,carga,montaje,
   angulo:tiempo*.048+g*1.62,
   elevacion:pioneerClave([.40,.38,.46,.36,.30,.22],g),
   distancia:pioneerClave([3.70,3.60,3.26,3.02,3.22,3.55],g),
-  centroX:pioneerClave([.67,.66,.33,.33,.50,.50,.50],g),
-  centroY:pioneerClave([.575,.555,.545,.555,.60,.635],g),
-  escala:pioneerClave([.57,.56,.53,.50,.47,.42],g),
+  centroX:pioneerClave([.72,.71,.33,.33,.50,.50,.50],g),
+  centroY:pioneerClave([.565,.555,.545,.555,.60,.635],g),
+  escala:pioneerClave([.63,.62,.53,.50,.47,.42],g),
  };
 }
 function pioneerFondo(){
@@ -885,22 +934,49 @@ function pioneerDibujar(p){
  const focal=2.2;
  const calidez=smooth(.28,.52,e.g);
  const acento=pioneerAcento(p,fondo,oscuro);
- const colorCuerpo=oscuro?mix(p.cream,p.stone,.22):mix(p.ink,p.petrol,.30);
+ // En modo dia el papel claro se come los tonos medios: las piezas grises,
+ // coral y doradas necesitan mas peso para no desaparecer.
+ const colorCuerpo=oscuro?mix(p.cream,p.stone,.22):mix(p.ink,p.petrol,.44);
  const colorBanda=mix(acento,oscuro?p.amber:acento,.14+calidez*.26);
- const colorHalo=oscuro?mix(p.cream,p.ash,.46):mix(p.ash,p.petrol,.34);
- const colorLinea=oscuro?mix(p.cream,p.petrol,.58):mix(p.petrol,p.cream,.20);
+ const colorHalo=oscuro?mix(p.cream,p.ash,.46):mix(p.ash,p.petrol,.68);
+ const colorLinea=oscuro?mix(p.cream,p.petrol,.58):mix(p.petrol,p.cream,.10);
  const colorRed=mix(colorLinea,p.amber,.72);
 
  // 1 · posiciones en el mundo.
  const tamBase=escala*(.032+.026*e.orden);
  const fade=(1-e.huida*.66);
+ // C · Carga: la materia entra condensada y tensa. El montaje la libera
+ // pieza a pieza; un latido la separa y la reagrupa antes de encajar.
+ const carga=e.carga;
+ const latidoCarga=Math.sin(smooth(.08,.24,e.g)*Math.PI);
+ // C · Encendido: el pulso recorre las piezas en el orden del montaje.
+ const frente=smooth(.02,.30,e.g);
  for(let i=0;i<PIONEER_N;i++){
   const k=i*3;
   const ret=pioneerRetraso[i];
   const tO=clamp((e.orden-ret*.52)/(1-ret*.52));
-  let x=pioneerCaos[k]*(1-tO)+pioneerOrden[k]*tO;
-  let y=pioneerCaos[k+1]*(1-tO)+pioneerOrden[k+1]*tO;
-  let z=pioneerCaos[k+2]*(1-tO)+pioneerOrden[k+2]*tO;
+  // El montaje no es lineal: la pieza llega con energía y se asienta.
+  // El montaje: la pieza se queda un momento dispersa, acelera hacia su
+  // sitio, llega con energia y se asienta.
+  const paso=tO*tO*(3-2*tO);
+  const te=paso>=1?1:paso+(1-paso)*(1-paso)*Math.sin(paso*Math.PI)*.22;
+  let x=pioneerCaos[k]*(1-te)+pioneerOrden[k]*te;
+  let y=pioneerCaos[k+1]*(1-te)+pioneerOrden[k+1]*te;
+  let z=pioneerCaos[k+2]*(1-te)+pioneerOrden[k+2]*te;
+  // La trayectoria no es recta: la pieza describe un arco hacia su sitio, como
+  // si fuera atraida por el lugar que le toca ocupar.
+  const dirX=pioneerOrden[k]-pioneerCaos[k],dirZ=pioneerOrden[k+2]-pioneerCaos[k+2];
+  const largo=Math.hypot(dirX,dirZ)||1;
+  const arco=Math.sin(te*Math.PI)*(.10+.12*hash(i*17+7));
+  const signo=hash(i*23+11)*2-1;
+  x+=-dirZ/largo*arco*signo;
+  z+=dirX/largo*arco*signo;
+  y+=Math.sin(te*Math.PI)*signo*.05;
+  // La carga condensa el conjunto hacia el núcleo antes de liberarlo.
+  x*=1-carga*.50;z*=1-carga*.50;y*=1-carga*.26;
+  // El latido separa y reagrupa la materia.
+  const empuje=1+latidoCarga*.12;
+  x*=empuje;z*=empuje;
   // El perímetro se abre: el crecimiento nace del borde. En la apertura final
   // la estructura se aplana y cede el sitio al portafolio.
   const apertura=Math.max(e.expansion,e.apertura*1.15);
@@ -926,27 +1002,37 @@ function pioneerDibujar(p){
   pioneerY[i]=centroY-y2*prof*escala;
   pioneerZ[i]=zz;
   pioneerFase[i]=i*2.399963+e.angulo*.30+e.huida*hash(i*11+3)*2.6;
-  // C · Cada pieza respira por su cuenta. La amplitud es pequeña y la fase
-  // es propia: el conjunto sigue vivo sin puntero y sin scroll.
+  // C · Cada pieza respira por su cuenta y conserva un zumbido mínimo: el
+  // conjunto nunca queda congelado, ni con el puntero quieto ni fuera.
   const resp=idleMotion.value;
-  const latido=Math.sin(idleMotion.time*.62+pioneerFase[i]*1.7);
-  pioneerS[i]=tamBase*prof*(1+latido*.055*resp);
-  pioneerX[i]+=Math.cos(idleMotion.time*.47+pioneerFase[i])*escala*.008*resp;
-  pioneerY[i]+=Math.sin(idleMotion.time*.53+pioneerFase[i]*1.3)*escala*.009*resp;
+   // C - Flujo lento: dos oscilaciones de frecuencia baja (12 y 18 s) y
+   // amplitud de pocos pixeles. La estructura respira; no tiembla.
+   const latido=Math.sin(idleMotion.time*.62+pioneerFase[i]*1.7);
+   const deriva=Math.sin(idleMotion.time*.52+pioneerFase[i]*.9);
+   const deriva2=Math.cos(idleMotion.time*.35+pioneerFase[i]*1.4);
+   // El pulso de encendido enciende la pieza justo cuando el frente la alcanza.
+   const chispa=clamp(1-Math.abs(frente-ret/.30)*4.2,0,1);
+   pioneerS[i]=tamBase*prof*(1+latido*.05*resp)*(1+chispa*.12);
+   pioneerX[i]+=(deriva*escala*.012+deriva2*escala*.007)*resp;
+   pioneerY[i]+=(deriva2*escala*.010+deriva*escala*.005)*resp;
+   pioneerChispa[i]=chispa;
  }
  // La palabra CRECER la escriben los propios fragmentos: la geometría responde
  // a las letras. Se calcula en espacio de pantalla para que la órbita de la
  // cámara no distorsione la tipografía.
  const tL=e.crecer;
+ let campo=null,destinoW=0,destinoH=0;
+ const cyLetra=H*(W<700?.44:.50);
  if(tL>0){
-  const campo=pioneerCampo('CRECER');
-  const destinoW=Math.min(W*(W<700?.88:.70),860),destinoH=destinoW*campo.aspecto;
+  campo=pioneerCampo('CRECER');
+  destinoW=Math.min(W*(W<700?.88:.70),860);destinoH=destinoW*campo.aspecto;
   const total=campo.pts.length;
-  const cyLetra=H*(W<700?.44:.50);
   for(let i=0;i<PIONEER_N;i++){
    // Dispersión por área: cada fragmento cae en un punto de la silueta
    // con cobertura uniforme, sin bandas diagonales.
-   const punto=campo.pts[Math.floor(hash(i*13+7)*total)%total];
+   // Los fragmentos recorren la letra entera en un barrido parejo: el
+   // interior de cada caracter se construye y no se acumulan sin criterio.
+   const punto=campo.pts[Math.floor(i*(total-1)/Math.max(1,PIONEER_N-1))];
    pioneerWx[i]=centroX+punto.x*destinoW;
    pioneerWy[i]=cyLetra+punto.y*destinoH;
   }
@@ -966,6 +1052,20 @@ function pioneerDibujar(p){
  ctx.globalAlpha=(oscuro?.06:.04)+(.24*e.activacion*(1-e.apertura*.85))+(.07*e.apertura);
  ctx.drawImage(pioneerResplandor(colorLuz),centroX-radioLuz,centroY-radioLuz,radioLuz*2,radioLuz*2);
  ctx.globalAlpha=1;
+ // C · La palabra emerge de la atmósfera: un halo suave la separa del fondo
+ // sin recortarla ni volverla un signo rígido.
+ if(tL>.02&&campo){
+  ctx.save();
+  ctx.translate(centroX,cyLetra);
+  ctx.scale(1,Math.max(.20,destinoH/destinoW*1.7));
+  const halo=ctx.createRadialGradient(0,0,0,0,0,destinoW*.54);
+  halo.addColorStop(0,rgba(colorLuz,.15*tL));
+  halo.addColorStop(.46,rgba(colorLuz,.065*tL));
+  halo.addColorStop(1,rgba(colorLuz,0));
+  ctx.fillStyle=halo;ctx.fillRect(-destinoW,-destinoW,destinoW*2,destinoW*2);
+  ctx.restore();
+ }
+ ctx.globalAlpha=1;
  // 4 · la red de uniones: aparece en el acto 2 y se enciende en el 3.
  const web=smooth(.04,.22,e.g)*(1-smooth(.62,.80,e.g));
  if(web>.01){
@@ -977,7 +1077,8 @@ function pioneerDibujar(p){
    const prof=clamp((pioneerZ[i]+pioneerZ[j])*.5-1.1,0,2.6)/2.6;
    const s=a/Math.max(1,pioneerAristasN-1);
    const pulso=smooth(.10,0,Math.abs(s-frente));
-   ctx.globalAlpha=web*(.30+.34*act+.55*act*pulso)*(1-prof*.70)*fade;
+   ctx.globalAlpha=web*(oscuro?(.30+.34*act+.55*act*pulso):(.46+.36*act+.42*act*pulso))
+        *(1-prof*(oscuro?.70:.46))*fade;
    ctx.strokeStyle=act>.02&&pulso>.04?colorRed:colorLinea;
    ctx.beginPath();
    ctx.moveTo(pioneerX[i],pioneerY[i]);
@@ -993,12 +1094,15 @@ function pioneerDibujar(p){
   const g=pioneerGrupo[i];
   const ret=pioneerRetraso[i];
   const tO=clamp((e.orden-ret*.52)/(1-ret*.52));
-  const niebla=clamp((pioneerZ[i]-1.15)/3.4,0,.62);
+  const niebla=clamp((pioneerZ[i]-1.15)/3.4,0,oscuro?.62:.36);
   const luz=clamp(1-(pioneerZ[i]-1.0)*.55,.18,1);
   const activo=e.activacion;
   let base=g===1?colorBanda:(g===2?colorHalo:colorCuerpo);
-  base=mix(base,mix(base,p.cream,.60),luz*(.12+.46*activo));
-  base=mix(base,fondo,niebla*.62);
+  // De dia la luz no lava las piezas: el tono se mantiene y la pieza existe.
+  base=mix(base,mix(base,p.cream,oscuro?.60:.26),luz*(.12+.46*activo));
+  // El pulso de encendido: la pieza brilla un instante al recibir la carga.
+  if(pioneerChispa[i]>.01)base=mix(base,mix(base,p.cream,.92),pioneerChispa[i]*.85);
+  base=mix(base,fondo,niebla*(oscuro?.62:.38));
   // La respuesta al puntero se mantiene localizada y sutil.
   const inf=pointerInfluenceAt(pioneerX[i],pioneerY[i],alcance);
   let sx=pioneerX[i],sy=pioneerY[i];
@@ -1013,11 +1117,11 @@ function pioneerDibujar(p){
    sy+=inf.dy/d*off;
   }
   const tL2=e.crecer;
-  const s=pioneerS[i]*(1+inf.strength*.35)*(1-tL2*.46);
+  const s=pioneerS[i]*(1+inf.strength*.35)*(1-tL2*.52);
   const c2=Math.cos(pioneerFase[i]),s2=Math.sin(pioneerFase[i]);
   const ex=s*.60,ey=s*.88;
   const apago=1-smooth(.55,.72,e.g)*.32;
-  const alpha=(.72+.28*tO)*(.80+.20*activo)*(1-niebla*.30)*fade*apago;
+  const alpha=(.72+.28*tO)*(.80+.20*activo)*(1-niebla*.30)*fade*apago*(1+tL2*.30);
   ctx.globalAlpha=alpha;
   ctx.fillStyle=base;
   ctx.beginPath();
@@ -1028,7 +1132,7 @@ function pioneerDibujar(p){
   ctx.closePath();
   ctx.fill();
   ctx.globalAlpha=alpha*.70;
-  ctx.strokeStyle=mix(base,p.cream,oscuro?.42:.30);
+  ctx.strokeStyle=mix(base,p.cream,oscuro?.42:.40);
   ctx.lineWidth=1;
   ctx.stroke();
  }
@@ -1038,7 +1142,7 @@ function pioneerDibujar(p){
 pioneerPolvo(e,p,fondo);
  // En modo día el polvo usa tonos medios: el papel claro no puede esconderlo.
  const tintaPolvo=oscuro?[mix(p.cream,p.stone,.35),p.amber,acento]
-                      :[mix(p.ash,p.petrol,.22),mix(p.amber,p.clay,.34),acento];
+                      :[mix(p.ash,p.petrol,.42),mix(p.amber,p.clay,.52),acento];
  // El polvo se dibuja agrupado: un camino por tono y por nivel de opacidad.
  // Rellenar cada partícula por separado era el mayor coste del lienzo.
  for(let i=0;i<DUST_N;i++){
@@ -1239,11 +1343,11 @@ function setup(){
     master.to(rule,{scaleX:1,duration:.40,ease:'sine.out'},begin+.58);
     if(desc)master.to(desc,{opacity:1,y:0,duration:.46,ease:'power2.out'},begin+.64);
    }
-   if(i<copies.length-1)master.to(copy,{autoAlpha:0,duration:.30},act(copyRange[i+1][0]));
+   if(i<copies.length-1)master.to(copy,{autoAlpha:0,duration:.26},act(copyRange[i+1][0]));
   });
  master.to({},{duration:.02},sceneStarts[8]+.02);
  trigger=ScrollTrigger.create({id:'jmorgado-journey',trigger:root,start:'top top',end:'bottom bottom',
-  animation:master,scrub:.42,anticipatePin:1,invalidateOnRefresh:true,
+  animation:master,scrub:.30,anticipatePin:1,invalidateOnRefresh:true,
   onUpdate:()=>{syncSceneState();navStatus()}});
  master.progress(trigger.progress);
  syncSceneState();
@@ -1276,10 +1380,22 @@ document.fonts.ready.then(()=>{
 // mantiene trabajo de pintado: si nada está sucio, no se pinta nada.
 function engineTick(){
  // El reloj propio del navegador. El tiempo que entrega el ticker de GSAP es un
+ // tiempo de animacion relativo y puede saltar hacia atras al corregir el retardo
+ // (lag smoothing), asi que no sirve para medir cadencias.
+ const now=performance.now();
+ const dt=pointerFrameAt?Math.min(.08,Math.max(0,(now-pointerFrameAt)/1000)):0;
+ pointerFrameAt=now;
+ if(pointerDirty){pointerDirty=false;applyPointer(pendingPointer)}
+ // El campo del puntero sigue al puntero con inercia: las piezas se desplazan
+ // con suavidad, sin tirones ni saltos de posicion.
+ if(pointer.active&&dt>0){
+  const k=1-Math.exp(-dt/.12);
+  pointer.x+=(pointer.tx-pointer.x)*k;
+  pointer.y+=(pointer.ty-pointer.y)*k;
+ }
+ // El reloj propio del navegador. El tiempo que entrega el ticker de GSAP es un
  // tiempo de animación relativo y puede saltar hacia atrás al corregir el retardo
  // (lag smoothing), así que no sirve para medir cadencias.
- const now=performance.now();
- if(pointerDirty){pointerDirty=false;applyPointer(pendingPointer)}
  ambientTick(now);
  ajustarResolucion();
  // C · El ambiente se pinta a su propio ritmo y nunca arrastra al relato.

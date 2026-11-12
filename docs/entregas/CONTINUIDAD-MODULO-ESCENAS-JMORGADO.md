@@ -1,146 +1,121 @@
-# Continuidad — Módulo de escenas JMorgado
+# Continuidad — Módulo de escenas JMorgado (versión aprobada)
 
-**Fecha:** 11 de noviembre de 2026
-**Estado:** implementación completa y verificada en navegador. Pendiente la revisión visual de Jorge.
-**Alcance:** sólo el Módulo de escenas (la introducción) y su traspaso inmediato a la landing.
-
----
-
-## 1. Git
-
-| Elemento | Valor |
-| --- | --- |
-| Rama de respaldo | `backup/jmorgado-antes-ajustes-modulo-escenas` |
-| Commit de respaldo | `d5f0dac` — `chore: checkpoint previo a refinamiento del modulo de escenas` |
-| Rama de trabajo | `work/modulo-escenas-jmorgado` |
-| Base de la versión aprobada | los cambios sin commitear de `experiment/intro-pioneer-c` (módulo Pioneer C de cuatro escenas), protegidos en `d5f0dac` |
-
-El respaldo queda intacto. `main` no se tocó. No hay push ni despliegue.
-`assets/site-particles.js` y `videos/` siguen **sin seguimiento**: pertenecen a otro frente de trabajo y no se incorporaron.
-
-Para recuperar la versión anterior: `git checkout backup/jmorgado-antes-ajustes-modulo-escenas`.
-Para volver a la versión aprobada: `git checkout work/modulo-escenas-jmorgado` (los cambios de implementación están en el árbol de trabajo, sin commit, a la espera de aprobación visual).
+**Fecha:** 12 de noviembre de 2026
+**Estado:** versión aprobada por Jorge. Es el punto de recuperación definitivo del inicio antes de trabajar la capa ambiental de la landing.
+**Alcance:** sólo la introducción (`.tech-study`). La landing y sus secciones no se tocan.
 
 ---
 
-## 2. Los cuatro textos definitivos
+## 1. Las cuatro escenas y sus textos
 
-Viven en `journey_study.py` (`TITLES` y `DESCRIPTIONS`) y se generan en `index.html`.
+Viven en `journey_study.py` (`TITLES` y `DESCRIPTIONS`) y se generan en `index.html` mediante `render_study()`.
 
 | # | Escena | Título | Texto secundario |
 | --- | --- | --- | --- |
 | 01 | Idea | `Todo comienza` / `con una idea.` | `O con algo que podría funcionar mejor.` |
 | 02 | Forma | `Le damos` / `forma.` | `Transformando lo que imaginas en algo que funciona.` |
 | 03 | Crecimiento | `Lo que funciona` / `puede crecer.` | `Evolucionar, abrir nuevas posibilidades y llegar más lejos.` |
-| 04 | Comienzo | `Y esto es solo el comienzo.` (una sola línea) | — (sin secundario) |
+| 04 | Comienzo | `Y esto es solo el` / `comienzo.` | — (sin secundario) |
 
-El cierre ya **no** muestra «JMorgado — Desarrollo web, datos y automatización» ni el wordmark.
+En la escena 04 la segunda línea va en coral y con mucho más cuerpo; el cierre no repite el nombre de la marca.
 
----
+**Composición por escena**
 
-## 3. Distribución y comportamiento de cada escena
-
-Cada escena ocupa un acto de dos tramos del recorrido (`play.t` 0→8).
-
-- **01 · Idea** — texto a la izquierda (`left:7%`, `top:19%`), materia a la derecha. Titular grande, «con una idea.» en coral. El polvo de la escena se atrae hacia ese texto (`pioneerMedirTexto`), así que la letra y la materia se comparten.
-- **02 · Forma** — texto a la derecha (`right:7%`, `top:13%`, alineado a la derecha), retícula y red de uniones a la izquierda. «forma.» va sobre un bloque invertido que participa del contraste tipográfico.
-- **03 · Crecimiento** — titular centrado arriba (`top:8%`), **descripción justo debajo del titular** (ya no aislada al pie) y la palabra **CRECER** escrita en el lienzo por la propia materia, en el centro. La palabra se forma entre `play.t` 4.0 y 5.2, justo cuando el titular ya está asentado.
-- **04 · Comienzo** — una sola línea centrada (`top:30%`), tipografía protagonista. Detrás, las piezas se desprenden, se separan, giran y caen; el texto permanece hasta el final del recorrido.
-
-Los textos nunca se leaves a pantalla vacía: cada escena entra en.crossfade con la siguiente (0,30 s de solape) y el barrido completo del recorrido confirma que en ningún punto baja de 0,55 la opacidad del texto visible.
+- **01 · Idea** — texto a la izquierda (`left:7 %`, `top:26 %`), materia a la derecha. El polvo de la escena se atrae hacia la segunda línea del titular, así que letra y materia comparten el mismo aire.
+- **02 · Forma** — texto a la derecha (`right:6 %`, `top:30 %`), retícula y red de uniones a la izquierda. «forma.» va sobre un bloque invertido y conserva su contraste.
+- **03 · Crecimiento** — titular arriba y centrado, palabra CRECER construida en el lienzo, texto de apoyo debajo de las partículas con ~100 px de hueco libre (medido por el motor, no estimado).
+- **04 · Comienzo** — una línea arriba y «comienzo.» en coral abajo; las piezas se desprenden, giran y caen hacia el sitio.
 
 ---
 
-## 4. Movimiento autónomo
+## 2. El movimiento autónomo
 
 El motor tiene un **reloj del mundo** (`idleClock` / `idleMotion.time`) que es la única fuente del movimiento propio:
 
-- Avanza siempre que la introducción esté a la vista, con `prefers-reduced-motion` desactivado.
-- **No depende del puntero**: el puntero sólo modula trayectoria, velocidad y respuesta; si sale de la página o la ventana pierde el foco, la escena sigue respirando.
-- `ambientTick()` es el único punto de control: si la sección sale de pantalla o la pestaña se oculta, el reloj se pausa y conserva su fase (no se reinicia).
-- La capa narrativa se repinta a su propio ritmo (`narrativeInterval()`: 33 ms en escritorio, 42 ms en pantallas estrechas) mientras el mundo late.
-- Cada pieza respira por su cuenta: una oscilación pequeña de tamaño y un desplazamiento mínimo, con fase propia (`pioneerFase`).
+- Avanza siempre que la introducción está a la vista, con `prefers-reduced-motion` desactivado.
+- **No depende del puntero**: el puntero sólo modula la respuesta (trazado, velocidad, dirección). Si sale de la página o la ventana pierde el foco, la escena sigue viva.
+- El puntero marca un objetivo (`tx/ty`) y la escena lo persigue con inercia (120 ms): la respuesta es continua, nunca un salto.
+- Cada pieza respira con dos oscilaciones lentas (periodos de 12 y 18 s) y amplitud de pocos píxeles: **la estructura respira, no tiembla**.
+- La capa narrativa se repinta a su propio ritmo (33 ms en escritorio, 42 ms en pantallas estrechas) mientras el mundo late.
 
-Medición puntual del intervalo entre fotogramas con el movimiento autónomo activo (Chrome, 1440×900 y 390×844): **mediana 4,2 ms, p95 8,2 ms**.
+**Entrada de la escena 01.** La materia entra condensada en un núcleo tenso, se libera, y las piezas describen **arcos** hacia su sitio (no líneas rectas). El montaje no es lineal: la pieza se queda un momento dispersa, acelera, llega con energía y se asienta con un rebote corto. Un latido radial separa y reagrupa el conjunto, y un frente de encendido recorre las piezas en el orden del montaje.
 
-Optimización aplicada para sostener esa cadencia: el polvo (780 partículas) se dibuja agrupado por tono y por nivel de opacidad (18 `fill()` en vez de 780).
-
----
-
-## 5. Sincronización con el scroll
-
-- `ScrollTrigger` id `jmorgado-journey`, `scrub: .42`, anclado a `.tech-study`.
-- Un único `master` timeline mueve `play.t` de 0 a 8; todo el estado de la escena es una **función pura de la posición del scroll**, de modo que el recorrido es reversible sin saltos ni reinicios.
-- La altura de la introducción bajó de `1140svh` a **`900svh`**: 800 svh de recorrido útil (200 svh por acto) más 100 svh de traspaso a la landing.
-- El fondo se mezcla con el mismo progreso de disolución que el resto de la escena; no hay cambios de color bruscos entre actos.
-- La cuatro ventanas de texto son `[[0,2.08],[1.92,4.08],[3.94,6.08],[5.92,8]]` en unidades de `play.t`; cada una se apaga cuando entra la siguiente.
+**Cuarta escena.** Al cerrarse, `huida` desprende cada pieza con su propio peso, la separa del conjunto y la hace girar mientras cae.
 
 ---
 
-## 6. Cabecera y botón JM.
+## 3. El recorrido: 460 svh
 
-- Durante las cuatro escenas **no** hay cabecera de la landing. Tampoco el monograma «JM» ni «Desplázate para continuar» en la introducción (se eliminaron del markup). En la esquina superior derecha queda sólo el control de tema y el enlace «Ir al sitio ↗».
-- La cabecera aparece cuando el contenido del sitio entra en pantalla (`#explorar`) y se retira al volver a las escenas (`navStatus()` ya no fuerza su presencia en el último acto).
-- La cabecera lleva la marca `JM.` a la izquierda, los enlaces de navegación existentes y el **control de día/noche como icono** en el extremo derecho (luna en modo día, sol en modo noche: el icono anuncia el modo al que se llega).
-- Al pulsar `JM.` (o «Volver al inicio ↑» del pie) el sitio **desplaza suavemente hasta elscroll 0**, sin recargar el documento ni reconstruir la escena. El motor sigue atado a la posición real del scroll, así que al volver a bajar se recorre la introducción de nuevo y al subir se rehace en sentido inverso.
+- `.tech-study.is-linked { height: 460svh }` → **3,6 pantallas** de recorrido (3240 px en 1440×900), de las que 360 svh son el recorrido útil y 100 svh el traspaso a la landing.
+- El `scrub` del ScrollTrigger es `.30`: la escena responde con agilidad sin aceleraciones internas.
+- El estado es una **función pura de la posición del scroll**: el recorrido se puede recorrer en ambos sentidos sin saltos ni reinicios.
+- Las cuatro ventanas de texto se **cruzan** (`[[0,2.08],[1.92,4.08],[3.94,6.08],[5.92,8]]` en unidades de `play.t`): un texto nunca desaparece antes de que el siguiente haya empezado a aparecer. El cruce dura `.26` s.
 
 ---
 
-## 7. Archivos modificados
+## 4. La paleta diurna aprobada
 
-| Archivo | Qué cambió |
+El día trabaja sobre **gris pizarra claro, ligeramente verdoso**:
+
+| Tramo | Color | Escena |
+| --- | --- | --- |
+| 0 | `#C6D2CF` | 01 · Idea |
+| 1 | `#BDCAC7` | 02 · Forma |
+| 2 | `#B2C0BD` | 02 · Forma |
+| 3 | `#A7B5B2` | 02 · Forma |
+| 4 | `#08272C` | 03 · Crecimiento |
+| 5 | `#10333A` | 03 · Crecimiento |
+| 6 | `#BFCBC9` | 04 · Comienzo |
+| 7 | `#F0EDE6` | traspaso → papel de la landing |
+
+El degradado ambiental es muy sutil (crema al 20 % arriba a la izquierda, tinta al 17 % abajo a la derecha) y no hay manchas decorativas.
+
+**Contraste diurno**: cuerpo de las piezas `mix(ink, petrol .44)`, halo `mix(ash, petrol .68)`, baño de crema reducido a `.26` y borde de pieza al `.40`: las piezas grises, marfil, coral y doradas se distinguen sin brillos artificiales. La niebla de profundidad baja a `.36` para que la composición no se lave.
+
+**Modo noche**: intacto y aprobado. `#131E23 → #111B20`, piezas marfil, coral `#FF785C` y ámbar `#EEC47D`.
+
+---
+
+## 5. La formación de CRECER
+
+`pioneerCampo('CRECER')` mide la silueta de la palabra sobre un lienzo temporal y guarda dos conjuntos: el **cuerpo** de la letra y su **contorno** (los puntos sin tinta al lado).
+
+- **Fragmentos**: los 96 fragmentos recorren la letra entera con un barrido parejo → el interior de cada carácter se construye y no hay acumulaciones desordenadas.
+- **Polvo**: 900 partículas; el 30 % va al contorno y un 70 % al cuerpo, con el contorno un 45 % más grande y el cuerpo un 18 % más grande.
+- **Halo**: un resplandor elíptico suave, con la escala vertical del propio trazo, separa la palabra del fondo sin recortarla.
+- La palabra aparece entre `play.t` 4,0 y 5,2, justo cuando el titular ya está asentado.
+
+---
+
+## 6. La transición hacia la landing
+
+Al terminar la cuarta escena el marco se desprende del anclaje y asciende mientras el papel de la landing entra por debajo. El fondo final del módulo (`#F0EDE6`) es exactamente el papel del sitio (`--jm-bg`), de modo que el traspaso no tiene corte de tono. La cabecera de la landing aparece cuando `#explorar` entra en pantalla y se retira en cuanto el visitante vuelve a las escenas.
+
+El botón `JM.` de la cabecera devuelve al inicio de la experiencia con un desplazamiento suave, sin recargar el documento y con el motor atado a la posición real del scroll.
+
+---
+
+## 7. Archivos principales del módulo
+
+| Archivo | Papel |
 | --- | --- |
-| `journey_study.py` | Canon de las cuatro escenas, marcado sin monograma ni invitación, cierre de una sola línea. |
-| `assets/journey-study.js` | Reloj del mundo y repintado autónomo, cruce de las cuatro escenas, formación de CRECER, caída del cuarto acto, contraste diurno, agrupado del polvo, limpieza del código muerto, cabecera/JM. |
-| `assets/journey-study.css` | Distribución de las cuatro escenas, cabecera con `JM.` e icono de tema, altura 900 svh, adaptación móvil. |
-| `assets/site.js` | Iconos de día/noche para el botón `data-theme-icon` (sólo portada). |
-| `build_site.py` | Marca `JM.`, clase `wordmark-text`, atributo `data-theme-icon` en la portada. |
-| `index.html` y páginas interiores | Regenerado con `python build_site.py` (cambia sólo el `?v=` de los recursos y la marca del logotipo). |
-| `qa_smoke.py` | El contrato editorial pasa a las cuatro escenas; se añade la comprobación de movimiento autónomo. |
-| `.gitignore` | Sólo se versiona este documento de `docs/entregas/`; el resto de la carpeta (zip, capturas, MP4) sigue siendo material local. |
+| `journey_study.py` | Canon de las cuatro escenas y marcado HTML accesible del inicio. |
+| `assets/journey-study.js` | Motor del módulo: escena paramétrica, reloj del mundo, CRECER, fondo y paleta. |
+| `assets/journey-study.css` | Distribución de las cuatro escenas, cabecera de la portada y medidas propias. |
+| `assets/site.js` | Iconos del control de tema (sólo en la portada). |
+| `build_site.py` | Marca `JM.`, clase `wordmark-text` y atributo `data-theme-icon` de la portada. |
+| `qa_smoke.py` | Contrato editorial del inicio y comprobaciones de recorrido. |
+| `index.html` | Salida generada con `python build_site.py`. |
 
 ---
 
-## 8. Comprobaciones realizadas
-
-| Comprobación | Resultado |
-| --- | --- |
-| `node --check assets/journey-study.js` / `assets/site.js` | correcto |
-| `python build_site.py` | correcto (26 rutas) |
-| `python qa_smoke.py` | correcto en 1440×900, 768×1024, 390×844, 320×568 y 844×390; 26 rutas, 24 canónicas, accesibilidad, temas, movimiento reducido, calculadora y juego |
-| `git diff --check` | correcto (sólo el aviso habitual de conversión LF/CRLF) |
-| Barrido del recorrido (101 posiciones) | 0 fracciones sin texto legible |
-| Movimiento autónomo | el lienzo cambia con el puntero quieto y con el puntero fuera de la página |
-| Consola | sin errores de página ni de consola en escritorio (1440×900) y móvil (390×844) |
-| CRECER | reconocible en modo día y en modo noche, también en móvil |
-| Cabecera | oculta durante las escenas, visible con el sitio, `inert` al volver con `JM.` |
-| Movimiento reducido | lienzo estático y las cuatro copias visibles |
-| Intervalo entre fotogramas | mediana 4,2 ms · p95 8,2 ms |
-| Grabación de revisión | `docs/entregas/revision-modulo-escenas-jmorgado.mp4` (MP4, H.264, 1280×720, 30 fps, sin audio, 2,3 MB) |
-
----
-
-## 9. Pendiente de revisión visual
-
-1. Ritmo de la caída del cuarto acto: conviene mirar la escena 04 detenida y durante el traspaso.
-2. En móvil, CRECER ocupa el 88 % del ancho y sube junto al titular: hay que confirmar que la composición respira.
-3. El «Ir al sitio ↗» de la esquina superior derecha de la introducción: se conserva porque el encargo no pedía retirarlo.
-4. Confirmar que la marca `JM.` sola en la cabecera satisface la marca de portada.
-
----
-
-## 10. Grabación de revisión
-
-`docs/entregas/revision-modulo-escenas-jmorgado.mp4` — MP4, H.264, 1280×720, 30 fps, sin audio, 2,3 MB.
-Recorre las cuatro escenas con sus rótulos, muestra CRECER escrito, el puntero quieto y el puntero fuera de la página (la escena sigue viva), la caída de las piezas, la entrada a la landing y el retorno con `JM.` con el recorrido inverso.
-
----
-
-## 11. Cómo verlo en local
+## 8. Cómo ejecutar el sitio localmente
 
 ```bash
 cd C:\Users\jorge\Proyectos\Jmorgado\landing
 python -m http.server 8765 --bind 127.0.0.1
 ```
 
-Abrir `http://127.0.0.1:8765/` y recorrer con la rueda. El control de tema está arriba a la derecha durante la introducción y en la cabecera cuando aparece el sitio.
+Abrir `http://127.0.0.1:8765/`. Para ver el ensamblaje de la escena 01 conviene avanzar despacio el primer 15 % del recorrido.
+
+Comprobaciones de apoyo: `node --check assets/journey-study.js`, `python build_site.py`, `python qa_smoke.py`.

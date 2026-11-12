@@ -15,6 +15,7 @@ docs/*
 !docs/entregas/
 docs/entregas/*
 !docs/entregas/CONTINUIDAD-MODULO-ESCENAS-JMORGADO.md
+!docs/entregas/CONTINUIDAD-AJUSTES-FINOS-MODULO-ESCENAS.md
 BRIEF_REPLICACION_EL_VIAJE.md
 _site/
 .env

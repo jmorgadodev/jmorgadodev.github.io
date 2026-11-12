@@ -15,7 +15,7 @@ ORIGINAL_TITLES = [
     ("Todo comienza", "con una idea."),
     ("Le damos", "forma."),
     ("Lo que funciona", "puede crecer."),
-    ("Y esto es solo el comienzo.", ""),  # CRECER se dibuja en Canvas
+    ("Y esto es solo el", "comienzo."),  # CRECER se dibuja en Canvas
 ]
 ORIGINAL_DESCRIPTIONS = [
     "O con algo que podría funcionar mejor.",

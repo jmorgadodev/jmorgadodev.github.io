@@ -49,7 +49,7 @@ html.theme-ready .home-header .theme-toggle{display:inline-flex;align-items:cent
 .copy-3 .study-rule{display:none}
 
 /* El recorrido completo cabe en menos scroll: cuatro actos y un traspaso. */
-.tech-study.is-linked{height:900svh}
+.tech-study.is-linked{height:460svh}
 .is-linked .study-frame{height:100svh;min-height:0;position:sticky;top:0;overflow:hidden}
 .is-linked .study-stage{position:absolute;inset:0;height:100%}
 .is-linked .study-topline{position:absolute;top:0;left:0;right:0}
@@ -57,31 +57,34 @@ html.theme-ready .home-header .theme-toggle{display:inline-flex;align-items:cent
 
 /* Escena 01 · Idea: el texto a la izquierda, la materia a la derecha.
    El bloque ocupa el ancho disponible sin invadir la zona de las piezas. */
-.is-linked .copy-0{left:7%;top:19%;width:47%;max-width:39rem}
+.is-linked .copy-0{left:7%;top:26%;width:47%;max-width:39rem}
 .is-linked .copy-0 .study-heading h1{font-size:clamp(2.6rem,4.6vw,4.7rem);line-height:1.06;letter-spacing:-.05em}
-.is-linked .copy-0 .study-rule{margin-top:1.15rem}
-.is-linked .copy-0 .study-description{max-width:31ch;margin-top:1rem;font-size:clamp(1rem,1.26vw,1.16rem);line-height:1.5}
+.is-linked .copy-0 .study-rule{margin-top:1.25rem}
+.is-linked .copy-0 .study-description{max-width:30ch;margin-top:1.05rem;font-size:clamp(1rem,1.26vw,1.16rem);line-height:1.5}
 
 /* Escena 02 · Forma: el texto a la derecha, la retícula a la izquierda. */
-.is-linked .copy-1{left:auto;right:7%;top:13%;width:44%;max-width:37rem;text-align:right}
-.is-linked .copy-1 .study-heading h2{font-size:clamp(2.4rem,4.1vw,4.2rem);line-height:1.06;letter-spacing:-.05em}
+.is-linked .copy-1{left:auto;right:6%;top:30%;width:44%;max-width:38rem;text-align:right}
+.is-linked .copy-1 .study-heading h2{font-size:clamp(2.4rem,4.1vw,4.2rem);line-height:1.08;letter-spacing:-.05em}
 .is-linked .copy-1 .study-mask,.is-linked .copy-1 .study-rule,.is-linked .copy-1 .study-description{margin-left:auto}
-.is-linked .copy-1 .study-rule{transform-origin:right center}
-.is-linked .copy-1 .study-description{max-width:29ch}
+.is-linked .copy-1 .study-mask.study-key{margin-top:-.04em}
+.is-linked .copy-1 .study-rule{transform-origin:right center;margin-top:1.25rem}
+.is-linked .copy-1 .study-description{max-width:28ch;margin-top:1.15rem}
 
 /* Escena 03 · Crecimiento: titular arriba, CRECER escrito en el lienzo.
    La descripción acompaña al titular: nunca queda aislada abajo. */
 .is-linked .copy-2{left:6%;right:6%;top:8%;width:88%;max-width:none;text-align:center}
-.is-linked .copy-2 .study-heading h2{font-size:clamp(2.2rem,4.1vw,4.2rem);line-height:1.06;letter-spacing:-.045em}
+.is-linked .copy-2 .study-heading h2{font-size:clamp(2.2rem,4.1vw,4.2rem);line-height:1.04;letter-spacing:-.045em}
 .is-linked .copy-2 .study-rule{display:none}
 .is-linked .copy-2 .study-mask,.is-linked .copy-2 .study-description{margin-inline:auto}
-.is-linked .copy-2 .study-description{max-width:37ch;margin-top:.95rem;opacity:.85}
+.is-linked .copy-2 .study-description{position:absolute;left:0;right:0;top:var(--apoyo-top,58svh);width:100%;max-width:42ch;margin:0 auto;text-align:center;font-size:clamp(1rem,1.32vw,1.22rem);opacity:.9}
 
 /* Escena 04 · Cierre: una sola línea, centrada y protagonista; las piezas
    se desprenden detrás mientras el texto sostiene su tiempo de lectura. */
-.is-linked .copy-3{left:5%;right:5%;top:30%;width:90%;max-width:none;text-align:center}
-.is-linked .copy-3 .study-heading h2{font-size:clamp(2.1rem,5.4vw,5.4rem);line-height:1.03;letter-spacing:-.05em}
+.is-linked .copy-3{left:5%;right:5%;top:27%;width:90%;max-width:none;text-align:center}
+.is-linked .copy-3 .study-heading h2{font-size:clamp(1.5rem,3.1vw,3.1rem);line-height:1.1;letter-spacing:-.035em;font-weight:600}
 .is-linked .copy-3 .study-mask{margin-inline:auto}
+.is-linked .copy-3 .study-mask.study-key{margin-top:.08em}
+.is-linked .copy-3 .study-key>span{color:var(--jm-coral);font-weight:700;letter-spacing:-.055em;font-size:clamp(2.9rem,7.6vw,7.6rem);line-height:.92}
 
 .tech-study[data-scene="2"],.tech-study[data-scene="4"],.tech-study[data-scene="6"]{--ui-color:#222327}
 .tech-study[data-scene="0"],.tech-study[data-scene="1"],.tech-study[data-scene="3"],.tech-study[data-scene="5"],.tech-study[data-scene="7"]{--ui-color:#222327}
@@ -90,17 +93,19 @@ html.theme-ready .home-header .theme-toggle{display:inline-flex;align-items:cent
 [data-jm-theme="night"] .tech-study[data-scene="4"]{--ui-color:#F3F0E8}
 [data-jm-theme="night"] .is-linked .copy-2 .study-heading h2{color:#FCFAF5}
 [data-jm-theme="night"] .is-linked .copy-2 .study-key>span{color:#FF9F7A}
+[data-jm-theme="night"] .is-linked .copy-3 .study-key>span{color:#FF9F7A}
 
 @media(max-height:760px) and (min-width:901px){
-  .is-linked .copy-0{top:15%}
+  .is-linked .copy-0{top:17%}
   .is-linked .copy-0 .study-heading h1{font-size:clamp(2rem,3.3vw,3.1rem)}
   .is-linked .copy-0 .study-description{font-size:.95rem}
-  .is-linked .copy-1{top:10%}
+  .is-linked .copy-1{top:16%}
   .is-linked .copy-1 .study-heading h2{font-size:clamp(1.8rem,3vw,2.8rem)}
   .is-linked .copy-2{top:6.5%}
   .is-linked .copy-2 .study-heading h2{font-size:clamp(1.8rem,3.2vw,3rem)}
-  .is-linked .copy-3{top:28%}
-  .is-linked .copy-3 .study-heading h2{font-size:clamp(1.9rem,4.4vw,4.2rem)}
+  .is-linked .copy-3{top:25%}
+  .is-linked .copy-3 .study-heading h2{font-size:clamp(1.3rem,2.6vw,2.6rem)}
+  .is-linked .copy-3 .study-key>span{font-size:clamp(2.6rem,6.2vw,6.2rem)}
 }
 @media(max-width:1100px){.home-header .header-inner{gap:.65rem;flex-wrap:wrap}}
 @media(max-width:900px){
@@ -111,42 +116,45 @@ html.theme-ready .home-header .theme-toggle{display:inline-flex;align-items:cent
   .is-linked .study-copy{left:6%;right:6%;width:88%;max-width:none;text-align:center}
   .is-linked .study-copy,.is-linked .study-copy .study-mask,.is-linked .study-copy .study-rule,.is-linked .study-copy .study-description{margin-inline:auto}
   .is-linked .study-description{max-width:33ch}
-  .is-linked .copy-0{top:11%}
+  .is-linked .copy-0{top:19%}
   .is-linked .copy-0 .study-heading h1{font-size:clamp(1.95rem,5.6vw,2.7rem)}
-  .is-linked .copy-1{top:11%}
+  .is-linked .copy-1{top:14%}
   .is-linked .copy-1 .study-heading h2{font-size:clamp(1.8rem,5.2vw,2.6rem)}
   .is-linked .copy-1 .study-rule{transform-origin:left center}
   .is-linked .copy-2{top:9%}
   .is-linked .copy-2 .study-heading h2{font-size:clamp(1.7rem,5.2vw,2.5rem)}
-  .is-linked .copy-2 .study-description{margin-top:.8rem}
-  .is-linked .copy-3{top:29%}
-  .is-linked .copy-3 .study-heading h2{font-size:clamp(1.7rem,7.2vw,3.4rem)}
-  .tech-study.is-linked{height:900svh}
+
+  .is-linked .copy-3{top:26%}
+  .is-linked .copy-3 .study-heading h2{font-size:clamp(1.3rem,5vw,2.4rem)}
+  .is-linked .copy-3 .study-key>span{font-size:clamp(2.4rem,11vw,4.6rem)}
+  .tech-study.is-linked{height:460svh}
   .study-stage{height:360px}
 }
 @media(max-width:430px){
   .study-heading h1,.study-heading h2{font-size:clamp(1.83rem,7.4vw,2.35rem)}
   .is-linked .copy-0 .study-heading h1{font-size:clamp(1.83rem,7.4vw,2.35rem)}
-  .is-linked .copy-0{top:10%}
+  .is-linked .copy-0{top:18%}
   .is-linked .copy-0 .study-description{font-size:14px}
-  .is-linked .copy-1{top:10%}
+  .is-linked .copy-1{top:13%}
   .is-linked .copy-2{top:8%}
-  .is-linked .copy-2 .study-description{margin-top:.7rem}
-  .is-linked .copy-3{top:28%}
-  .is-linked .copy-3 .study-heading h2{font-size:clamp(1.6rem,7vw,2.3rem)}
+
+  .is-linked .copy-3{top:25%}
+  .is-linked .copy-3 .study-heading h2{font-size:clamp(1.2rem,4.6vw,1.9rem)}
+  .is-linked .copy-3 .study-key>span{font-size:clamp(2.1rem,9.4vw,3.6rem)}
   .is-linked .study-topline{padding:1.1rem 5vw}
   .study-description{font-size:14px}
 }
 @media(max-height:620px) and (max-width:900px){
   .is-linked .study-topline{padding:.4rem 5vw}
   .is-linked .study-copy{top:12%;left:7%;right:7%;width:86%}
-  .is-linked .copy-0{top:12%}
-  .is-linked .copy-1{top:11%}
+  .is-linked .copy-0{top:15%}
+  .is-linked .copy-1{top:14%}
   .is-linked .copy-2{top:6.5%}
   .is-linked .copy-2 .study-heading h2{font-size:clamp(1.35rem,4.2vw,2rem)}
-  .is-linked .copy-2 .study-description{margin-top:.4rem}
-  .is-linked .copy-3{top:26%}
-  .is-linked .copy-3 .study-heading h2{font-size:clamp(1.45rem,5.4vw,2.2rem)}
+
+  .is-linked .copy-3{top:24%}
+  .is-linked .copy-3 .study-heading h2{font-size:clamp(1.1rem,4vw,1.7rem)}
+  .is-linked .copy-3 .study-key>span{font-size:clamp(1.7rem,7vw,2.8rem)}
   .study-heading h1,.study-heading h2{font-size:clamp(1.45rem,5.2vw,2rem);line-height:1.04}
   .study-description{font-size:12px;line-height:1.35;margin-top:.65rem;max-width:36ch}
 }

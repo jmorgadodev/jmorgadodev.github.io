@@ -11,7 +11,7 @@ TITLES = [
     ("Todo comienza", "con una idea."),
     ("Le damos", "forma."),
     ("Lo que funciona", "puede crecer."),
-    ("Y esto es solo el comienzo.", ""),
+    ("Y esto es solo el", "comienzo."),
 ]
 DESCRIPTIONS = [
     "O con algo que podría funcionar mejor.",
