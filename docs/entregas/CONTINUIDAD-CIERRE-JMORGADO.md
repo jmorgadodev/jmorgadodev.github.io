@@ -56,7 +56,7 @@ La cabecera conserva el tratamiento editorial aprobado (`JM.` en texto coral); n
 
 **HTML regenerado:** index, 404, calculadora, contacto, herramientas, jugar, metodo, proyectos/* (11 páginas), servicios/* (7 páginas)
 
-**Nuevos:** `robots.txt` (User-agent: * Allow: / Sitemap: https://jmorgado.pages.dev/sitemap.xml) · `sitemap.xml` (23 URLs públicas indexables)
+**Nuevos:** `robots.txt` (User-agent: * Allow: / Sitemap: https://jmorgado.pages.dev/sitemap.xml) · `sitemap.xml` (24 URLs públicas indexables)
 
 ## 6. Producción replicable
 
@@ -73,7 +73,7 @@ npx wrangler pages dev _site --port 8788
 | --- | --- |
 | Push fast-forward a `origin/main` | OK |
 | `https://jmorgado.pages.dev/` | HTTP 200, título correcto |
-| `robots.txt` y `sitemap.xml` | HTTP 200; 23 URLs públicas indexables |
+| `robots.txt` y `sitemap.xml` | HTTP 200; 24 URLs públicas indexables |
 | `og:image` absoluta | Cargando; canonical y `og:url` coherentes con `jmorgado.pages.dev` |
 | `assets/social-preview.png` | HTTP 200, 187557 bytes |
 | 404 propio | HTTP 404 en ruta inexistente; header/fооter compartidos |
@@ -86,3 +86,18 @@ npx wrangler pages dev _site --port 8788
 1. GitHub Pages puede retirarse cuando se confirme que todo el tráfico proviene de Cloudflare Pages.
 2. El dominio `jmorgado.pages.dev` puede sustituirse en `SITE_URL` del generador si se mueve a un dominio propio.
 3. El panel del sitio aún no tiene alternativa textual del recorrido para lectores de pantalla.
+
+## 9. Google Search Console e indexación
+
+| Elemento | Estado comprobado |
+| --- | --- |
+| Propiedad | `https://jmorgado.pages.dev/`, propiedad de prefijo URL; no existía antes de esta configuración |
+| Verificación | Verificada con la etiqueta HTML de Google en el `<head>` de la portada. La etiqueta permanece en `build_site.py` y en el HTML generado |
+| Sitemap | `https://jmorgado.pages.dev/sitemap.xml` enviado; Search Console confirmó que se recibió y que lo procesará periódicamente. Lectura y descubrimiento todavía pendientes |
+| Robots | `https://jmorgado.pages.dev/robots.txt` permite el rastreo público y señala el sitemap canónico |
+| URLs inspeccionadas | Portada, servicios, proyectos, herramientas y contacto. Google aún no reconoce ninguna; rastreo, sitemap de referencia y canonicals seleccionadas por Google aparecen como `N/D` mientras no las rastrea |
+| Solicitudes de indexación | La solicitud para la portada fue rechazada por cuota diaria de Search Console. No quedó ninguna solicitud confirmada; reintentar cuando Google restablezca la cuota |
+| Canonical / dominio anterior | Las páginas generadas declaran `https://jmorgado.pages.dev/`. GitHub Pages conserva el mismo contenido y el sitemap publicado en ambos hosts lista las mismas 24 URLs canónicas de Cloudflare |
+| Git | `61857f4` añadió la etiqueta de verificación; `42b27ff` corrigió la inclusión de `herramientas/` para alinear ambos sitemaps. Ambos commits están en `origin/main` |
+
+La cuota impidió probar la URL publicada e iniciar solicitudes de indexación. La propiedad está verificada y el sitemap fue recibido, pero eso no confirma que Google haya indexado páginas. Volver a revisar el estado después de que Google procese el sitemap y permita nuevas solicitudes.
