@@ -8,25 +8,19 @@ from playwright.sync_api import sync_playwright, expect
 from bs4 import BeautifulSoup
 
 ROOT=Path(__file__).resolve().parent
-# Contrato editorial del inicio: conservar las siete frases y descripciones de
-# la versión respaldada antes de la intervención del 7 de noviembre.
+# Contrato editorial del inicio: conservar las cuatro frases y descripciones
+# de la versión aprobada del módulo de escenas.
 from journey_study import TITLES as INTRO_TITLES, DESCRIPTIONS as INTRO_DESCRIPTIONS
 ORIGINAL_TITLES = [
-    ("Hay algo que podría", "funcionar mejor."),
-    ("Antes de cambiar algo,", "hay que entenderlo."),
-    ("Empezar por algo", "que funcione."),
-    ("Lo que funciona puede", ""),  # CRECER se dibuja en Canvas
-    ("Una buena base abre", "nuevos caminos."),
-    ("Cada pieza encuentra", "su lugar."),
     ("Todo comienza", "con una idea."),
+    ("Le damos", "forma."),
+    ("Lo que funciona", "puede crecer."),
+    ("Y esto es solo el comienzo.", ""),  # CRECER se dibuja en Canvas
 ]
 ORIGINAL_DESCRIPTIONS = [
-    "Una tarea que pesa. Una idea que todavía no encuentra su forma.",
-    "Comprender las relaciones cambia la manera de resolver.",
-    "Una solución pequeña también puede transformar el trabajo.",
-    "Una buena idea se desarrolla sin empezar otra vez.",
-    "Cada nueva capacidad amplía las posibilidades.",
-    "Las partes se convierten en un conjunto.",
+    "O con algo que podría funcionar mejor.",
+    "Transformando lo que imaginas en algo que funciona.",
+    "Evolucionar, abrir nuevas posibilidades y llegar más lejos.",
     "",
 ]
 assert INTRO_TITLES == ORIGINAL_TITLES, "Los titulares del inicio cambiaron"
@@ -394,7 +388,7 @@ try:
             page.on('pageerror',lambda e:errors.append(str(e)))
             page.goto(base,wait_until='networkidle')
             page.evaluate('document.fonts.ready')
-            assert page.locator('[data-copy]').count()==7
+            assert page.locator('[data-copy]').count()==4
             rendered_copy=page.eval_on_selector_all('[data-copy]', """sections=>sections.map(s=>({
                 fragments:[...s.querySelectorAll('.study-mask>span')].map(x=>x.textContent),
                 description:s.querySelector('.study-description')?.textContent??''
@@ -403,7 +397,8 @@ try:
                 {"fragments":[part for part in title if part],"description":description}
                 for title,description in zip(ORIGINAL_TITLES,ORIGINAL_DESCRIPTIONS)
             ], "El texto generado ya no coincide con el original"
-            assert page.locator('#journey-title-3').get_attribute('aria-label') == 'Lo que funciona puede crecer.'
+            assert page.locator('#journey-title-2').get_attribute('aria-label') == 'Lo que funciona puede crecer.'
+            assert page.locator('#journey-title-3').get_attribute('aria-label') == 'Y esto es solo el comienzo.'
             # El primer titular aparece sin scroll; nunca debe regresar la pantalla vacía.
             first_line=page.locator('.copy-0 .study-mask>span').first
             assert first_line.evaluate(
@@ -421,9 +416,8 @@ try:
                 'e=>{let r=e.getBoundingClientRect();return [r.width,r.height]}')
             assert abs(rect[0]-width)<2 and abs(rect[1]-height)<2,(width,height,rect)
             midpoints=[.065,.194,.318,.439,.569,.704,.825,.939]
-            expected=['Hay algo que podría','Antes de cambiar algo','Empezar por algo',
-                      'Lo que funciona','Una buena base abre','Una buena base abre',
-                      'Cada pieza encuentra','Todo comienza']
+            expected=['Todo comienza','Todo comienza','Le damos','Le damos',
+                      'Lo que funciona','Lo que funciona','Y esto es solo','Y esto es solo']
             for fraction,phrase,scene in zip(midpoints,expected,range(8)):
                 seek(page,fraction);page.wait_for_timeout(1500)
                 state=page.evaluate('''()=>{const copies=[...document.querySelectorAll('[data-copy]')];
@@ -431,7 +425,7 @@ try:
                     return {scene:Number(document.querySelector('[data-study]').dataset.scene),
                     active,activeText:active>=0?copies[active].innerText:'',
                     opacity:copies.map(e=>Number(getComputedStyle(e).opacity))}}''')
-                expected_index=[0,1,2,3,4,4,5,6][scene]
+                expected_index=[0,0,1,1,2,2,3,3][scene]
                 assert not page.evaluate('document.documentElement.scrollWidth>innerWidth+1')
                 assert state['scene']==scene,(width,height,fraction,state['scene'])
                 assert state['active']==expected_index and phrase in state['activeText'],(width,height,scene,state)
@@ -445,13 +439,18 @@ try:
             page.mouse.move(width*.5,height*.62);page.wait_for_timeout(280)
             after=page.locator('canvas.study-canvas').evaluate('e=>e.toDataURL()')
             assert before!=after,(width,height,'pointer interaction did not redraw canvas')
+            # El movimiento es autónomo: el lienzo cambia sin puntero.
+            idle_a=page.locator('canvas.study-canvas').evaluate('e=>e.toDataURL()')
+            page.wait_for_timeout(700)
+            idle_b=page.locator('canvas.study-canvas').evaluate('e=>e.toDataURL()')
+            assert idle_a!=idle_b,(width,height,'the scene does not move on its own')
             seek(page,.99);page.wait_for_timeout(560)
-            assert page.locator('.copy-6').evaluate(
+            assert page.locator('.copy-3').evaluate(
                 'e=>Number(getComputedStyle(e).opacity)')>.98
             page.locator('.intro-skip').click()
             assert page.locator('.home-header').evaluate('e=>!e.inert')
             headings = page.locator("main > section:not([data-study])").all()
-            # El recorrido editorial aprobó un orden nuevo sin alterar las siete escenas intro.
+            # El recorrido editorial aprobó un orden nuevo sin alterar las cuatro escenas intro.
             order = ["mejorar", "Primero te escucho.",
                      "Compara el tiempo", "Proyectos",
                      "Soy Jorge", "Herramientas propias", "necesitas", "una partida"]
@@ -508,7 +507,7 @@ try:
                          dict(java_script_enabled=False)]:
             page=browser.new_page(**settings)
             page.goto(base)
-            assert page.locator('[data-copy]:visible').count()==7
+            assert page.locator('[data-copy]:visible').count()==4
             assert page.locator('.is-linked').count()==0
             page.close()
         portfolio(browser)

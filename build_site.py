@@ -82,9 +82,12 @@ def meta(d, title, description, active="", journey=False, *, canonical=None, jso
     body_class=' class="home-page"' if journey else ''
     header_class=' home-header' if journey else ''
     descriptor='Una forma de resolver' if journey else 'Desarrollo independiente<br>Software, datos y procesos'
-    monogram='JM' if journey else 'jm'
+    monogram='JM.' if journey else 'jm'
     home_target=local(d) + "#home-start"
     controls=''
+    # En la portada el control de tema es un icono: la cabecera lleva la marca
+    # «JM.» a la izquierda y el icono del día y la noche a la derecha.
+    theme_icon=' data-theme-icon' if journey else ''
     progress='' if journey else ''
     fonts = '' if journey or active=="jugar" else """<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">"""
@@ -108,10 +111,10 @@ def meta(d, title, description, active="", journey=False, *, canonical=None, jso
 <link rel="stylesheet" href="{e(asset(d,'assets/interior.css'))}">
 </head><body{body_class}><a class="skip-link" href="#contenido">Saltar al contenido</a>{SYMBOLS}
 <header class="site-header{header_class}"><div class="wrap header-inner">
-<a class="wordmark" href="{e(home_target)}" data-home-return aria-label="Volver a la portada JMorgado"><span class="mark" aria-hidden="true">{monogram}</span><span>JMorgado<span class="orange">.</span></span></a>
+<a class="wordmark" href="{e(home_target)}" data-home-return aria-label="Volver al inicio de la experiencia JMorgado"><span class="mark" aria-hidden="true">{monogram}</span><span class="wordmark-text">JMorgado<span class="orange">.</span></span></a>
 <div class="header-sub">{descriptor}</div>{controls}
 <button type="button" class="menu-toggle" data-menu-toggle aria-controls="main-nav" aria-expanded="false">Menú +</button>
-<button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Cambiar a modo noche">Noche</button>
+<button type="button" class="theme-toggle" data-theme-toggle{theme_icon} aria-pressed="false" aria-label="Cambiar a modo noche">Noche</button>
 <nav class="nav" id="main-nav" data-nav aria-label="Navegación principal">{links}</nav>
 </div>{progress}</header>"""
     if jsonld:

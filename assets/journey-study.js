@@ -26,7 +26,7 @@ const themeButton=root.querySelector('.study-theme'),siteTheme=document.querySel
 const skip=root.querySelector('.intro-skip'),copies=[...root.querySelectorAll('[data-copy]')];
 const prefersReduced=matchMedia('(prefers-reduced-motion: reduce)');
 const mqMobile=matchMedia('(max-width:900px)');
-let W=0,H=0,DPR=1,idleDPR=1,wordPoints=[],play={t:0},master,trigger,resizeId;
+let W=0,H=0,DPR=1,idleDPR=1,play={t:0},master,trigger,resizeId;
 // C · Cadencia propia de la capa ambiental: 29,4 fps en escritorio y 23,8 fps
 // en pantallas estrechas. No se cambia el valor: ya está dentro del rango
 // pedido y forma parte de la sensación de profundidad del reposo.
@@ -140,10 +140,16 @@ function ajustarResolucion(){
  frameEnfriamiento=ahora+(nivel<dprTope?1500:6000);
  resize();
 }
-const seedPulse={value:0},introReveal={value:1},sceneAmbient={value:0},idleMotion={value:0,time:0};
-const homeReturn={scale:1,turn:0,lift:0,glow:0,ring:0,opacity:1};
-let seedPulseTween=null,introTween=null,introTextTween=null,sceneAmbientTimer=0,homeReturnTween=null;
+// C · El reloj del mundo. Es la única fuente del movimiento autónomo:
+// avanza siempre que la introducción esté a la vista, sin depender del
+// puntero, del foco de la ventana ni del reposo. Nunca se reinicia.
+const sceneAmbient={value:0},idleMotion={value:0,time:0};
+let introTextTween=null;
 let idleLastRender=0,idleLastFrame=0,idleClock=0,ambientRunning=false;
+let narrativeLastPaint=0;
+// La cadencia del relato cuando sólo late el mundo: 30 fps en escritorio,
+// 24 fps en pantallas estrechas.
+const narrativeInterval=()=>W<700?42:33;
 const pointer={x:0,y:0,energy:0,active:false,down:false,dirX:0,dirY:0,speed:0,lastMoveAt:0,lastSpeedUpdateAt:0,hasPosition:false};
 let pointerTween=null,pointerFade=null,scrollIdle=true,scrollIdleTimer=0;
 
@@ -175,12 +181,14 @@ function registerLayer(layer){layers[layer.id]=layer;return layer}
 function invalidate(id){const l=layers[id];if(l)l.dirty=true}
 function invalidateAll(){for(const id in layers)layers[id].dirty=true}
 
-// A · La capa narrativa sólo se repinta si algo del relato ha cambiado:
+// A · La capa narrativa se repinta si algo del relato ha cambiado:
 // cambio de tramo, puntero, pulso de semilla, tema, tamaño o entrada inicial.
+// Con el mundo en marcha también se repinta a su propio ritmo: las piezas
+// siguen moviéndose sin puntero y sin scroll.
 const narrativeLayer=registerLayer({
  id:'narrative',dirty:true,
- due(){return this.dirty},
- paint(){this.dirty=false;paintNarrative()}
+ due(now){return this.dirty||(ambientRunning&&now-narrativeLastPaint>=narrativeInterval())},
+ paint(now){this.dirty=false;narrativeLastPaint=now;paintNarrative()}
 });
 // C · La capa ambiental tiene su propio ritmo (24-30 fps) y su propia
 // visibilidad. Nunca provoca un repintado completo del motor principal.
@@ -203,7 +211,7 @@ function queuePointer(event){
  pointerDirty=true;
 }
 function invalidateNarrative(){narrativeLayer.dirty=true}
-const N=3600,particles=[],PHI=(1+Math.sqrt(5))/2;
+const PHI=(1+Math.sqrt(5))/2;
 const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
 const lerp=(a,b,t)=>a+(b-a)*t;
 const smooth=(a,b,v)=>{let t=clamp((v-a)/(b-a));return t*t*(3-2*t)};
@@ -227,7 +235,6 @@ const hash=n=>{
  return valor;
 };
 const rad=Math.PI/180;
-for(let i=0;i<N;i++)particles.push({r:hash(i*2),s:hash(i*2+1),k:hash(i*3+7)});
 const PAL={
  // Cada capítulo conserva la misma familia cromática, pero tiene una superficie propia.
  // Las diferencias son tonales y materiales: papel, salvia, coral, mineral, petróleo,
@@ -465,190 +472,6 @@ function drawIdleAmbient(now){
   idleCtx.restore();
  }
 }
-/* Todas las escenas comparten la misma familia modular: proporciones variadas,
-   sin fichas rígidas ni logos explicativos. El índice mantiene identidad y color. */
-// La paleta se construye una vez por tema en lugar de en cada pieza.
-const modulePalettes={};
-function barAspect(){return W<700?2.1:3.55}
-/* Lenguaje de encaje compartido: mismo módulo, mismo destino, giro reversible.
-   Cada gesto vale exactamente cero en ambos extremos del recorrido y nunca
-   altera la geometría ni las duraciones fijadas en la línea de tiempo. */
-function cloudPoint(i,count){
- const radius=Math.sqrt(hash(i*9+6)),angle=hash(i*9+7)*Math.PI*2;
- return {x:W*.50+Math.cos(angle)*radius*W*(W<700?.38:.34),
-         y:H*.64+Math.sin(angle)*radius*H*(W<700?.185:.205),
-         size:W<700?8:15,rotation:(hash(i+72)-.5)*.12};
-}
-const MODULE_COUNT=56;
-const CHART_COUNTS=[9,8,4,5,9,9,6,6];
-const MODULE_META=(()=>{
- const tabla=[];
- for(let i=0;i<MODULE_COUNT;i++){
-  let offset=i,column=0,row=0;
-  for(column=0;column<CHART_COUNTS.length;column++){
-   if(offset<CHART_COUNTS[column]){row=offset;break;}
-   offset-=CHART_COUNTS[column];
-  }
-  tabla.push({column,row});
- }
- return tabla;
-})();
-function moduleMeta(i){return MODULE_META[i]||{column:7,row:5}};
-function stackPoint(i,chart=false){
- const mobile=W<700,m=moduleMeta(i),aspect=barAspect();
- // Las ocho columnas comparten el centro geométrico del lienzo en ambas
- // composiciones; así la gráfica final no queda desplazada hacia la derecha.
- const cellW=W*(chart?(mobile?.055:.058):(mobile?.075:.071));
- const gapX=W*(chart?(mobile?.009:.012):(mobile?.010:.014));
- const total=8*cellW+7*gapX;
- const left=(W-total)/2;
- const x=left+m.column*(cellW+gapX)+cellW/2;
- const cellH=mobile?Math.min(H*.021,W*.043):Math.min(H*.032,W*.055);
- const size=Math.min(cellH*.92,cellW/(aspect*1.04));
- const gapY=cellH*.16,base=H*(chart?.84:.83);
- return {x,y:base-(m.row+.5)*(cellH+gapY),size,rotation:0};
-}
-function scatteredPoint(i){
- const angle=i*2.399963,radial=.24+.72*Math.sqrt(hash(i+91));
- return {x:W*.5+Math.cos(angle)*W*.37*radial,
-  y:H*.60+Math.sin(angle)*H*.20*radial,
-  size:W<700?10:21,rotation:(hash(i+33)-.5)*.32};
-}
-function groupedModulePoint(i){
- // Tres conjuntos visibles, con una retícula modular clara y espacio entre ellos.
- // La composición se lee como piezas relacionadas, no como una nube de partículas.
- const group=i%3,local=Math.floor(i/3),col=local%3,row=Math.floor(local/3);
- const gapX=W*(W<700?.026:.032),gapY=H*(W<700?.027:.035);
- return {x:W*(.25+group*.25)+(col-1)*gapX,
-  y:H*(W<700?.625:.667)+(group===1?-.018:.018)*H+(row-3)*gapY,
-  size:W<700?9:18,rotation:(hash(i+15)-.5)*.035};
-}
-function wordModulePoint(i){
- const q=wordPoint(i),size=Math.min(W*(W<700?.92:.84),1120);
- return {x:W*.5+q.x*size,y:H*(H<620?(W<700?.65:.58):(W<700?.70:.565))+q.y*H*(W<700?.32:.55),
-  size:W<700?6:11,rotation:0};
-}
-function sphereModulePoint(i,u=1){
- const mobile=W<700,compact=H<620,cx=W*.5,cy=H*(compact?.70:.64);
- const R=Math.min(W*(compact?.30:mobile?.34:.255),H*(compact?.22:.33));
- // Reutiliza la proyección exacta de draw4: giro, inclinación y perspectiva
- // comparten origen, fase y respuesta al puntero con la nube de partículas.
- const v=smooth(.035,.79,u),idle=idleMotion.value,phase=idleMotion.time;
- const formation=smooth(.42,.88,v),pointerField=pointerInfluenceAt(cx,cy,R*2.25);
- const pointerX=pointer.active?(pointer.x-cx)/Math.max(W*.5,1):0;
- const pointerY=pointer.active?(pointer.y-cy)/Math.max(H*.5,1):0;
- const spin=phase*.235*idle*formation+
-  pointerX*.14*pointerField.strength+pointer.dirX*pointer.speed*.08*pointerField.strength;
- const pitch=Math.sin(phase*.31)*.085*idle*formation+
-  pointerY*.11*pointerField.strength+pointer.dirY*pointer.speed*.06*pointerField.strength;
- const roll=Math.sin(phase*.22)*.022*idle*formation;
- const a=spherePoint(i,u,MODULE_COUNT,spin,pitch),near=1+.15*a.z;
- const rotatedX=a.x*Math.cos(roll)-a.y*Math.sin(roll);
- const rotatedY=a.y*Math.cos(roll)+a.x*Math.sin(roll);
- let x=cx+rotatedX*R*near,y=cy-rotatedY*R*near;
- const size=mobile?7:13,distance=Math.hypot(x-cx,y-cy);
- // El centro de cada pieza queda dentro del campo visible y conserva
- // un margen suficiente para que sus bordes no sobresalgan del volumen.
- const safeRadius=Math.max(0,R*1.035-size*.95);
- if(distance>safeRadius){
-  const inset=safeRadius/distance;
-  x=cx+(x-cx)*inset;y=cy+(y-cy)*inset;
- }
- return {x,y,size,rotation:(hash(i+23)-.5)*.12};
-}
-function platformModulePoint(i){return expansionPoint(i)}
-function chartPoint(i){return stackPoint(i,true)}
-function scene5Geometry(){
- const mobile=W<700,compact=H<620,compactMobile=mobile&&compact;
- const positions=compactMobile?[
-  {cx:.20,cy:.66},{cx:.50,cy:.49},{cx:.80,cy:.66},{cx:.50,cy:.86}
- ]:mobile?[
-  {cx:.20,cy:.70},{cx:.50,cy:.49},{cx:.80,cy:.70},{cx:.50,cy:.88}
- ]:compact?[
-  {cx:.22,cy:.65},{cx:.50,cy:.52},{cx:.78,cy:.65},{cx:.50,cy:.83}
- ]:[
-  {cx:.22,cy:.61},{cx:.50,cy:.43},{cx:.78,cy:.61},{cx:.50,cy:.82}
- ];
- return positions.map((q,i)=>({
-  ...q,
-  rx:i===3?(mobile?.12:.135):(mobile?.105:.118),
-  ry:i===3?(mobile?.058:.076):(mobile?.056:.074)
- }));
-}
-function scene5Motion(group){
- // Giro de guiñada muy contenido: cada placa cambia de orientación sin
- // llegar a ponerse de canto. El movimiento oscila lentamente, no se vence.
- // La fase se conserva al desplazar y volver a detener el scroll.
- const rates=[.31,-.27,.34];
- const spin=group<3?Math.sin(idleMotion.time*rates[group])*.12:0;
- return {spin};
-}
-function scene5Deployment(group,u=1){
- const timing=[
-  {start:.08,end:.84,angle:-.28},
-  {start:.14,end:.89,angle:.12},
-  {start:.20,end:.94,angle:.28},
-  {start:.015,end:.34,angle:0}
- ][clamp(group,0,3)];
- const progress=smooth(timing.start,timing.end,u);
- return {
-  progress,
-  angle:timing.angle*(1-progress),
-  lift:group===3?(1-progress)*H*.012:Math.sin(progress*Math.PI)*H*.014
- };
-}
-function scene5Project(group,x,y,progress=1){
- const geometry=scene5Geometry(),g=geometry[clamp(group,0,3)],base=geometry[3];
- const cx=W*g.cx,cy=H*g.cy,deployment=scene5Deployment(group,progress);
- const scale=group===3?lerp(.90,1,deployment.progress):lerp(.13,1,deployment.progress);
- const dx=x-cx,dy=y-cy,angle=deployment.angle;
- const localX=cx+(dx*Math.cos(angle)-dy*Math.sin(angle))*scale;
- const localY=cy+(dx*Math.sin(angle)+dy*Math.cos(angle))*scale;
- let px=localX,py=localY;
- if(group!==3){
-  // Las alas nacen juntas en el núcleo y se despliegan hacia sus destinos.
-  const anchorX=W*base.cx,anchorY=H*(base.cy-base.ry*.54);
-  const originX=anchorX+(localX-cx)*.12,originY=anchorY+(localY-cy)*.12;
-  px=lerp(originX,localX,deployment.progress);
-  py=lerp(originY,localY,deployment.progress)-deployment.lift;
- }else py+=deployment.lift;
- const projectX=px-cx,projectY=py-cy,{spin}=scene5Motion(group);
- // Giro rígido en el plano de la propia plataforma. La proyección isométrica
- // permanece intacta: no se estrecha, no cabecea y nunca parece volcarse.
- const cosine=Math.cos(spin),sine=Math.sin(spin);
- const projectedX=projectX*cosine+projectY*Math.sqrt(3)*sine;
- const projectedY=projectY*cosine-projectX*sine/Math.sqrt(3);
- return {x:cx+projectedX,y:cy+projectedY};
-}
-function scene5GridPoint(group,slot,progress=1){
- const mobile=W<700,g=scene5Geometry()[clamp(group,0,3)];
- const col=slot%4,row=Math.floor(slot/4);
- const size=mobile?Math.max(7,Math.min(W*.027,H*.036)):Math.max(10,Math.min(W*.020,H*.026));
- const dx=size*(mobile?1.25:1.42),dy=size*.68;
- const x=W*g.cx+(col-row)*dx,y=H*g.cy+(col+row-3)*dy;
- return {...scene5Project(group,x,y,progress),size,rotation:0,group,slot};
-}
-function expansionPoint(i,progress=1){return scene5GridPoint(Math.floor(i/14),i%14,progress)}
-function ribbonCurvePoint(q){
- // Una sola curva gobierna el trazo y la posición final de cada módulo.
- // En reposo recibe una onda de profundidad mínima, compartida por línea y piezas.
- q=clamp(q);
- const phase=idleMotion.time;
- const depth=(Math.sin(q*7.8+phase*.62)+.45*Math.sin(q*3.2-phase*.39))*H*.0038*idleMotion.value;
- return {x:W*(.16+.68*q),
-  y:H*(.63+.075*Math.sin(q*9.4+1.3)+.045*Math.cos(q*4.1))+depth};
-}
-function ribbonPoint(i){
- const q=i/(MODULE_COUNT-1);
- return {...ribbonCurvePoint(q),
-  size:W<700?5:10,rotation:(hash(i+4)-.5)*.2};
-}
-function centerPoint(i){
- return {x:W*.5+(hash(i+10)-.5)*2,y:H*.66+(hash(i+20)-.5)*2,
-  size:W<700?2:3,rotation:0};
-}
-const MODULE_LAYOUTS=[stackPoint,scatteredPoint,groupedModulePoint,cloudPoint,
- wordModulePoint,sphereModulePoint,platformModulePoint,chartPoint,ribbonPoint,centerPoint];
 function applyPointer(event){
  const rect=canvas.getBoundingClientRect();
  const x=clamp(event.clientX-rect.left,0,W),y=clamp(event.clientY-rect.top,0,H);
@@ -697,107 +520,64 @@ window.addEventListener('pointerup',event=>{
 canvas.addEventListener('pointercancel',()=>{pointer.down=false;fadePointer()},{passive:true});
 canvas.addEventListener('pointerleave',()=>{if(!pointer.down)fadePointer()},{passive:true});
 function stopSceneAmbient(){
-  clearTimeout(sceneAmbientTimer);
   ambientRunning=false;idleLastFrame=0;idleLastRender=0;
   if(W&&H){idleCtx.setTransform(idleDPR,0,0,idleDPR,0,0);idleCtx.clearRect(0,0,W,H)}
 }
-function startSceneAmbient(){
-  if(ambientRunning||prefersReduced.matches||document.hidden||!document.hasFocus()||
-   !root.classList.contains('is-linked'))return;
-  const bounds=root.getBoundingClientRect();
-  if(bounds.bottom<=0||bounds.top>=innerHeight)return;
-  ambientRunning=true;idleLastRender=0;idleLastFrame=0;
+// C · El mundo se mide de vez en cuando: leer el marco de la introducción en
+// cada fotograma obligaría al navegador a recalcular la composición sin falta.
+let introBounds=null,introBoundsAt=0;
+function introVisible(now){
+ if(!introBounds||now-introBoundsAt>220){
+  introBounds=root.getBoundingClientRect();introBoundsAt=now;
+ }
+ return introBounds.bottom>0&&introBounds.top<innerHeight;
 }
-// C · La capa ambiental avanza su propio reloj y respira a su propio ritmo.
-// No llama a paintNarrative: el ambiente nunca obliga a redibujar el relato.
+// C · El reloj del mundo. Es la única fuente del movimiento autónomo: avanza
+// siempre que la introducción esté a la vista. No depende del puntero, ni del
+// foco de la ventana, ni de que el visitante se mueva: si el puntero sale de
+// la página, las piezas siguen respirando.
 function ambientTick(now){
-  if(!ambientRunning)return;
-  if(document.hidden||!document.hasFocus()||prefersReduced.matches||!root.classList.contains('is-linked')){
-   stopSceneAmbient();return;
-  }
-  const bounds=root.getBoundingClientRect();
-  if(bounds.bottom<=0||bounds.top>=innerHeight){stopSceneAmbient();return}
-  // El reloj sólo avanza mientras la escena está visible. Al volver a ella,
-  // la fase continúa donde quedó, sin saltar ni comenzar otro ciclo.
-  const delta=idleLastFrame?Math.min(.08,Math.max(0,(now-idleLastFrame)/1000)):0;
-  idleClock+=delta;
-  idleLastFrame=now;
-  idleMotion.time=idleClock;
-  // Durante el scroll el movimiento permanece casi imperceptible; al detenerse
-  // gana presencia con una interpolación temporal, nunca con un reinicio.
-  const target=scrollIdle?.84:.18;
-  const response=1-Math.exp(-delta/(scrollIdle?.72:.30));
-  idleMotion.value=lerp(idleMotion.value,target,response);
-  if(now-idleLastRender>=ambientInterval()){
-   const breathing=.50+.50*Math.sin(idleClock*.90);
-   sceneAmbient.value=idleMotion.value*(.35+.58*breathing);
-   invalidate('ambient');
-  }
-}
-
-function scheduleSceneAmbient(delay=350){
- clearTimeout(sceneAmbientTimer);
- sceneAmbientTimer=setTimeout(()=>{
-  if(!scrollIdle||prefersReduced.matches||document.hidden||!document.hasFocus())return;
-  startSceneAmbient();
- },delay);
+ if(prefersReduced.matches||!root.classList.contains('is-linked')){stopSceneAmbient();return}
+ if(document.hidden||!introVisible(now)){stopSceneAmbient();return}
+ ambientRunning=true;
+ // El reloj sólo avanza mientras la escena está visible. Al volver a ella,
+ // la fase continúa donde quedó, sin saltar ni comenzar otro ciclo.
+ const delta=idleLastFrame?Math.min(.08,Math.max(0,(now-idleLastFrame)/1000)):0;
+ idleLastFrame=now;
+ idleClock+=delta;
+ idleMotion.time=idleClock;
+ // Durante el scroll el movimiento permanece casi imperceptible; al detenerse
+ // gana presencia con una interpolación temporal, nunca con un reinicio.
+ const target=scrollIdle?.84:.18;
+ const response=1-Math.exp(-delta/(scrollIdle?.72:.30));
+ idleMotion.value=lerp(idleMotion.value,target,response);
+ if(now-idleLastRender>=ambientInterval()){
+  const breathing=.50+.50*Math.sin(idleClock*.90);
+  sceneAmbient.value=idleMotion.value*(.35+.58*breathing);
+  invalidate('ambient');
+ }
 }
 window.addEventListener('scroll',()=>{
  // Si se desplaza antes de completar la presentación, dejar el titular
  // totalmente legible; el resto de la coreografía sigue unido al scroll.
  if(introTextTween&&window.scrollY>16)introTextTween.progress(1);
- if(introTween&&window.scrollY>16)introTween.progress(1);
+ introBounds=null;
  scrollIdle=false;clearTimeout(scrollIdleTimer);
  // La posición del puntero conserva su referencia mientras las escenas cambian.
  // Sólo cambia la intensidad del reposo; la interacción no se desconecta.
- startSceneAmbient();
- scrollIdleTimer=setTimeout(()=>{scrollIdle=true;scheduleSceneAmbient(80)},170);
+ scrollIdleTimer=setTimeout(()=>{scrollIdle=true},170);
 },{passive:true});
-window.addEventListener('blur',()=>{pointer.down=false;stopSceneAmbient();fadePointer()});
-window.addEventListener('focus',()=>{if(scrollIdle)scheduleSceneAmbient(350);else startSceneAmbient()});
+// La ventana puede perder el foco: la escena sigue viva, sólo se apaga el
+// puntero. El movimiento no depende de que el visitante esté mirando.
+window.addEventListener('blur',()=>{pointer.down=false;fadePointer()});
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden){stopSceneAmbient();fadePointer()}
- else if(scrollIdle)scheduleSceneAmbient(350);
- else startSceneAmbient();
 });
 
-function buildWord(){
- const temp=document.createElement('canvas');temp.width=1000;temp.height=260;
- const c=temp.getContext('2d',{willReadFrequently:true});
- c.clearRect(0,0,1000,260);c.fillStyle='#fff';c.textAlign='center';c.textBaseline='middle';
- c.font='800 194px "Instrument Sans",sans-serif';c.fillText('CRECER',500,132,945);
- const data=c.getImageData(0,0,1000,260).data,pts=[];
- for(let y=8;y<252;y+=4)for(let x=15;x<985;x+=4)
-  if(data[(y*1000+x)*4+3]>135)pts.push({x:(x-500)/1000,y:(y-130)/260});
- wordPoints=pts;
-}
-function wordPoint(i){
- if(!wordPoints.length)return{x:0,y:0};
- return wordPoints[(i*59+Math.floor(hash(i)*157))%wordPoints.length];
-}
-function spherePoint(i,u,count,spin=0,pitch=0){
- const y=1-2*(i+.5)/count,a=2*Math.PI*i/PHI;
- const r=Math.sqrt(1-y*y),theta=a+u*2.7+spin;
- let x=Math.cos(theta)*r,z=Math.sin(theta)*r;
- const bend=.15*Math.sin(u*7+y*4);
- x+=bend;
- const vertical=y+.08*Math.sin(theta*2+u*3);
- const rotatedY=vertical*Math.cos(pitch)-z*Math.sin(pitch);
- const rotatedZ=vertical*Math.sin(pitch)+z*Math.cos(pitch);
- return {x,y:rotatedY,z:rotatedZ};
-}
-function syncSeedPulse(){
- const active=play.t>=6.6&&play.t<=8&&!prefersReduced.matches;
- if(active&&!seedPulseTween){
-  seedPulseTween=gsap.to(seedPulse,{value:1,duration:1.55,repeat:-1,yoyo:true,
-   ease:'sine.inOut',onUpdate:invalidateNarrative});
- }else if(!active&&seedPulseTween){
-  seedPulseTween.kill();seedPulseTween=null;seedPulse.value=0;
- }
-}
+
 function drawScene(i,u,p){
- // El experimento sustituye el dibujo de las siete escenas por una sola
- // estructura parametrica: el estado lo da el avance global del recorrido.
+ // Una sola estructura paramétrica para las cuatro escenas: el estado lo da
+ // el avance global del recorrido.
  pioneerDibujar(p);
 }
 function resize(){
@@ -837,10 +617,10 @@ function pintarGrano(c){
 // El recorrido es continuo e inverso con el scroll; la cámara y el estado
 // del mundo derivan del avance global `play.t / 8`.
 //
-//   Acto 1 · Fragmentos con potencial  la retícula deshecha; el polvo roza IDEA
-//   Acto 2 · Organización y conexión   retícula en cúpula + red que se enciende
-//   Acto 3 · Lo que funciona puede crecer  CRECER formado mediante partículas
-//   Acto 4 · Integración               la estructura se abre y cede el sitio
+//   Acto 1 · Idea        la retícula deshecha se ordena; el polvo roza el texto
+//   Acto 2 · Forma       la red se enciende y la materia se coloca a la izquierda
+//   Acto 3 · Crecimiento CRECER se escribe con la propia materia
+//   Acto 4 · Comienzo   la estructura se abre, se desprende y cae
 //
 // Inspiración de dirección: Pioneer (Corn Revolutionized). Sin copiar recursos
 // ni identidad. Sin WebGL, sin vídeo, sin dependencias nuevas.
@@ -974,22 +754,24 @@ function pioneerCampoPunto(campo,i){
 }
 
 // Las partículas de polvo: la misma materia que los fragmentos, a otra escala.
-const DUST_N=620;
+const DUST_N=780;
 const dustX=new Float32Array(DUST_N);
 const dustY=new Float32Array(DUST_N);
 const dustS=new Float32Array(DUST_N);
 const dustTinte=new Uint8Array(DUST_N);
 const dustAlpha=new Float32Array(DUST_N);
+const DUST_LEVELS=6;
+const dustBucket=new Uint8Array(DUST_N);
 function pioneerPolvo(e,p,fondo){
  const tiempo=prefersReduced.matches?0:idleMotion.time;
- const cx=W*.5,cy=H*.485;   // la palabra CRECER vive algo por encima del centro
+ const cx=W*.5,cy=H*(W<700?.44:.485);   // la palabra CRECER vive junto al titular
  const palabra='CRECER';
  const campo=pioneerCampo(palabra);
- const destinoW=Math.min(W*.70,860),destinoH=destinoW*campo.aspecto;
+ const destinoW=Math.min(W*(W<700?.88:.70),860),destinoH=destinoW*campo.aspecto;
  // Compuertas por acto: el polvo existe en los momentos narrativos.
  const aIdea=1-smooth(.24,.30,e.g);
- const aCrecer=smooth(.40,.50,e.g)*(1-smooth(.64,.72,e.g));
- const aCaida=smooth(.68,.96,e.g);
+ const aCrecer=smooth(.48,.58,e.g)*(1-smooth(.74,.84,e.g));
+ const aCaida=smooth(.74,.96,e.g);
  for(let i=0;i<DUST_N;i++){
   const h1=hash(i*3+11),h2=hash(i*5+17),h3=hash(i*7+29),h4=hash(i*11+43);
   const ph=h1*6.28318;
@@ -1008,12 +790,12 @@ function pioneerPolvo(e,p,fondo){
   const punto=campo.pts[Math.floor(i*(total-1)/(DUST_N-1))];
   const dx=cx+punto.x*destinoW;
   const dy=cy+punto.y*destinoH;
-  const cp=clamp((e.expansion-.10-h2*.26)/.32,0,1);
+  const cp=clamp((e.crecer-h2*.30)/.70,0,1);
   const ease=cp*cp*(3-2*cp);
   x=baseX+(dx-baseX)*ease;
   y=baseY+(dy-baseY)*ease;
   if(aCaida>0){y+=aCaida*(.22+.62*h3)*H;x+=(h2-.5)*W*.10*aCaida;}
-  tam=(2.4+2.6*h4)*(Math.min(W,H)<520?.62:1);
+  tam=(2.4+2.6*h4)*(1+aCrecer*.28)*(Math.min(W,H)<520?.62:1);
   tinta=h4<.40?2:h4<.70?1:0;
   surge=aCrecer*(.34+.58*h4)+aCaida*(.62+.34*h4)*(1-aCaida*.55);
  }else{
@@ -1059,10 +841,12 @@ function pioneerEstado(){
  const activacion=smooth(.28,.44,g);
  const expansion=smooth(.42,.62,g);
  const apertura=smooth(.60,.80,g);
- const huida=smooth(.76,.94,g);
+ const huida=smooth(.74,.94,g);
+ // La palabra CRECER se escribe dentro del tercer acto, junto a su titular.
+ const crecer=smooth(.50,.65,g);
  const tiempo=prefersReduced.matches?0:idleMotion.time;
  return {
-  g,orden,activacion,expansion,apertura,huida,
+  g,orden,activacion,expansion,apertura,huida,crecer,
   angulo:tiempo*.048+g*1.62,
   elevacion:pioneerClave([.40,.38,.46,.36,.30,.22],g),
   distancia:pioneerClave([3.70,3.60,3.26,3.02,3.22,3.55],g),
@@ -1103,13 +887,13 @@ function pioneerDibujar(p){
  const acento=pioneerAcento(p,fondo,oscuro);
  const colorCuerpo=oscuro?mix(p.cream,p.stone,.22):mix(p.ink,p.petrol,.30);
  const colorBanda=mix(acento,oscuro?p.amber:acento,.14+calidez*.26);
- const colorHalo=oscuro?mix(p.cream,p.ash,.46):mix(p.stone,p.ash,.34);
+ const colorHalo=oscuro?mix(p.cream,p.ash,.46):mix(p.ash,p.petrol,.34);
  const colorLinea=oscuro?mix(p.cream,p.petrol,.58):mix(p.petrol,p.cream,.20);
  const colorRed=mix(colorLinea,p.amber,.72);
 
  // 1 · posiciones en el mundo.
  const tamBase=escala*(.032+.026*e.orden);
- const fade=(1-e.huida*.85);
+ const fade=(1-e.huida*.66);
  for(let i=0;i<PIONEER_N;i++){
   const k=i*3;
   const ret=pioneerRetraso[i];
@@ -1126,8 +910,13 @@ function pioneerDibujar(p){
    x*=push;z*=push;
    y+=apertura*(.05+.78*ext)-e.apertura*.34;
   }
-  // En el acto 4 la materia se desprende y cae (en el mundo 3D).
-  y-=e.huida*.85;
+  // Acto 4 · la materia se desprende: cada pieza cae con su propio peso,
+  // se separa del conjunto y gira. El descenso acompaña el traspaso al sitio.
+  if(e.huida>0){
+    y-=e.huida*(.78+hash(i*3+5)*.72);
+    x+=(hash(i*7+13)-.5)*e.huida*.85;
+    z+=(hash(i*11+19)-.5)*e.huida*.55;
+   }
   // La cámara: órbita continua, se acerca y se eleva.
   const x1=x*ca-z*sa,z1=x*sa+z*ca;
   const y2=y*ce-z1*se,z2=y*se+z1*ce;
@@ -1136,18 +925,24 @@ function pioneerDibujar(p){
   pioneerX[i]=centroX+x1*prof*escala;
   pioneerY[i]=centroY-y2*prof*escala;
   pioneerZ[i]=zz;
-  pioneerS[i]=tamBase*prof;
-  pioneerFase[i]=i*2.399963+e.angulo*.30;
+  pioneerFase[i]=i*2.399963+e.angulo*.30+e.huida*hash(i*11+3)*2.6;
+  // C · Cada pieza respira por su cuenta. La amplitud es pequeña y la fase
+  // es propia: el conjunto sigue vivo sin puntero y sin scroll.
+  const resp=idleMotion.value;
+  const latido=Math.sin(idleMotion.time*.62+pioneerFase[i]*1.7);
+  pioneerS[i]=tamBase*prof*(1+latido*.055*resp);
+  pioneerX[i]+=Math.cos(idleMotion.time*.47+pioneerFase[i])*escala*.008*resp;
+  pioneerY[i]+=Math.sin(idleMotion.time*.53+pioneerFase[i]*1.3)*escala*.009*resp;
  }
  // La palabra CRECER la escriben los propios fragmentos: la geometría responde
  // a las letras. Se calcula en espacio de pantalla para que la órbita de la
  // cámara no distorsione la tipografía.
- const tL=smooth(.40,.57,e.g);
+ const tL=e.crecer;
  if(tL>0){
   const campo=pioneerCampo('CRECER');
-  const destinoW=Math.min(W*.70,860),destinoH=destinoW*campo.aspecto;
+  const destinoW=Math.min(W*(W<700?.88:.70),860),destinoH=destinoW*campo.aspecto;
   const total=campo.pts.length;
-  const cyLetra=H*.50;
+  const cyLetra=H*(W<700?.44:.50);
   for(let i=0;i<PIONEER_N;i++){
    // Dispersión por área: cada fragmento cae en un punto de la silueta
    // con cobertura uniforme, sin bandas diagonales.
@@ -1217,8 +1012,8 @@ function pioneerDibujar(p){
    sx+=inf.dx/d*off;
    sy+=inf.dy/d*off;
   }
-  const tL2=smooth(.40,.57,e.g);
-  const s=pioneerS[i]*(1+inf.strength*.35)*(1-tL2*.24);
+  const tL2=e.crecer;
+  const s=pioneerS[i]*(1+inf.strength*.35)*(1-tL2*.46);
   const c2=Math.cos(pioneerFase[i]),s2=Math.sin(pioneerFase[i]);
   const ex=s*.60,ey=s*.88;
   const apago=1-smooth(.55,.72,e.g)*.32;
@@ -1240,21 +1035,34 @@ function pioneerDibujar(p){
  ctx.globalAlpha=1;
  // 6 · el polvo: IDEA en el acto 1, CRECER en el acto 3, desprendimiento en el 4.
  if(e.huida>.96){ctx.globalAlpha=1;return;}
- pioneerPolvo(e,p,fondo);
- const tintaPolvo=[mix(p.cream,p.stone,.35),p.amber,acento];
+pioneerPolvo(e,p,fondo);
+ // En modo día el polvo usa tonos medios: el papel claro no puede esconderlo.
+ const tintaPolvo=oscuro?[mix(p.cream,p.stone,.35),p.amber,acento]
+                      :[mix(p.ash,p.petrol,.22),mix(p.amber,p.clay,.34),acento];
+ // El polvo se dibuja agrupado: un camino por tono y por nivel de opacidad.
+ // Rellenar cada partícula por separado era el mayor coste del lienzo.
  for(let i=0;i<DUST_N;i++){
   const alfa=dustAlpha[i]*fade;
-  if(alfa<=.01)continue;
-  ctx.globalAlpha=alfa;
-  ctx.fillStyle=tintaPolvo[dustTinte[i]];
-  const s=dustS[i];
-  ctx.beginPath();
-  ctx.moveTo(dustX[i],dustY[i]-s);
-  ctx.lineTo(dustX[i]+s*.72,dustY[i]);
-  ctx.lineTo(dustX[i],dustY[i]+s);
-  ctx.lineTo(dustX[i]-s*.72,dustY[i]);
-  ctx.closePath();
-  ctx.fill();
+  dustBucket[i]=dustTinte[i]*DUST_LEVELS+Math.min(DUST_LEVELS-1,Math.floor(clamp(alfa)*DUST_LEVELS));
+ }
+ for(let t=0;t<3;t++){
+  for(let l=0;l<DUST_LEVELS;l++){
+   const bucket=t*DUST_LEVELS+l;
+   ctx.globalAlpha=(l+.5)/DUST_LEVELS;
+   ctx.fillStyle=tintaPolvo[t];
+   ctx.beginPath();
+   let any=false;
+   for(let i=0;i<DUST_N;i++){
+    if(dustBucket[i]!==bucket)continue;
+    const s=dustS[i],px=dustX[i],py=dustY[i];
+    ctx.moveTo(px,py-s);
+    ctx.lineTo(px+s*.72,py);
+    ctx.lineTo(px,py+s);
+    ctx.lineTo(px-s*.72,py);
+    any=true;
+   }
+   if(any)ctx.fill();
+  }
  }
  ctx.globalAlpha=1;
 }
@@ -1328,10 +1136,9 @@ const themes=new MutationObserver(syncTheme);
 themes.observe(document.documentElement,{attributes:true,attributeFilter:['data-jm-theme']});
 syncTheme();
 function navStatus(){
- // La cabecera también acompaña el último capítulo: el logo debe seguir disponible
- // cuando alguien vuelve hacia arriba y llega a "Todo comienza con una idea".
- const finalChapterActive=play.t>=6.25;
- const active=destination.getBoundingClientRect().top<=innerHeight*.92||finalChapterActive;
+ // La cabecera pertenece al sitio: aparece cuando el contenido empieza y se
+ // retira en cuanto el visitante vuelve a las escenas.
+ const active=destination.getBoundingClientRect().top<=innerHeight*.92;
  document.body.classList.toggle('intro-in-content',active);
  header.inert=!active;header.setAttribute('aria-hidden',String(!active));
 }
@@ -1340,18 +1147,7 @@ function skipJourney(e){
  destination.focus({preventScroll:true});ScrollTrigger.update();navStatus();
 }
 skip.addEventListener('click',skipJourney);
-function animateHomeReturn(){
- if(prefersReduced.matches)return;
- homeReturnTween?.kill();
- gsap.set(homeReturn,{scale:.42,turn:-1.18,lift:-1.08,glow:0,ring:0,opacity:0});
- homeReturnTween=gsap.timeline({onUpdate:invalidateNarrative,onComplete:()=>{homeReturnTween=null}});
- homeReturnTween
-  .to(homeReturn,{scale:1.12,turn:.16,lift:.16,glow:1,ring:1,opacity:1,
-   duration:.88,ease:'power3.out'},0)
-  .to(homeReturn,{scale:1,turn:0,lift:0,duration:.76,ease:'back.out(1.35)'},.66)
-  .to(homeReturn,{glow:0,ring:0,duration:1.28,ease:'sine.out'},.72);
-}
-function goToHomeStart(event){
+function goToHomeStart(event,instant){
  if(event){
   if(event.button>0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
   event.preventDefault();
@@ -1359,28 +1155,13 @@ function goToHomeStart(event){
  if(location.hash!=='#home-start'){
   history.replaceState(history.state,'',location.pathname+location.search+'#home-start');
  }
- if(!trigger||!master){
-  document.getElementById('home-start')?.scrollIntoView({block:'center',behavior:'instant'});
-  return;
- }
- const html=document.documentElement,previousScrollBehavior=html.style.scrollBehavior;
- html.style.scrollBehavior='auto';
- trigger.scrubDuration(0);
- const finalCopy=copies[copies.length-1];
- const copyTopAtEnd=finalCopy.getBoundingClientRect().top+Math.max(0,window.scrollY-trigger.end);
- const desiredCopyTop=Math.max(header.getBoundingClientRect().height+24,innerHeight*.12);
- const targetY=trigger.end+Math.max(0,copyTopAtEnd-desiredCopyTop);
- window.scrollTo(0,targetY);
- ScrollTrigger.update();
- trigger.update();
- master.progress(1);
- syncSceneState();invalidateNarrative();navStatus();
- requestAnimationFrame(()=>{
-  trigger.scrubDuration(.42);
-  html.style.scrollBehavior=previousScrollBehavior;
-  ScrollTrigger.update();navStatus();
- });
- animateHomeReturn();
+ // Volver al inicio de la experiencia: «Todo comienza con una idea». El
+ // documento no se recarga y el motor sigue atado a la posición real del
+ // scroll, de modo que el recorrido puede repetirse en ambos sentidos.
+ const suave=!instant&&!prefersReduced.matches;
+ window.scrollTo({top:0,behavior:suave?'smooth':'instant'});
+ clearTimeout(goToHomeStart.timer);
+ goToHomeStart.timer=setTimeout(()=>{ScrollTrigger.update();navStatus()},suave?1400:60);
 }
 document.querySelectorAll('[data-home-return]').forEach(link=>link.addEventListener('click',goToHomeStart));
 function activeCopyForScene(scene){
@@ -1402,11 +1183,7 @@ function syncSceneState(){
 function setup(){
  stopSceneAmbient();
  if(prefersReduced.matches){idleMotion.value=0;sceneAmbient.value=0}
- homeReturnTween?.kill();homeReturnTween=null;
- Object.assign(homeReturn,{scale:1,turn:0,lift:0,glow:0,ring:0,opacity:1});
- master?.kill();trigger?.kill();seedPulseTween?.kill();seedPulseTween=null;seedPulse.value=0;
- introTween?.kill();introTween=null;introTextTween?.kill();introTextTween=null;
- introReveal.value=prefersReduced.matches?1:0;
+ master?.kill();trigger?.kill();introTextTween?.kill();introTextTween=null;
  pointerTween?.kill();pointerFade?.kill();pointerTween=null;pointerFade=null;
  Object.assign(pointer,{x:0,y:0,energy:0,active:false,down:false,dirX:0,dirY:0,
   speed:0,lastMoveAt:0,lastSpeedUpdateAt:0,hasPosition:false});
@@ -1415,11 +1192,9 @@ function setup(){
  root.classList.toggle('is-compact',compact);root.classList.toggle('is-mobile',mqMobile.matches);
  root.classList.toggle('is-static',simple);root.classList.toggle('is-linked',!simple);
  document.body.classList.add('intro-ready');
- buildWord();
  if(simple){
   root.dataset.scene='0';
   root.classList.add('all-copies');
-  introReveal.value=1;
   play.t=0;
   copies.forEach(c=>{c.inert=false;c.removeAttribute('aria-hidden');gsap.set(c,{clearProps:'all'})});
   document.body.classList.add('intro-in-content');
@@ -1428,7 +1203,7 @@ function setup(){
  }
  root.classList.remove('all-copies');
  master=gsap.timeline({paused:true,onUpdate:()=>{
-  invalidateNarrative();syncSeedPulse();syncSceneState();
+  invalidateNarrative();syncSceneState();
  }});
  play.t=0;
  // El ritmo reserva tiempo para que cada transformacion se complete y pueda leerse.
@@ -1440,31 +1215,32 @@ function setup(){
   sceneStarts.push(sceneStarts[i]+length);
  });
  master.addLabel('finish',sceneStarts[8]+.02);
- // Cuatro composiciones, una por acto.
- const copyStarts=[0,2,4,6];
- const copyEnd=[2,4,6,8];
- const copyBegin=[0,.28,.30,.26];
- copies.forEach((copy,i)=>{
-  const fragments=copy.querySelectorAll('.study-mask>span'),desc=copy.querySelector('.study-description');
-  const rule=copy.querySelector('.study-rule');
-  const begin=sceneStarts[copyStarts[i]]+copyBegin[i];
-  const endScene=copyEnd[i];
-  const fromX=i===1?-28:0;
-  gsap.set(copy,{autoAlpha:i===0?1:0});
-  gsap.set(fragments,{yPercent:105,xPercent:i===0?0:fromX});
-  gsap.set(rule,{scaleX:0,transformOrigin:'left center'});
-  if(desc)gsap.set(desc,{opacity:0,y:18});
-  if(i===0){
-   // La primera frase no espera al scroll: la primera linea es visible desde la carga.
-   gsap.set(fragments[0],{yPercent:0,y:12,opacity:0});
-  }else{
-   master.to(copy,{autoAlpha:1,duration:.18},begin+.01);
-   master.to(fragments,{yPercent:0,xPercent:0,duration:i===2?.72:i===1?.70:i===3?.66:.66,stagger:i===2?.21:i===1?.24:i===3?.34:.17,ease:'power3.out'},begin+.04);
-   master.to(rule,{scaleX:1,duration:.44,ease:'sine.out'},begin+(i===3?0:.66));
-   if(desc)master.to(desc,{opacity:1,y:0,duration:.52,ease:'power2.out'},begin+(i===3?.30:.86));
-  }
-  if(i<copies.length-1)master.to(copy,{autoAlpha:0,duration:.20},sceneStarts[endScene]-.18);
- });
+  // Las cuatro escenas, una por acto. El relevo se resuelve con un cruce:
+  // un texto nunca desaparece antes de que el siguiente haya empezado a
+  // aparecer, así que en ningún momento queda la pantalla en blanco.
+  const copyRange=[[0,2.08],[1.92,4.08],[3.94,6.08],[5.92,8]];
+  const total=sceneStarts[8];
+  const act=pt=>pt/8*total;
+  copies.forEach((copy,i)=>{
+   const fragments=copy.querySelectorAll('.study-mask>span'),desc=copy.querySelector('.study-description');
+   const rule=copy.querySelector('.study-rule');
+   const begin=act(copyRange[i][0]);
+   const fromX=i===1?-26:0;
+   gsap.set(copy,{autoAlpha:i===0?1:0});
+   gsap.set(fragments,{yPercent:105,xPercent:i===0?0:fromX});
+   gsap.set(rule,{scaleX:0,transformOrigin:'left center'});
+   if(desc)gsap.set(desc,{opacity:0,y:16});
+   if(i===0){
+    // La primera frase no espera al scroll: la primera linea es visible desde la carga.
+    gsap.set(fragments[0],{yPercent:0,y:12,opacity:0});
+   }else{
+    master.to(copy,{autoAlpha:1,duration:.16},begin);
+    master.to(fragments,{yPercent:0,xPercent:0,duration:i===3?.60:.52,stagger:i===3?.12:.18,ease:'power3.out'},begin+.04);
+    master.to(rule,{scaleX:1,duration:.40,ease:'sine.out'},begin+.58);
+    if(desc)master.to(desc,{opacity:1,y:0,duration:.46,ease:'power2.out'},begin+.64);
+   }
+   if(i<copies.length-1)master.to(copy,{autoAlpha:0,duration:.30},act(copyRange[i+1][0]));
+  });
  master.to({},{duration:.02},sceneStarts[8]+.02);
  trigger=ScrollTrigger.create({id:'jmorgado-journey',trigger:root,start:'top top',end:'bottom bottom',
   animation:master,scrub:.42,anticipatePin:1,invalidateOnRefresh:true,
@@ -1479,9 +1255,7 @@ function setup(){
  if(fragments[1])introTextTween.to(fragments[1],{yPercent:0,duration:.68,ease:'power3.out'},.16);
  introTextTween.to(rule,{scaleX:1,duration:.38,ease:'sine.out'},.52);
  if(desc)introTextTween.to(desc,{opacity:1,y:0,duration:.46,ease:'power2.out'},.70);
- if(window.scrollY>16)introTextTween.progress(1);
- introTween=gsap.to(introReveal,{value:1,duration:2.68,ease:'none',onUpdate:invalidateNarrative});
- scheduleSceneAmbient(1100);
+  if(window.scrollY>16)introTextTween.progress(1);
 }
 let resizeTick=0;
 window.addEventListener('resize',()=>{
@@ -1489,7 +1263,12 @@ window.addEventListener('resize',()=>{
 });
 prefersReduced.addEventListener('change',setup);
 mqMobile.addEventListener('change',setup);
-document.fonts.ready.then(()=>{buildWord();resize();ScrollTrigger.refresh()});
+document.fonts.ready.then(()=>{
+ // La silueta de CRECER se mide con la tipografía real: al cargar las
+ // fuentes hay que volver a medirla y repintar.
+ for(const key in pioneerCampos)delete pioneerCampos[key];
+ resize();ScrollTrigger.refresh();
+});
 
 // D · Ciclo de fotogramas del motor. Un solo ciclo gobierna todas las capas:
 // el puntero se aplica una vez, el ambiente respira a su ritmo y el relato se
@@ -1505,7 +1284,7 @@ function engineTick(){
  ajustarResolucion();
  // C · El ambiente se pinta a su propio ritmo y nunca arrastra al relato.
  if(ambientLayer.due(now))ambientLayer.paint(now);
- // A · El relato sólo se repinta si su estado ha cambiado de verdad.
+ // A · El relato se repinta si su estado ha cambiado o si el mundo late.
  if(narrativeLayer.due(now))narrativeLayer.paint(now);
 }
 gsap.ticker.add(engineTick);
@@ -1520,6 +1299,6 @@ gsap.ticker.add(engineTick);
 setup();
 window.addEventListener('scroll',navStatus,{passive:true});
 if(location.hash==='#home-start'){
- requestAnimationFrame(()=>requestAnimationFrame(()=>goToHomeStart()));
+ requestAnimationFrame(()=>requestAnimationFrame(()=>goToHomeStart(null,true)));
 }
 })();

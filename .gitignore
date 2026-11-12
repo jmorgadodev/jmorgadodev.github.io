@@ -10,6 +10,11 @@ docs/*
 !docs/CONTEXTO_MAESTRO_JMORGADO.md
 !docs/PLAN_MEJORA_ESCENAS_INICIO_JMORGADO.md
 !docs/ENCARGO_AGENTE_IDENTIDAD_INTERIOR_JMORGADO.md
+# El documento de continuidad del módulo de escenas se conserva en Git.
+# El resto de la carpeta (capturas, zip, vídeos) sigue siendo material local.
+!docs/entregas/
+docs/entregas/*
+!docs/entregas/CONTINUIDAD-MODULO-ESCENAS-JMORGADO.md
 BRIEF_REPLICACION_EL_VIAJE.md
 _site/
 .env
