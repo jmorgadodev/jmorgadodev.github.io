@@ -1267,16 +1267,18 @@ function goToHomeStart(event,instant){
   if(event.button>0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
   event.preventDefault();
  }
- if(location.hash!=='#home-start'){
-  history.replaceState(history.state,'',location.pathname+location.search+'#home-start');
+ // Destino definitivo: el inicio del contenido (¿Que te gustaria mejorar?).
+ // El documento no se recarga y el motor sigue atado a la posicion real del
+ // scroll, de modo que las cuatro escenas pueden repetirse subiendo.
+ const destino=document.getElementById('explorar');
+ if(!destino)return;
+ if(location.hash!=='#explorar'){
+  history.replaceState(history.state,'',location.pathname+location.search+'#explorar');
  }
- // Volver al inicio de la experiencia: «Todo comienza con una idea». El
- // documento no se recarga y el motor sigue atado a la posición real del
- // scroll, de modo que el recorrido puede repetirse en ambos sentidos.
  const suave=!instant&&!prefersReduced.matches;
- window.scrollTo({top:0,behavior:suave?'smooth':'instant'});
+ destino.scrollIntoView({block:'start',behavior:suave?'smooth':'instant'});
  clearTimeout(goToHomeStart.timer);
- goToHomeStart.timer=setTimeout(()=>{ScrollTrigger.update();navStatus()},suave?1400:60);
+ goToHomeStart.timer=setTimeout(()=>{ScrollTrigger.update();navStatus()},suave?900:60);
 }
 document.querySelectorAll('[data-home-return]').forEach(link=>link.addEventListener('click',goToHomeStart));
 function activeCopyForScene(scene){
@@ -1376,6 +1378,29 @@ let resizeTick=0;
 window.addEventListener('resize',()=>{
  cancelAnimationFrame(resizeTick);resizeTick=requestAnimationFrame(()=>{resize();ScrollTrigger.refresh()});
 });
+// F · Regreso desde el historial. El motor de scroll guarda en caché los puntos
+// de inicio y fin del recorrido y su progreso. Si la portada vuelve desde otra
+// ruta —el navegador la restaura desde la caché de localización— esas medidas
+// quedan desfasadas: el módulo se congela en la última escena y deja de
+// responder al scroll. Al reaparecer se recalculan las medidas y el relato se
+// reconstruye en la posición real del documento, en ambos sentidos.
+// No se crea ninguna instancia nueva: se reutiliza el mismo recorrido.
+function resincronizar(){
+ if(!trigger)return;
+ resize();
+ ScrollTrigger.refresh();
+ navStatus();
+}
+window.addEventListener('pageshow',()=>{
+ // Da igual si la página vuelve de la caché de localización o se reconstruye:
+ // en ambos casos el navegador puede devolverla con la posición del scroll
+ // anterior y el recorrido queda con medidas desfasadas. Se sincroniza dos
+ // veces: al reaparecer y en el siguiente fotograma, cuando el navegador ya
+ // terminó de devolver la posición.
+ resincronizar();
+ requestAnimationFrame(()=>resincronizar());
+});
+window.addEventListener('popstate',()=>{requestAnimationFrame(()=>resincronizar())});
 prefersReduced.addEventListener('change',setup);
 mqMobile.addEventListener('change',setup);
 document.fonts.ready.then(()=>{
@@ -1425,7 +1450,7 @@ gsap.ticker.add(engineTick);
 
 setup();
 window.addEventListener('scroll',navStatus,{passive:true});
-if(location.hash==='#home-start'){
+if(location.hash==='#explorar'){
  requestAnimationFrame(()=>requestAnimationFrame(()=>goToHomeStart(null,true)));
 }
 })();

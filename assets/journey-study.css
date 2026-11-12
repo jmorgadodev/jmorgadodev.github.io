@@ -5,6 +5,8 @@
    introduction manda. La marca «JM.» queda a la izquierda, la navegación se
    conserva y el cambio de tema es un icono al extremo derecho.            */
 .home-projects{scroll-margin-top:90px}
+/* «JM.» lleva a esta seccion: deja aire para la cabecera fija. */
+.home-page main > #explorar{scroll-margin-top:calc(var(--jm-header-h,80px) + 16px)}
 .portfolio-about{max-width:65ch;margin-top:5rem;padding-top:2rem;border-top:1px solid var(--line)}
 .portfolio-about h3{font-size:2rem}.portfolio-about .lead{font-size:1.1rem;line-height:1.65}
 .portfolio-situations summary{padding:.5rem 0;min-height:44px}

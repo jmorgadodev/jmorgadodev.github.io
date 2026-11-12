@@ -9,6 +9,7 @@ from pathlib import Path
 import json
 import re
 from hashlib import sha256
+import os
 from urllib.parse import urlsplit
 from site_data import (LEGACY_TOOL_SLUGS, PROJECT_ARCHIVE, PROJECT_CONTEXT, PROJECT_DECISIONS,
                        PROJECT_MARKS, PROJECTS, PROJECT_PORTAL_PAGES, SERVICE_CONTACT,
@@ -91,7 +92,9 @@ def meta(d, title, description, active="", journey=False, *, canonical=None, jso
     body_class=' class="home-page"' if journey else ''
     descriptor='Una forma de resolver' if journey else 'Desarrollo independiente<br>Software, datos y procesos'
     monogram='JM.'
-    home_target=local(d) + "#home-start"
+    # «JM.» lleva al inicio del contenido (¿Que te gustaria mejorar?), no a las
+    # cuatro escenas: quien quiera repetirlas solo tiene que subir.
+    home_target=local(d) + "#explorar"
     controls=''
     # El control de tema es un icono en todas las paginas: la cabecera lleva
     # la marca «JM.» a la izquierda y el icono del día y la noche a la derecha.
@@ -119,7 +122,7 @@ def meta(d, title, description, active="", journey=False, *, canonical=None, jso
 <link rel="stylesheet" href="{e(asset(d,'assets/interior.css'))}">
 </head><body{body_class}><a class="skip-link" href="#contenido">Saltar al contenido</a>{SYMBOLS}
 <header class="site-header jm-header"><div class="wrap header-inner">
-<a class="wordmark" href="{e(home_target)}" data-home-return aria-label="Volver al inicio de la experiencia JMorgado"><span class="mark" aria-hidden="true">{monogram}</span><span class="wordmark-text">JMorgado<span class="orange">.</span></span></a>
+<a class="wordmark" href="{e(home_target)}" data-home-return aria-label="Ir a «¿Qué te gustaría mejorar?»"><span class="mark" aria-hidden="true">{monogram}</span><span class="wordmark-text">JMorgado<span class="orange">.</span></span></a>
 <div class="header-sub">{descriptor}</div>{controls}
 <button type="button" class="menu-toggle" data-menu-toggle aria-controls="main-nav" aria-expanded="false">Menú +</button>
 <button type="button" class="theme-toggle" data-theme-toggle{theme_icon} aria-pressed="false" aria-label="Cambiar a modo noche">Noche</button>
@@ -218,6 +221,54 @@ def not_found():
     <p class="missing-actions">{a(None,"","Volver al inicio","button strong")} {a(None,"proyectos/","Ver proyectos","button")}</p>
     </div></section></main>"""
     (ROOT / "404.html").write_text(meta(None, title, description) + body + foot(None), encoding="utf-8")
+
+PUBLICAS=("", "servicios", "proyectos", "herramientas", "contacto",
+           "calculadora", "metodo", "jugar")
+
+
+def sitemap():
+    """Mapa del sitio y robots.txt a partir de las rutas publicas generadas.
+
+    Se excluye la pagina 404 (no debe indexarse) y todo lo que no sea una
+    pagina publica: el directorio privado de revisiones, Herramientas, docs
+    y assets no son parte del sitio servido.
+    """
+    rutas=[]
+    for raiz, dirs, files in os.walk(ROOT):
+        dirs[:] = [d for d in dirs if not d.startswith(("_", ".", "node_modules"))
+                   and d not in ("Herramientas", "REVISION-PROYECTOS", "docs",
+                                 "assets", "videos")]
+        if "index.html" not in files:
+            continue
+        ruta = Path(raiz).relative_to(ROOT).as_posix()
+        if ruta == ".":
+            ruta = ""
+        grupo = ruta.split("/")[0] if ruta else ""
+        if grupo not in PUBLICAS:
+            continue
+        # Las paginas noindexed (stubs que redirigen) no se indexan.
+        html = (Path(raiz) / "index.html").read_text(encoding="utf-8")
+        if "noindex" in html:
+            continue
+        rutas.append(ruta)
+    rutas.sort()
+    lineas = ['<?xml version="1.0" encoding="UTF-8"?>',
+              '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for ruta in rutas:
+        url = SITE_URL + (ruta + "/" if ruta else "")
+        lineas.append("  <url>")
+        lineas.append("    <loc>%s</loc>" % url)
+        lineas.append("  </url>")
+    lineas.append("</urlset>")
+    (ROOT / "sitemap.xml").write_text("\n".join(lineas) + "\n", encoding="utf-8")
+
+    robots = ["User-agent: *",
+              "Allow: /",
+              "",
+              "Sitemap: %ssitemap.xml" % SITE_URL]
+    (ROOT / "robots.txt").write_text("\n".join(robots) + "\n", encoding="utf-8")
+    return rutas
+
 
 def overline(number,caption):
     return f'<div class="overline"><span class="num">{e(number)} · {e(caption)}</span></div>'
@@ -1936,3 +1987,4 @@ if __name__=="__main__":
     services_index()
     for s in SERVICES:service_detail(s)
     method();calc();contact();not_found()
+    print("RUTAS PUBLICAS", len(sitemap()))
