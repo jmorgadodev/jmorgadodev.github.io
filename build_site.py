@@ -1868,6 +1868,29 @@ def calc():
     text=path.read_text(encoding="utf-8")
     text=text.replace("</body></html>",'<script src="../assets/calculator.js" defer></script></body></html>')
     path.write_text(text,encoding="utf-8")
+def booking_art():
+    """Ilustracion geometrica del agendamiento.
+
+    La disponibilidad y la hora se eligen en Google Calendar al abrir el
+    enlace: aqui solo se comunica la idea de calendario con la marca.
+    """
+    marks = [(64, 126), (122, 126), (238, 126),
+             (64, 176), (180, 176),
+             (122, 226), (238, 226)]
+    squares = "".join(f'<rect x="{x}" y="{y}" width="18" height="18" rx="2"/>' for x, y in marks)
+    return f"""<div class="booking-art">
+    <svg class="booking-art-figure" viewBox="0 0 320 300" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <rect class="booking-art-frame" x="24" y="46" width="272" height="230" rx="9"/>
+      <path class="booking-art-rule" d="M24 94h272"/>
+      <path class="booking-art-ring" d="M89 46a11 11 0 0 1 22 0M209 46a11 11 0 0 1 22 0"/>
+      <g class="booking-art-marks">{squares}</g>
+      <rect class="booking-art-pick" x="180" y="126" width="18" height="18" rx="2"/>
+      <path class="booking-art-tick" d="M180 152h18"/>
+    </svg>
+    <p class="booking-art-note"><b>45 min</b> · Google Calendar<span>Hora de Chile</span></p>
+    </div>"""
+
+
 def contact():
     d=1
     booking_url="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3nJEkpRw3rSiFc6ldUwwIPkAhPsU7OYKU8sa3XNiW_B1-6MrMRT9YLVTwZir0YJCvPp57moGoW"
@@ -1883,7 +1906,7 @@ def contact():
         "o inteligencia artificial. No necesitas llegar con una solución definida ni preparar documentación; basta con contar "
         "el contexto y el resultado que buscas. Evita incluir información confidencial al describir tu consulta.")
     body=f"""<section class="page-hero contact-hero"><div class="wrap">{crumb(d,[(None,"Contacto")])}
-    {interior_art("modular-v02/K02-marco-editorial.svg","contact-frame-art")}
+    {interior_art("modular-v02/K03-ficha-agenda.svg","contact-frame-art")}
     <span class="eyebrow">Diagnóstico inicial gratuito</span>
     <h1>¿Qué necesitas resolver<span class="orange">?</span></h1>
     <p class="lead">Cuéntame qué haces hoy y qué parte te está tomando más tiempo del que debería.</p>
@@ -1892,7 +1915,7 @@ def contact():
     {overline("01","Agenda una conversación")}
     <div class="booking-intro"><div><h2 id="booking-title">Elige un horario para conversar.</h2>
     <p class="lead">{e(booking_description)}</p></div>
-    <p class="booking-time">45 min · Google Calendar<br><span>Hora de Chile</span></p></div>
+    {booking_art()}</div>
     <a class="button dark" href="{e(booking_url)}" data-project-portal>Ver horarios {icon("window",True)}</a>
     {booking_dialog}
     </div></section>
@@ -1904,7 +1927,7 @@ def contact():
     <p>La primera conversación ayuda a decidir si conviene evaluar el problema con más detalle. Una auditoría, instalación, desarrollo o intervención se presupuestan y acuerdan por separado.</p>
     <p class="hint">No envíes credenciales, bases de clientes, datos privados ni archivos sensibles en el primer mensaje.</p></aside></div></div></section>
     <section class="ink-panel"><div class="wrap">{overline("03","Antes de conversar")}
-    <div class="statement"><h2>Una pregunta es suficiente para comenzar.</h2>
+    <div class="statement statement-contact"><h2>Una pregunta es suficiente para comenzar.</h2>
     <p class="lead">¿Qué parte de tu trabajo requiere tiempo que podría dedicarse a algo más útil? Si no lo tienes claro, también podemos revisarlo.</p></div></div></section>"""
     page("contacto","Agenda una conversación","Agenda una conversación inicial gratuita de 45 minutos con JMorgado. Reserva directamente desde la web mediante Google Calendar.",body,"contacto")
 if __name__=="__main__":

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 300" role="img" aria-label="Ficha de agenda">
+<title>K03-ficha-agenda</title>
+<desc>Recurso vectorial modular JMorgado, capas editables. Ficha de agenda con una entrada marcada en coral.</desc>
+
+<g id="trazos"><path d="M22 34H498a8 8 0 0 1 8 8v216a8 8 0 0 1-8 8H22a8 8 0 0 1-8-8V42a8 8 0 0 1 8-8Z" fill="none" stroke="var(--jm-petrol,#23494E)" stroke-width="1.8"/><path d="M14 92H506" fill="none" stroke="var(--jm-petrol,#23494E)" stroke-width="1.8"/><path d="M80 63h150" fill="none" stroke="var(--jm-line,#77796C)" stroke-width="1.2" opacity=".55"/><path d="M48 140h426M48 176h426M48 212h426" fill="none" stroke="var(--jm-line,#77796C)" stroke-width="1.2" opacity=".55"/><path d="M48 176h126" fill="none" stroke="var(--jm-signal,#F45A3A)" stroke-width="3.4" stroke-linecap="round"/><path d="M192 190L216 166M199 166h17v17" fill="none" stroke="var(--jm-signal,#F45A3A)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g><g id="vertices"><rect x="48" y="54" width="18" height="18" rx="2" fill="var(--jm-signal,#F45A3A)"/></g>
+</svg>
