@@ -283,6 +283,23 @@ def game_layouts(browser):
         print(width,height,"juego responsive y recursos locales OK")
         page.close()
 
+def game_ranking(browser):
+    github = "https://jmorgadodev.github.io/"
+    endpoint = "https://jmorgado.pages.dev/api/tetris/ranking"
+    page = browser.new_page()
+    try:
+        page.route(github+"**", lambda route: route.fulfill(response=route.fetch(
+            url=base+route.request.url.removeprefix(github))))
+        page.route(endpoint, lambda route: route.fulfill(
+            json={"entries": [{"id":"qa-ranking", "name":"Marca QA", "score":120, "seconds":10}]},
+            headers={"Access-Control-Allow-Origin": github.rstrip("/")}))
+        page.goto(github+"jugar/")
+        page.locator(".game-ranking summary").click()
+        expect(page.locator("[data-ranking-list] li")).to_contain_text("Marca QA")
+    finally:
+        page.close()
+    print("Ranking de GitHub Pages consulta Cloudflare OK")
+
 def portfolio(browser):
     page = browser.new_page()
     page.goto(base+"proyectos/")
@@ -513,6 +530,7 @@ try:
             page.close()
         portfolio(browser)
         game_layouts(browser)
+        game_ranking(browser)
         game_keyboard(browser)
         game_touch(browser)
         page=browser.new_page()

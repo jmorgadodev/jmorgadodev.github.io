@@ -328,7 +328,7 @@
   const rankStatus = find("[data-ranking-status]");
   const rankRetry = find("[data-ranking-retry]");
   const rankList = find("[data-ranking-list]");
-  const rankEndpoint = location.hostname === "jmorgado.pages.dev" ?
+  const rankEndpoint = location.hostname === "jmorgadodev.github.io" ?
     "https://jmorgado.pages.dev/api/tetris/ranking" : "/api/tetris/ranking";
   const dialog = find(".game-dialog");
   const touch = find(".game-touch");
