@@ -259,6 +259,13 @@ def sitemap():
         if "noindex" in html:
             continue
         rutas.append(ruta)
+    # En Windows, la carpeta pública `herramientas/` y el archivo de recursos
+    # `Herramientas/` comparten nombre. La exclusión de recursos evita recorrer
+    # su contenido, así que añadimos únicamente su index público al sitemap.
+    tools_index = ROOT / "herramientas" / "index.html"
+    if tools_index.is_file() and "noindex" not in tools_index.read_text(encoding="utf-8"):
+        if "herramientas" not in rutas:
+            rutas.append("herramientas")
     rutas.sort()
     lineas = ['<?xml version="1.0" encoding="UTF-8"?>',
               '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
