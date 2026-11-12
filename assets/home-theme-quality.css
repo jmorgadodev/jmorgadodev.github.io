@@ -189,7 +189,7 @@
 
 /* One display family across the narrative and the editorial landing. */
 .home-page { --font-display:var(--font-text); }
-.home-page .home-header .wordmark,.home-page .home-header .mark {font-family:var(--font-text)!important;}
+.home-page .jm-header .wordmark,.home-page .jm-header .mark {font-family:var(--font-text)!important;}
 
 /* Quiet, relational light fields give each chapter its own depth in both themes. */
 .home-page main > :is(.home-problem,.home-method,.home-calculator,.home-work,.home-persona,.home-tools,.home-game,.home-contact-cta) {position:relative!important;isolation:isolate;}

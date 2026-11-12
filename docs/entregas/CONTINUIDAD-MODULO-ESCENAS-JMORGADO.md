@@ -1,8 +1,8 @@
 # Continuidad — Módulo de escenas JMorgado (versión aprobada)
 
 **Fecha:** 12 de noviembre de 2026
-**Estado:** versión aprobada por Jorge. Es el punto de recuperación definitivo del inicio antes de trabajar la capa ambiental de la landing.
-**Alcance:** sólo la introducción (`.tech-study`). La landing y sus secciones no se tocan.
+**Estado:** versión aprobada por Jorge (`d1c6373`). El sistema experimental de partículas ambientales para la landing quedó descartado; la última corrección añade la unión visual entre el final de la cuarta escena y la primera sección del sitio.
+**Alcance:** la introducción (`.tech-study`) y, en su último tramo, la unión con la primera sección de la landing. El resto de la landing no se toca.
 
 ---
 
@@ -89,9 +89,11 @@ El degradado ambiental es muy sutil (crema al 20 % arriba a la izquierda, tinta 
 
 ## 6. La transición hacia la landing
 
-Al terminar la cuarta escena el marco se desprende del anclaje y asciende mientras el papel de la landing entra por debajo. El fondo final del módulo (`#F0EDE6`) es exactamente el papel del sitio (`--jm-bg`), de modo que el traspaso no tiene corte de tono. La cabecera de la landing aparece cuando `#explorar` entra en pantalla y se retira en cuanto el visitante vuelve a las escenas.
+Al terminar la cuarta escena el marco se desprende del anclaje y asciende mientras el papel de la landing entra por debajo. La cabecera de la landing aparece cuando `#explorar` entra en pantalla y se retira en cuanto el visitante vuelve a las escenas.
 
 El botón `JM.` de la cabecera devuelve al inicio de la experiencia con un desplazamiento suave, sin recargar el documento y con el motor atado a la posición real del scroll.
+
+El detalle de continuidad entre las dos superficies está en la sección siguiente.
 
 ---
 
@@ -119,3 +121,54 @@ python -m http.server 8765 --bind 127.0.0.1
 Abrir `http://127.0.0.1:8765/`. Para ver el ensamblaje de la escena 01 conviene avanzar despacio el primer 15 % del recorrido.
 
 Comprobaciones de apoyo: `node --check assets/journey-study.js`, `python build_site.py`, `python qa_smoke.py`.
+
+---
+
+# Transición definitiva hacia la landing
+
+**12 de noviembre de 2026.**
+
+## Qué se descartó
+
+El sistema experimental de **partículas ambientales para toda la landing** (un lienzo fijo con piezas repartidas por los apartados) queda **descartado**. Se retiraron del proyecto activo:
+
+- `assets/site-particles.js` — queda en el disco, **fuera de la carga del sitio** (era un archivo sin seguimiento de otro frente de trabajo; no se borra sin revisarlo).
+- `assets/home-particles.css` — creado sólo para ese experimento; se eliminó.
+- Las dos referencias de `build_site.py` (el `<link>` del CSS y el `<script>`) y la entrada de `.gitignore` para su documento.
+
+`index.html` se regeneró con `python build_site.py` y vuelve a la estructura aprobada. La landing no carga ningún lienzo adicional.
+
+## Qué se conservó
+
+El **Módulo de escenas aprobado** (`d1c6373`) queda intacto: las cuatro frases, la formación de CRECER, el movimiento autónomo, el recorrido de 460 svh, la composición de los textos y el header.
+
+## Cómo se resolvió la continuidad entre superficies
+
+El problema no era el color: `#explorar` y el final del módulo usan el mismo papel (`#F0EDE6` de día, `#111B20` de noche). El problema era el **tratamiento**: el lienzo del módulo añade iluminación, grano y viñeta, y la primera sección de la landing es plana.
+
+La corrección es un **cierre dentro del motor**, no un parche de la landing:
+
+- En el tramo final (`play.t` 7,05 → 7,92) una capa plana del color exacto del papel de la landing (`PAL[…].bg[7]`) se superpone con opacidad creciente sobre el lienzo.
+- Al avanzar, la iluminación especial, el grano, la viñeta y la atmósfera de las escenas se apagan; las piezas siguen cayendo por encima porque se dibujan después.
+- Al final del módulo el lienzo es **idéntico píxel a píxel** al papel de la landing: en modo día el borde inferior pasó de `(225,223,218)/(212,208,201)/(184,182,180)` a `(240,237,230)`, y en modo noche de `(28,38,44)` a `(17,27,32)`.
+- No hay borde ni filete: `#explorar` no declara `border-top` en la portada.
+
+La transición depende sólo del scroll (`play.t`), así que funciona igual al subir.
+
+## Archivos modificados para resolverla
+
+| Archivo | Cambio |
+| --- | --- |
+| `assets/journey-study.js` | El cierre del módulo: la capa plana final sobre el lienzo. |
+| `index.html` | Regenerado con `python build_site.py`. |
+| `build_site.py`, `.gitignore` | Restaurados a su contenido aprobado (`d1c6373`). |
+| `assets/site-particles.js` | Fuera de la carga del sitio. |
+| `assets/home-particles.css` | Eliminado. |
+| `docs/entregas/CONTINUIDAD-PARTICULAS-LANDING-JMORGADO.md` | Eliminado: era el documento del experimento descartado. |
+
+## Cómo comprobarlo visualmente
+
+1. `python -m http.server 8765 --bind 127.0.0.1` y abrir `http://127.0.0.1:8765/`.
+2. Bajar toda la introducción hasta el final de «Y esto es solo el comienzo.» y seguir bajando despacio: el marco se desprende y el papel de la landing entra **sin línea ni cambio de superficie**.
+3. Repetir en modo noche con el control de la esquina superior derecha.
+4. Subir de nuevo: la transición se rehace en sentido inverso y el módulo vuelve a su tratamiento original.

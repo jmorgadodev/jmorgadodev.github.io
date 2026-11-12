@@ -257,6 +257,28 @@
   stage.addEventListener("pointercancel", endGesture);
   stage.addEventListener("dragstart", event => event.preventDefault());
 
+  /* ---------- Seleccion con el puntero ----------
+     Al detenerse sobre una tarjeta lateral, esta pasa al centro. Hay una
+     demora breve para que el puntero pueda cruzar entre tarjetas sin que la
+     escena cambie sola, y la seleccion se mantiene hasta otra interaccion.
+     Nunca se navega: el clic sigue abriendo la ficha del proyecto. */
+  let hoverTimer = 0;
+  const finePointer = window.matchMedia
+    ? window.matchMedia("(hover: hover) and (pointer: fine)")
+    : { matches: false };
+  cards.forEach((card, index) => {
+    card.addEventListener("pointerenter", event => {
+      if (event.pointerType !== "mouse" || !finePointer.matches) return;
+      if (drag || press) return;
+      clearTimeout(hoverTimer);
+      hoverTimer = window.setTimeout(() => {
+        if (index === active || drag) return;
+        select(index, { announce: true });
+      }, 240);
+    });
+    card.addEventListener("pointerleave", () => clearTimeout(hoverTimer));
+  });
+
   /* ---------- Rueda o trackpad horizontal ---------- */
   stage.addEventListener("wheel", event => {
     if (event.ctrlKey) return;

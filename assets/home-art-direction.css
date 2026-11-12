@@ -896,3 +896,37 @@
 
 /* Keep the night contact surface within accessible text contrast. */
 .home-page main > .home-contact{background-color:var(--jm-petrol-deep)!important}
+
+/* ── Refinamiento final de la portada ───────────────────────────────────── */
+
+/* Las tres areas son accesos a servicios: la opcion completa es navegable. */
+.home-page main > .home-problem .home-offer-link{display:flex;flex-direction:column;align-items:center;gap:.5rem;width:100%;align-self:stretch;height:100%;text-decoration:none;color:inherit;text-align:center}
+.home-page main > .home-problem .home-offer-link h3{color:inherit;transition:color .2s ease}
+.home-page main > .home-problem .home-offer-link .home-offer-icon{transition:transform .25s ease}
+.home-page main > .home-problem .home-offer-link:hover h3,
+.home-page main > .home-problem .home-offer-link:focus-visible h3{color:var(--jm-coral)}
+.home-page main > .home-problem .home-offer-link:hover .home-offer-icon,
+.home-page main > .home-problem .home-offer-link:focus-visible .home-offer-icon{transform:translateY(-3px)}
+.home-page main > .home-problem .home-offer-link:focus-visible{outline:2px solid var(--jm-coral);outline-offset:8px}
+/* Un solo acceso a servicios, centrado bajo las tres areas. */
+.home-page main > .home-problem .home-offer-all{margin:clamp(2.2rem,4.5vw,3.4rem) 0 0!important;max-width:none!important;width:100%;text-align:center}
+.home-page main > .home-problem .home-offer-all a:focus-visible{outline:2px solid var(--jm-coral);outline-offset:6px}
+
+/* Calculadora: el encabezado se centra sobre su propio titulo. */
+body.home-page main > .home-calculator .impact-heading .impact-eyebrow{width:auto;max-width:100%;margin:0 auto 1.1rem;text-align:center;white-space:nowrap}
+body.home-page main > .home-calculator .home-quick-calc > .quick-calc-note{margin-top:1.7rem!important;max-width:44ch}
+
+/* Proyectos: el enlace queda centrado bajo el carrusel. */
+body.home-page main > .home-work .section-action{width:auto!important;max-width:none!important;margin-inline:auto!important;text-align:center}
+
+/* Contacto: mas aire entre los botones y la nota. */
+body.home-page main > .home-contact-cta .contact-board-copy > .contact-actions{margin-bottom:0!important}
+body.home-page main > .home-contact-cta .contact-board-copy > .contact-caveat{margin-top:1.6rem!important}
+
+/* Sobre mi: acceso sobrio a LinkedIn. */
+body.home-page main > .home-persona .persona-story > a.persona-linkedin{display:flex!important;width:fit-content!important;max-width:100%;align-items:center;gap:.5rem;margin:1.7rem auto 0!important;color:var(--art-ink);text-decoration:none;font:600 .68rem var(--font-mono);border-bottom:1px solid var(--art-line);padding-bottom:.35rem;transition:color .2s ease,border-color .2s ease}
+/* En una sola columna el enlace se alinea con el texto, no queda suelto. */
+@media(max-width:700px){body.home-page main > .home-persona .persona-story > a.persona-linkedin{margin-left:0!important;margin-right:0!important}}
+body.home-page main > .home-persona .persona-story > a.persona-linkedin .icon{width:16px;height:16px;fill:#0A66C2;flex:none}
+body.home-page main > .home-persona .persona-story > a.persona-linkedin:hover{color:#0A66C2;border-color:#0A66C2}
+body.home-page main > .home-persona .persona-story > a.persona-linkedin:focus-visible{outline:2px solid #0A66C2;outline-offset:5px}

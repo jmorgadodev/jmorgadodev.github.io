@@ -21,7 +21,7 @@ Object.assign(idleCanvas.style,{
 });
 canvas.insertAdjacentElement('afterend',idleCanvas);
 const idleCtx=idleCanvas.getContext('2d',{alpha:true});
-const header=document.querySelector('.home-header'),destination=document.getElementById('explorar');
+const header=document.querySelector('.jm-header'),destination=document.getElementById('explorar');
 const themeButton=root.querySelector('.study-theme'),siteTheme=document.querySelector('[data-theme-toggle]');
 const skip=root.querySelector('.intro-skip'),copies=[...root.querySelectorAll('[data-copy]')];
 const prefersReduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -1225,6 +1225,17 @@ function paintNarrative(){
  ctx.globalAlpha=1;
  pintarGrano(ctx);
  drawSceneAtmosphere(i,p);
+ // C · Cierre del modulo: la iluminacion, el grano y la vineta de las escenas
+ // se apagan en el ultimo tramo y el lienzo queda en el papel exacto de la
+ // landing. Asi el final de la cuarta escena y la primera seccion del sitio
+ // son una sola superficie, sin franja ni corte de luminancia.
+ const cierre=smooth(7.05,7.92,play.t);
+ if(cierre>.001){
+  ctx.globalAlpha=cierre;
+  ctx.fillStyle=p.bg[7];
+  ctx.fillRect(0,0,W,H);
+  ctx.globalAlpha=1;
+ }
  // La primera escena comienza mezclada y el propio scroll lleva las piezas
  // hasta su composición ordenada; no hay una animación automática que la adelante.
   // La transicion entre escenas la resuelve la propia estructura: no hace

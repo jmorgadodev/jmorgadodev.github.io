@@ -4,19 +4,6 @@
    Sólo existe cuando el sitio empieza: durante las cuatro escenas la
    introduction manda. La marca «JM.» queda a la izquierda, la navegación se
    conserva y el cambio de tema es un icono al extremo derecho.            */
-.home-page .home-header{position:fixed;top:0;left:0;width:100%;z-index:40;background:var(--paper);box-shadow:0 1px 0 color-mix(in srgb,var(--ink) 10%,transparent);visibility:hidden;opacity:0}
-.home-page.intro-ready:not(.intro-in-content) .home-header{visibility:hidden;opacity:0;transform:translateY(-100%);pointer-events:none}
-.home-page.intro-ready.intro-in-content .home-header{visibility:visible;opacity:1;transform:none;pointer-events:auto;transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .36s}
-.home-header .header-inner{min-height:80px;gap:1.1rem}
-.home-header .header-sub,.home-header .journey-controls{display:none}
-.home-header .wordmark{order:1;font-family:"Segoe UI",sans-serif;font-weight:600;letter-spacing:-.06em}
-.home-header .wordmark-text{display:none}
-.home-header .mark{order:1;background:transparent;color:var(--signal);transform:none;font:600 1.3rem/1 "Segoe UI",sans-serif;width:auto;height:auto;margin-right:.35rem;letter-spacing:-.05em}
-.home-header .nav{order:2;margin-left:auto}
-.home-header .menu-toggle{order:3}
-.home-header .theme-toggle{order:4;display:none;width:44px;height:44px;padding:0;min-height:44px;border:0;background:transparent;color:var(--ink);cursor:pointer}
-html.theme-ready .home-header .theme-toggle{display:inline-flex;align-items:center;justify-content:center}
-.home-header .theme-toggle svg{width:20px;height:20px;display:block;pointer-events:none}
 .home-projects{scroll-margin-top:90px}
 .portfolio-about{max-width:65ch;margin-top:5rem;padding-top:2rem;border-top:1px solid var(--line)}
 .portfolio-about h3{font-size:2rem}.portfolio-about .lead{font-size:1.1rem;line-height:1.65}
@@ -107,7 +94,7 @@ html.theme-ready .home-header .theme-toggle{display:inline-flex;align-items:cent
   .is-linked .copy-3 .study-heading h2{font-size:clamp(1.3rem,2.6vw,2.6rem)}
   .is-linked .copy-3 .study-key>span{font-size:clamp(2.6rem,6.2vw,6.2rem)}
 }
-@media(max-width:1100px){.home-header .header-inner{gap:.65rem;flex-wrap:wrap}}
+@media(max-width:1100px){.jm-header .header-inner{gap:.65rem;flex-wrap:wrap}}
 @media(max-width:900px){
   .is-linked .study-topline{padding:1rem 6vw}
   .study-topactions{gap:1.1rem}
@@ -159,6 +146,6 @@ html.theme-ready .home-header .theme-toggle{display:inline-flex;align-items:cent
   .study-description{font-size:12px;line-height:1.35;margin-top:.65rem;max-width:36ch}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}
-  .home-page.intro-ready .home-header{visibility:visible!important;opacity:1!important;transform:none!important;pointer-events:auto!important}
+  .home-page.intro-ready .jm-header{visibility:visible!important;opacity:1!important;transform:none!important;pointer-events:auto!important}
   .tech-study.is-linked{height:auto}.is-linked .study-frame{position:relative;height:auto}
 }

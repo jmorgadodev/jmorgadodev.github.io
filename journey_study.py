@@ -49,7 +49,7 @@ def render_study():
             '</section>'
         )
     return (
-        '<noscript><style>.home-header{position:sticky!important;visibility:visible!important;'
+        '<noscript><style>.jm-header{position:sticky!important;visibility:visible!important;'
         'opacity:1!important;transform:none!important}.study-copy{opacity:1!important;'
         'visibility:visible!important}</style></noscript>'
         '<section class="tech-study" id="home-start" data-study aria-label="Una idea toma forma">'

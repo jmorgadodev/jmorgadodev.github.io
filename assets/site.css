@@ -28,6 +28,46 @@ h3{font-size:clamp(1.5rem,2.7vw,2.5rem)}
 .wrap{width:min(calc(100% - 2.5rem),var(--shell));margin-inline:auto}
 .skip-link{position:absolute;top:-100px;left:12px;z-index:99;background:var(--ink);color:#fff;padding:.75rem 1rem}
 .skip-link:focus{top:12px}
+/* ── Cabecera global: la portada es la referencia ─────────────────────────
+   Una sola cabecera para todo el sitio. Marca «JM.» a la izquierda,
+   navegacion al centro derecha y el control de tema en el extremo derecho.
+   En las paginas interiores el contenido arranca debajo de la cabecera. */
+/* -- Cabecera global: la portada es la referencia -------------------------
+   Una sola cabecera para todo el sitio. Marca "JM." a la izquierda,
+   navegacion al centro derecha y el control de tema en el extremo derecho.
+   En las paginas interiores el contenido arranca debajo de la cabecera.
+   Los selectores llevan "body" para ganar al estilo base del sitio. */
+:root{--jm-header-h:80px}
+body .jm-header{position:fixed;top:0;left:0;width:100%;z-index:40;background:var(--paper);border-bottom:1px solid color-mix(in srgb,var(--ink) 10%,transparent)}
+body .jm-header .header-inner{min-height:var(--jm-header-h);gap:1.1rem}
+body .jm-header .header-sub,body .jm-header .journey-controls{display:none}
+body .jm-header .wordmark{order:1;display:inline-flex;align-items:center;gap:.35rem;font-family:var(--font-text);font-weight:600;font-size:1.44rem;letter-spacing:-.08em;color:var(--ink);text-decoration:none}
+body .jm-header .wordmark-text{display:none}
+body .jm-header .mark{order:1;display:inline-block;width:auto;height:auto;background:transparent;color:var(--signal);transform:none;font:600 1.3rem/1 var(--font-text);letter-spacing:-.05em}
+body .jm-header .nav{order:2;margin-left:auto}
+body .jm-header .menu-toggle{order:3}
+body .jm-header .theme-toggle{order:4;display:none;width:44px;height:44px;padding:0;min-height:44px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+html.theme-ready body .jm-header .theme-toggle{display:inline-flex;align-items:center;justify-content:center}
+body .jm-header .theme-toggle svg{width:20px;height:20px;display:block;pointer-events:none}
+/* La cabecera no aparece sobre las cuatro escenas narrativas. */
+body.home-page .jm-header{visibility:hidden;opacity:0}
+body.home-page.intro-ready:not(.intro-in-content) .jm-header{visibility:hidden;opacity:0;transform:translateY(-100%);pointer-events:none}
+body.home-page.intro-in-content .jm-header{visibility:visible;opacity:1;transform:none;pointer-events:auto;transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .36s}
+body:not(.home-page) main{padding-top:calc(var(--jm-header-h) + 1.2rem)}
+@media(max-width:1100px){body .jm-header .header-inner{gap:.65rem;flex-wrap:wrap}}
+@media(max-width:620px){:root{--jm-header-h:70px}}
+/* -- Pie global: identidad a la izquierda, enlaces a la derecha ------------ */
+body .jm-footer{background:#102E38;color:#E3EAE7;padding:0 0 1.4rem}
+body .jm-footer .jm-footer-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1.4rem 2.5rem;padding-block:2.1rem 1.5rem}
+body .jm-footer .jm-footer-brand{display:flex;flex-direction:column;gap:.55rem;max-width:32ch}
+body .jm-footer .jm-footer-mark{font:600 1.3rem/1 var(--font-text);letter-spacing:-.05em;color:var(--signal)}
+body .jm-footer .jm-footer-brand p{margin:0;font-size:.8rem;line-height:1.55;color:#AFC1BD}
+body .jm-footer .jm-footer-links{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem 1.6rem}
+body .jm-footer .jm-footer-links a{color:#E3EAE7;text-decoration:none;font-size:.83rem;line-height:1.4}
+body .jm-footer .jm-footer-links a:hover,body .jm-footer .jm-footer-links a:focus-visible{color:#EFC77D;text-decoration:underline;text-underline-offset:4px}
+body .jm-footer .jm-footer-base{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.7rem;padding-top:.9rem;border-top:1px solid #49666B;color:#AFC1BD;font:500 .62rem/1.5 var(--font-mono)}
+body .jm-footer .jm-footer-base a{color:#E5ECE9;text-decoration:none}
+body .jm-footer .jm-footer-base a:hover{color:#EFC77D;text-decoration:underline;text-underline-offset:4px}
 .site-header{z-index:20;position:relative;border-bottom:1px solid var(--ink);background:var(--paper)}
 .header-inner{min-height:92px;display:flex;align-items:center;gap:2rem}
 .wordmark{text-decoration:none;display:inline-flex;align-items:center;gap:.6rem;font-family:var(--font-display);font-size:1.44rem;font-weight:800;letter-spacing:-.08em;white-space:nowrap}
@@ -958,6 +998,7 @@ html:has(.project-portal[open]) { overflow:hidden; }
 .social-plan li::before{content:"0" counter(editorial);display:block;margin-bottom:1rem;color:var(--muted);font:600 .82rem var(--font-mono)}
 .social-plan p{margin-bottom:0}
 @media(max-width:620px){
+ :root{--jm-header-h:70px}
  .social-plan{grid-template-columns:1fr}
  .social-plan li{border-right:0;border-bottom:1px solid var(--line)}
  .social-plan li:last-child{border-bottom:0}
@@ -968,6 +1009,6 @@ html:has(.project-portal[open]) { overflow:hidden; }
   .page-hero h1{font-size:clamp(2.15rem,10vw,3.4rem);overflow-wrap:anywhere}
 }
 @media(max-width:400px){
-  .site-header:not(.home-header) .header-inner{gap:.45rem;flex-wrap:wrap;padding-block:.5rem}
-  .site-header:not(.home-header) .menu-toggle,.site-header:not(.home-header) .theme-toggle{font-size:.82rem;padding-inline:.5rem}
+  body:not(.home-page) .site-header .header-inner{gap:.45rem;flex-wrap:wrap;padding-block:.5rem}
+  body:not(.home-page) .site-header .menu-toggle,body:not(.home-page) .site-header .theme-toggle{font-size:.82rem;padding-inline:.5rem}
 }

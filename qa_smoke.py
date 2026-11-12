@@ -53,8 +53,8 @@ def navigation(page):
         menu.click()
         no_overflow(page)
     links = page.locator("#main-nav a")
-    expected = (["Servicios", "Proyectos", "Sobre m\u00ed", "Contacto"]
-                if page.locator(".home-header").count()
+    expected = (["Servicios", "Proyectos", "Herramientas", "Sobre m\u00ed", "Contacto"]
+                if page.locator(".jm-header").count()
                 else ["Herramientas", "Proyectos", "Servicios", "Contacto"])
     assert links.all_text_contents() == expected
     assert all(link.is_visible() for link in links.all())
@@ -408,7 +408,7 @@ try:
             assert not page.locator('.tech-label,.study-kicker,.journey-counter').count()
             assert not errors,errors
             assert page.locator('.is-linked').count()==1
-            assert page.locator('.home-header').evaluate(
+            assert page.locator('.jm-header').evaluate(
                 "e=>getComputedStyle(e).visibility")=='hidden'
             assert page.locator('canvas.study-canvas').evaluate(
                 "e=>getComputedStyle(e).pointerEvents==='auto' && e.width>0 && e.height>0")
@@ -448,12 +448,12 @@ try:
             assert page.locator('.copy-3').evaluate(
                 'e=>Number(getComputedStyle(e).opacity)')>.98
             page.locator('.intro-skip').click()
-            assert page.locator('.home-header').evaluate('e=>!e.inert')
+            assert page.locator('.jm-header').evaluate('e=>!e.inert')
             headings = page.locator("main > section:not([data-study])").all()
             # El recorrido editorial aprobó un orden nuevo sin alterar las cuatro escenas intro.
             order = ["mejorar", "Primero te escucho.",
                      "Compara el tiempo", "Proyectos",
-                     "Soy Jorge", "Herramientas propias", "necesitas", "una partida"]
+                     "Soy Jorge", "Herramientas propias", "necesitas", "Una pausa"]
             assert len(headings) == len(order)
             for section, title in zip(headings, order):
                 actual_title=section.locator("h2").first.inner_text()
@@ -492,7 +492,7 @@ try:
             page.locator('.study-theme').click()
             assert page.locator('html').get_attribute('data-jm-theme')=='night'
             seek(page,.05);page.wait_for_timeout(220)
-            assert page.locator('.home-header').evaluate('e=>e.inert')
+            assert page.locator('.jm-header').evaluate('e=>e.inert')
             assert not errors,errors
             print(width,height,'motion, scroll, header, accesibilidad y tema OK')
             page.close()
@@ -536,11 +536,11 @@ try:
             assert len(ids) == len(set(ids)), str(file)
             assert bool(document.select('script[src*="tetris.js"]')) == (route == "jugar/")
             if route == "":
-                assert document.select_one('.home-footer .footer-nav a[href="#recursos"]')
-                assert document.select_one('.home-footer .footer-nav a[href="#trabajos"]')
+                assert document.select_one('.jm-footer-links a[href$="herramientas/"]')
+                assert document.select_one('.jm-footer-links a[href$="proyectos/"]')
             elif route not in [f"proyectos/{slug}/" for slug in LEGACY_TOOL_SLUGS]:
-                assert document.select_one('.footer-links a[href$="herramientas/"]')
-                assert document.select_one('.footer-links a[href$="jugar/"]')
+                assert document.select_one('.jm-footer-links a[href$="herramientas/"]')
+                assert document.select_one('.jm-footer-links a[href$="servicios/"]')
         urls = {entry.text for entry in sitemap.findall(".//{*}loc")}
         assert urls == {"https://jmorgadodev.github.io/"+route for route in routes
                         if route not in [f"proyectos/{slug}/" for slug in LEGACY_TOOL_SLUGS]}

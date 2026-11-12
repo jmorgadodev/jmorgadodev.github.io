@@ -48,6 +48,7 @@ def icon(name="arrow", tiny=False):
     return f'<svg class="icon{" tiny" if tiny else ""}" aria-hidden="true" focusable="false"><use href="#i-{e(name)}"></use></svg>'
 SYMBOLS = """<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden">
 <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 20 20 4M8 4h12v12"/></symbol>
+<symbol id="i-linkedin" viewBox="0 0 24 24"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05a4.2 4.2 0 0 1 3.75-2c4 0 4.4 2.4 4.4 5.6V21h-4v-5.3c0-1.3 0-3-1.9-3s-2.2 1.4-2.2 2.9V21h-3.9V9Z"/></symbol>
 <symbol id="i-data" viewBox="0 0 24 24"><path d="M3 6 12 2l9 4-9 4-9-4Zm0 6 9 4 9-4M3 18l9 4 9-4M3 6v12M21 6v12"/></symbol>
 <symbol id="i-branch" viewBox="0 0 24 24"><path d="M4 4v16M4 7h8m0 0v10m0-10h8M12 17h8M20 4v6m0 4v6"/><circle cx="4" cy="4" r="2"/><circle cx="20" cy="4" r="2"/><circle cx="20" cy="20" r="2"/></symbol>
 <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 5-6 7 6 7m8-14 6 7-6 7M14 3 10 21"/></symbol>
@@ -61,7 +62,15 @@ SYMBOLS = """<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="0
 <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M21 11.6a9 9 0 0 1-13.2 8L3 21l1.3-4.7A9 9 0 1 1 21 11.6Z"/><path d="M9.7 7.6c-.4-.7-1-.8-1.5-.2-.9 1-.6 2.6 1 4.5 1.8 2 3.8 3 5.2 2.8.9-.1 1.5-.7 1.5-1.4l-2.2-1.1-.9.9c-1.4-.6-2.4-1.5-3-2.9l.9-.8Z"/></symbol>
 </svg>"""
 def meta(d, title, description, active="", journey=False, *, canonical=None, jsonld=None):
-    nav_items=([("#explorar","Servicios","servicios"),("#trabajos","Proyectos","proyectos"),("#quien-soy","Sobre mí","persona"),("#contacto","Contacto","contacto")] if journey else [("herramientas/","Herramientas","herramientas"),("proyectos/","Proyectos","proyectos"),("servicios/","Servicios","servicios"),("contacto/","Contacto","contacto")])
+    # Una sola cabecera para todo el sitio. La portada es la referencia: los
+    # servicios van a su pagina, las herramientas tambien y sobre mi y contacto
+    # apuntan a la seccion que corresponde en cada contexto.
+    nav_items=([("servicios/","Servicios","servicios"),("#trabajos","Proyectos","proyectos"),
+                ("herramientas/","Herramientas","herramientas"),("#quien-soy","Sobre mí","persona"),
+                ("#contacto","Contacto","contacto")] if journey else
+               [("servicios/","Servicios","servicios"),("proyectos/","Proyectos","proyectos"),
+                ("herramientas/","Herramientas","herramientas"),("#quien-soy","Sobre mí","persona"),
+                ("contacto/","Contacto","contacto")])
     links="".join(f'<a href="{e(local(d,u))}"' + (' class="nav-contact"' if section=="contacto" else '')+(' aria-current="page"' if section==active else '')+f'>{e(t)}</a>' for u,t,section in nav_items)
     journey_css=(f'<link rel="stylesheet" href="{e(asset(d,"assets/journey-study.css"))}">'
                  f'<link rel="stylesheet" href="{e(asset(d,"assets/booking.css"))}">'
@@ -80,14 +89,13 @@ def meta(d, title, description, active="", journey=False, *, canonical=None, jso
                  f'<link rel="stylesheet" href="{e(asset(d,"assets/home-project-carousel.css"))}">'
                  f'<link rel="stylesheet" href="{e(asset(d,"assets/home-tools-rig.css"))}">') if journey else ""
     body_class=' class="home-page"' if journey else ''
-    header_class=' home-header' if journey else ''
     descriptor='Una forma de resolver' if journey else 'Desarrollo independiente<br>Software, datos y procesos'
-    monogram='JM.' if journey else 'jm'
+    monogram='JM.'
     home_target=local(d) + "#home-start"
     controls=''
-    # En la portada el control de tema es un icono: la cabecera lleva la marca
-    # «JM.» a la izquierda y el icono del día y la noche a la derecha.
-    theme_icon=' data-theme-icon' if journey else ''
+    # El control de tema es un icono en todas las paginas: la cabecera lleva
+    # la marca «JM.» a la izquierda y el icono del día y la noche a la derecha.
+    theme_icon=' data-theme-icon'
     progress='' if journey else ''
     fonts = '' if journey or active=="jugar" else """<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">"""
@@ -110,7 +118,7 @@ def meta(d, title, description, active="", journey=False, *, canonical=None, jso
 <link rel="stylesheet" href="{e(local(d,'assets/themes.css'))}">
 <link rel="stylesheet" href="{e(asset(d,'assets/interior.css'))}">
 </head><body{body_class}><a class="skip-link" href="#contenido">Saltar al contenido</a>{SYMBOLS}
-<header class="site-header{header_class}"><div class="wrap header-inner">
+<header class="site-header jm-header"><div class="wrap header-inner">
 <a class="wordmark" href="{e(home_target)}" data-home-return aria-label="Volver al inicio de la experiencia JMorgado"><span class="mark" aria-hidden="true">{monogram}</span><span class="wordmark-text">JMorgado<span class="orange">.</span></span></a>
 <div class="header-sub">{descriptor}</div>{controls}
 <button type="button" class="menu-toggle" data-menu-toggle aria-controls="main-nav" aria-expanded="false">Menú +</button>
@@ -146,33 +154,33 @@ def foot(d, journey=False, active=""):
         extra += f'<script src="{e(asset(d,"assets/home-narrative.js"))}" defer></script>'
         extra += f'<script src="{e(asset(d,"assets/home-project-carousel.js"))}" defer></script>'
     fab_hidden = " hidden" if journey else ""
+    # Un solo pie para todo el sitio: identidad a la izquierda, enlaces a la
+    # derecha y una linea fina con el cierre y el regreso.
+    footer_html=f"""<footer class="site-footer jm-footer"><div class="wrap">
+      <div class="jm-footer-top">
+        <div class="jm-footer-brand">
+          <span class="jm-footer-mark">JM.</span>
+          <p>Desarrollo web, datos y automatización para resolver necesidades concretas.</p>
+        </div>
+        <nav class="jm-footer-links" aria-label="Explorar el sitio">
+          <a href="{e(local(d,'servicios/'))}">Servicios</a>
+          <a href="{e(local(d,'proyectos/'))}">Proyectos</a>
+          <a href="{e(local(d,'herramientas/'))}">Herramientas</a>
+          <a href="{e(local(d,'#quien-soy'))}">Sobre mí</a>
+          <a href="{e(local(d,'contacto/'))}">Contacto</a>
+        </nav>
+      </div>
+      <div class="jm-footer-base">
+        <span>© 2026 Jorge Morgado</span>
+        <a href="{e(local(d,'#home-start'))}" data-home-return>Volver al inicio ↑</a>
+      </div>
+    </div></footer>"""
     if journey:
-        footer_html=f"""<footer class="site-footer home-footer"><div class="wrap">
-          <nav class="footer-nav" aria-label="Explorar el sitio">
-            <a href="#explorar">Servicios</a>
-            <a href="#trabajos">Proyectos</a>
-            <a href="#recursos">Herramientas propias</a>
-            <a href="#quien-soy">Sobre mí</a>
-          </nav>
-          <div class="footer-base"><span>© 2026 Jorge Morgado</span><a href="#home-start" data-home-return>Volver al inicio ↑</a></div>
-        </div></footer>"""
         return footer_html+f"""
         <a class="whatsapp-fab" href="{e(WHATSAPP)}" target="_blank" rel="noopener noreferrer" aria-label="Escribirme por WhatsApp" hidden>{icon("whatsapp")}</a>
         <script src="{e(asset(d,'assets/site.js'))}" defer></script>{extra}</body></html>"""
-    return f"""<footer class="site-footer"><div class="wrap">
-  <nav class="footer-links" aria-label="Explorar el sitio">
-    <div><h2>Trabajo</h2>
-    <a href="{e(local(d,'proyectos/'))}">Proyectos</a><a href="{e(local(d,'servicios/'))}">Servicios</a><a href="{e(local(d,'metodo/'))}">Método</a></div>
-    <div><h2>Recursos</h2>
-    <a href="{e(local(d,'herramientas/'))}">Herramientas</a><a href="{e(local(d,'calculadora/'))}">Calculadora</a><a href="{e(local(d,'jugar/'))}">Pausa de Tetris</a></div>
-    <div><h2>Contacto</h2>
-    {external(WHATSAPP,"WhatsApp","footer-external")}{external(LINKEDIN,"LinkedIn","footer-external")}
-    <a href="{e(local(d,'contacto/#agenda'))}">Agendar una hora</a></div>
-  </nav>
-<div class="footer-base"><span>© JMorgado</span><a href="#contenido">Volver arriba ↑</a></div>
-</div></footer>
-<a class="whatsapp-fab" href="{e(WHATSAPP)}" target="_blank" rel="noopener noreferrer" aria-label="Escribirme por WhatsApp"{fab_hidden}>{icon("whatsapp")}</a>
-<script src="{e(asset(d,'assets/site.js'))}" defer></script>{extra}</body></html>"""
+    return footer_html+f"""
+    <script src="{e(asset(d,'assets/site.js'))}" defer></script>{extra}</body></html>"""
 def page(where,title,description,content,active="",journey=False,jsonld=None):
     target=ROOT / where / "index.html" if where else ROOT / "index.html"
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -741,14 +749,15 @@ def home_tools_showcase(d):
 
 
 def home_savings(d):
-    before, after, runs = (ORDER_CASE[key] for key in ("before", "after", "runs_per_week"))
+    # Ejemplo de la portada: antes de automatizar, despues y frecuencia.
+    before, after, runs = 180, 1, 5
     recovered=before-after
     weekly_hours=recovered*runs/60
     annual_hours=weekly_hours*52
     return f"""<section class="ink-panel home-calculator" id="ahorro" aria-labelledby="impact-title"><div class="wrap">
       <div class="impact-heading">
         <div>
-          <p class="eyebrow">EL COSTO INVISIBLE DE REPETIR</p>
+          <p class="eyebrow impact-eyebrow">EL COSTO INVISIBLE DE REPETIR</p>
           <h2 id="impact-title">Compara el tiempo antes y despu&eacute;s.</h2>
         </div>
         <p>Incluye la revisi&oacute;n y las correcciones que todav&iacute;a requieren trabajo humano. Ajusta tres datos para estimar tu propio caso.</p>
@@ -769,7 +778,7 @@ def home_savings(d):
               <span class="quick-calc-control"><input id="quick-frequency" data-frequency type="number" min="0" max="1000" step="1" value="{runs}" inputmode="numeric"><span>veces</span></span>
             </label>
           </div>
-          <p class="quick-calc-note">Cuenta el tiempo activo de una ejecuci&oacute;n, incluida la revisi&oacute;n que permanece.</p>
+          <p class="quick-calc-note">Incluye el tiempo de ejecución y la revisión humana que siga siendo necesaria.</p>
         </form>
         <aside class="quick-calc-result" aria-live="off">
           <p class="quick-calc-result-label" data-quick-label>TIEMPO RECUPERADO</p>
@@ -822,21 +831,28 @@ def home():
       </div>
       <div class="home-offer-grid">
         <article class="home-offer">
-          <span class="home-offer-icon" aria-hidden="true">{icon("network")}</span>
-          <h3>Automatizar y conectar</h3>
-          <p>Reducir tareas repetidas y hacer que las aplicaciones que ya utilizas trabajen juntas.</p>
+          <a class="home-offer-link" href="{e(local(d,'servicios/'))}">
+            <span class="home-offer-icon" aria-hidden="true">{icon("network")}</span>
+            <h3>Automatizar y conectar</h3>
+            <p>Reducir tareas repetidas y hacer que las aplicaciones que ya utilizas trabajen juntas.</p>
+          </a>
         </article>
         <article class="home-offer">
-          <span class="home-offer-icon" aria-hidden="true">{icon("data")}</span>
-          <h3>Datos y paneles</h3>
-          <p>Ordenar planillas e información para entender lo importante y tomar mejores decisiones.</p>
+          <a class="home-offer-link" href="{e(local(d,'servicios/'))}">
+            <span class="home-offer-icon" aria-hidden="true">{icon("data")}</span>
+            <h3>Datos y paneles</h3>
+            <p>Ordenar planillas e información para entender lo importante y tomar mejores decisiones.</p>
+          </a>
         </article>
         <article class="home-offer">
-          <span class="home-offer-icon" aria-hidden="true">{icon("window")}</span>
-          <h3>Web y herramientas</h3>
-          <p>Crear sitios, catálogos y sistemas a medida, además de soporte cuando lo necesites.</p>
+          <a class="home-offer-link" href="{e(local(d,'servicios/'))}">
+            <span class="home-offer-icon" aria-hidden="true">{icon("window")}</span>
+            <h3>Web y herramientas</h3>
+            <p>Crear sitios, catálogos y sistemas a medida, además de soporte cuando lo necesites.</p>
+          </a>
         </article>
       </div>
+      <p class="home-offer-all">{a(d,"servicios/","Ver servicios "+icon("arrow",True))}</p>
     </div></section>
 
     <section class="section home-method" id="como-trabajo" aria-labelledby="method-title"><div class="wrap">
@@ -870,7 +886,10 @@ def home():
         <div class="persona-story">
           <p>Trabajo de forma independiente con personas y empresas. Me involucro en entender el problema y encontrar una solución realista, desde una web o un panel de datos hasta una automatización o una herramienta propia.</p>
           <p>También puedo ayudarte a revisar y mantener funcionando lo que ya utilizas.</p>
-          {external(LINKEDIN,"Ver mi trayectoria "+icon("arrow",True))}
+          <a class="persona-linkedin" href="{e(LINKEDIN)}" target="_blank" rel="noopener noreferrer" aria-label="Ver el perfil de Jorge Morgado en LinkedIn (se abre en una pestaña nueva)">
+            <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-linkedin"></use></svg>
+            <span>LinkedIn</span>
+          </a>
         </div>
       </div>
     </div></section>
@@ -903,8 +922,8 @@ def home():
     <section class="section home-game" id="una-partida" aria-labelledby="pause-title"><div class="wrap">
       <div class="pause-layout">
         <div class="pause-copy">
-          <h2 id="pause-title">Antes de irte, <em>una partida.</em></h2>
-          <p>Tetris siempre ha sido uno de mis juegos favoritos. Aquí puedes jugar una partida individual.</p>
+          <h2 id="pause-title">Una pausa <em>para jugar.</em></h2>
+          <p>Tetris siempre ha sido uno de mis juegos favoritos. Si te apetece, puedes jugar una partida aquí mismo.</p>
         </div>
         <div class="pause-figure">{home_tetris_visual(d)}</div>
       </div>

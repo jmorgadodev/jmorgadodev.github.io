@@ -39,7 +39,7 @@
     animation = 0;
   }
 
-  function move(from, to, duration = 950) {
+  function move(from, to, duration = 380) {
     stop();
     if (reduce || duration <= 0 || to.every((value, index) => Math.abs(value - from[index]) < .001)) {
       paint(to);
@@ -50,7 +50,8 @@
     const tick = time => {
       if (start === undefined) start = time;
       const t = Math.min(1, (time - start) / duration);
-      const eased = 1 - Math.pow(1 - t, 3);
+      // Suavizacion corta y sin rebote: la cifra se asienta sin saltos.
+      const eased = t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
       paint(to.map((target, index) => from[index] + (target - from[index]) * eased));
       if (t < 1) animation = requestAnimationFrame(tick);
       else {
@@ -98,14 +99,14 @@
       status.textContent = "Ambos escenarios requieren el mismo tiempo por ejecuci\u00f3n.";
     }
 
-    if (hasEntered) move(shown, desired, 650);
+    if (hasEntered) move(shown, desired, 380);
     else paint(desired);
   }
 
   function enter() {
     if (hasEntered) return;
     hasEntered = true;
-    if (valid) move([0, 0, 0], desired, 1100);
+    if (valid) move([0, 0, 0], desired, 640);
   }
 
   [before, after, frequency].forEach(input => input.addEventListener("input", update));

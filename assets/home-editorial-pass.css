@@ -426,7 +426,7 @@
   color:#664B31!important;font:650 .65rem var(--font-mono)!important;
   letter-spacing:.075em!important;
 }
-.home-page.intro-ready.intro-in-content .home-header{
+.home-page.intro-ready.intro-in-content .jm-header{
   background:var(--paper)!important;
   color:var(--ink)!important;
   box-shadow:0 1px 0 var(--line);
