@@ -1999,6 +1999,7 @@ def qr_contact():
     d = 1
     home_url = e(local(d))
     email = e(CONTACT_EMAIL)
+    form_url = "https://docs.google.com/forms/d/e/1FAIpQLSfn-_qbGkr429pE9fX5X5bwEZpJGJf_Vl9E8HF4K20COHPeHQ/viewform"
     html = f"""<!doctype html>
 <html lang="es-CL">
 <head>
@@ -2034,8 +2035,8 @@ def qr_contact():
     </section>
     <section class="qr-panel" aria-labelledby="qr-form-title">
       <h2 id="qr-form-title">Envíame un mensaje</h2>
-      <p>El formulario está en actualización. Puedes enviarme tu consulta por WhatsApp.</p>
-      <a class="qr-panel-action" href="{e(WHATSAPP)}">Abrir WhatsApp {icon('whatsapp')}</a>
+      <p>Cuéntame qué necesitas en el formulario. Te responderé al correo que indiques.</p>
+      <a class="qr-panel-action" href="{e(form_url)}">Abrir formulario {icon()}</a>
     </section>
   </main>
 </body>

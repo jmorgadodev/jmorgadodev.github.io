@@ -569,7 +569,8 @@ try:
         assert 'https://jmorgado.pages.dev/qr/' not in urls
         assert qr.select_one('a[href="https://wa.me/56933904330"]')
         assert qr.select_one('a[href="mailto:jorge.morgado.b@gmail.com"]')
-        assert qr.select_one('.qr-panel a[href="https://wa.me/56933904330"]')
+        form_link = qr.select_one('.qr-panel a[href^="https://docs.google.com/forms/d/e/"]')
+        assert form_link and form_link['href'].endswith('/viewform')
         browser.close()
         print('27 rutas, 24 canónicas, contacto QR, calculadora, JS deshabilitado y movimiento reducido OK')
 finally:
