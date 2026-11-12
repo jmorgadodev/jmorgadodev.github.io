@@ -58,6 +58,7 @@ def navigation(page):
                 else ["Herramientas", "Proyectos", "Servicios", "Contacto"])
     assert links.all_text_contents() == expected
     assert all(link.is_visible() for link in links.all())
+    assert links.filter(has_text="Contacto").evaluate("a=>a.href") == base + "contacto/"
     if menu.is_visible():
         menu.click()
 

@@ -63,15 +63,11 @@ SYMBOLS = """<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="0
 <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M21 11.6a9 9 0 0 1-13.2 8L3 21l1.3-4.7A9 9 0 1 1 21 11.6Z"/><path d="M9.7 7.6c-.4-.7-1-.8-1.5-.2-.9 1-.6 2.6 1 4.5 1.8 2 3.8 3 5.2 2.8.9-.1 1.5-.7 1.5-1.4l-2.2-1.1-.9.9c-1.4-.6-2.4-1.5-3-2.9l.9-.8Z"/></symbol>
 </svg>"""
 def meta(d, title, description, active="", journey=False, *, canonical=None, jsonld=None):
-    # Una sola cabecera para todo el sitio. La portada es la referencia: los
-    # servicios van a su pagina, las herramientas tambien y sobre mi y contacto
-    # apuntan a la seccion que corresponde en cada contexto.
-    nav_items=([("servicios/","Servicios","servicios"),("#trabajos","Proyectos","proyectos"),
-                ("herramientas/","Herramientas","herramientas"),("#quien-soy","Sobre mí","persona"),
-                ("#contacto","Contacto","contacto")] if journey else
-               [("servicios/","Servicios","servicios"),("proyectos/","Proyectos","proyectos"),
-                ("herramientas/","Herramientas","herramientas"),("#quien-soy","Sobre mí","persona"),
-                ("contacto/","Contacto","contacto")])
+    # La cabecera comparte destinos; en portada, Proyectos lleva a la galería.
+    nav_items=[("servicios/","Servicios","servicios"),
+               ("#trabajos" if journey else "proyectos/","Proyectos","proyectos"),
+               ("herramientas/","Herramientas","herramientas"),("#quien-soy","Sobre mí","persona"),
+               ("contacto/","Contacto","contacto")]
     links="".join(f'<a href="{e(local(d,u))}"' + (' class="nav-contact"' if section=="contacto" else '')+(' aria-current="page"' if section==active else '')+f'>{e(t)}</a>' for u,t,section in nav_items)
     journey_css=(f'<link rel="stylesheet" href="{e(asset(d,"assets/journey-study.css"))}">'
                  f'<link rel="stylesheet" href="{e(asset(d,"assets/booking.css"))}">'
