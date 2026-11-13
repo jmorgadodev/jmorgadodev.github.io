@@ -26,7 +26,7 @@ Los cambios en `main` disparan publicaciones automáticas. No se incluyen creden
 
 ## Contacto del QR
 
-El QR apunta a `https://jmorgado.pages.dev/qr/`. Se accede a esta página por enlace directo y lleva la indicación `noindex` para los buscadores. El botón de contacto abre Google Forms. Las consultas se guardan en la pestaña **Respuestas** de **Contacto JMorgado** y Google envía un aviso a la cuenta propietaria.
+El QR apunta a `https://jmorgado.pages.dev/qr/`. Se accede a esta página por enlace directo y lleva la indicación `noindex` para los buscadores. El formulario de la página envía las consultas a la función `/api/contacto` de Cloudflare Pages, también desde GitHub Pages. La función valida los campos y los entrega al formulario existente **Contacto JMorgado**, donde se consultan las respuestas y se mantienen los avisos de Google. Si se reemplaza ese formulario, hay que actualizar su URL y los identificadores de los campos en `functions/api/contacto.js`.
 
 ## Ranking de Tetris
 

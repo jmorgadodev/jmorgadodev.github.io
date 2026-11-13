@@ -1997,46 +1997,64 @@ def contact():
 
 def qr_contact():
     d = 1
-    home_url = e(local(d))
+    home_url = e(local(d) + "#explorar")
     email = e(CONTACT_EMAIL)
-    form_url = "https://docs.google.com/forms/d/e/1FAIpQLSfn-_qbGkr429pE9fX5X5bwEZpJGJf_Vl9E8HF4K20COHPeHQ/viewform"
     html = f"""<!doctype html>
 <html lang="es-CL">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, follow">
+  <meta name="description" content="Contacta a Jorge Morgado para conversar sobre desarrollo web, datos y automatización.">
   <title>Contacto | Jorge Morgado</title>
   <link rel="icon" href="{e(asset(d, 'assets/favicon.svg'))}" type="image/svg+xml">
   <script src="{e(asset(d, 'assets/theme-init.js'))}"></script>
   <link rel="stylesheet" href="{e(asset(d, 'assets/themes.css'))}">
   <link rel="stylesheet" href="{e(asset(d, 'assets/qr-contact.css'))}">
+  <script src="{e(asset(d, 'assets/site.js'))}" defer></script>
+  <script src="{e(asset(d, 'assets/qr-contact.js'))}" defer></script>
 </head>
 <body>
   {SYMBOLS}
   <header class="qr-header">
-    <a class="qr-brand" href="{home_url}" aria-label="Inicio de JMorgado">JM<span aria-hidden="true">.</span></a>
+    <a class="qr-brand" href="{home_url}" aria-label="Inicio de JMorgado">JMorgado<span>.</span></a>
+    <nav class="qr-header-actions" aria-label="Navegación">
+      <button class="theme-toggle" type="button" data-theme-toggle data-theme-icon aria-label="Cambiar tema"></button>
+    </nav>
   </header>
   <main class="qr-main">
-    <section aria-labelledby="qr-title">
-      <h1 id="qr-title">Jorge Morgado</h1>
-      <p class="qr-intro">Desarrollo web, datos y automatización. Cuéntame qué necesitas resolver.</p>
-      <ul class="qr-links">
-        <li><a class="qr-whatsapp" href="{e(WHATSAPP)}">
-          <span><strong>WhatsApp</strong><span>+56 9 3390 4330</span></span>{icon('whatsapp')}
-        </a></li>
-        <li><a href="mailto:{email}">
-          <span><strong>Correo</strong><span>{email}</span></span>{icon()}
-        </a></li>
-        <li><a href="{home_url}">
-          <span><strong>Visitar el sitio</strong><span>Servicios y proyectos</span></span>{icon()}
-        </a></li>
-      </ul>
+    <section class="qr-card" aria-labelledby="qr-title">
+      <img class="qr-mark" src="{e(asset(d, 'assets/favicon.svg'))}" alt="" width="68" height="68">
+      <h1 id="qr-title">Jorge <br>Morgado<span>.</span></h1>
+      <p class="qr-specialties">Desarrollo web, datos y automatización</p>
+      <p class="qr-intro">Trabajo de forma independiente. Puedo ayudarte a crear una web, ordenar tus datos o automatizar una tarea que se repite.</p>
+      <address class="qr-contact">
+        <a class="qr-whatsapp" href="{e(WHATSAPP)}"><span>WhatsApp</span><strong>+56 9 3390 4330</strong>{icon('whatsapp')}</a>
+        <a href="mailto:{email}"><span>Correo</span><strong>{email}</strong>{icon()}</a>
+      </address>
+      <div class="qr-actions">
+        <a class="qr-primary" href="{home_url}">Visitar el sitio {icon()}</a>
+      </div>
     </section>
-    <section class="qr-panel" aria-labelledby="qr-form-title">
-      <h2 id="qr-form-title">Envíame un mensaje</h2>
-      <p>Cuéntame qué necesitas en el formulario. Te responderé al correo que indiques.</p>
-      <a class="qr-panel-action" href="{e(form_url)}">Abrir formulario {icon()}</a>
+    <section class="qr-panel" id="escribeme" aria-labelledby="qr-form-title">
+      <h2 id="qr-form-title">Conversemos</h2>
+      <p class="qr-panel-intro">Cuéntame qué necesitas. Te responderé al correo que indiques.</p>
+      <p class="qr-form-fallback">Puedes escribirme a <a href="mailto:{email}">{email}</a>.</p>
+      <form class="qr-form" aria-labelledby="qr-form-title" data-contact-form hidden>
+        <div class="qr-fields">
+          <label>Nombre <input name="name" type="text" autocomplete="name" maxlength="100" required></label>
+          <label>Correo electrónico <input name="email" type="email" autocomplete="email" maxlength="254" required></label>
+          <label class="qr-message">¿En qué te puedo ayudar? <textarea name="message" rows="5" maxlength="2500" required></textarea></label>
+        </div>
+        <div class="qr-trap" aria-hidden="true" inert>
+          <label>Deja este campo vacío <input name="website" tabindex="-1" autocomplete="off"></label>
+        </div>
+        <div class="qr-submit">
+          <button type="submit">Enviar mensaje {icon()}</button>
+          <p>Usaré tus datos para responder a tu consulta.</p>
+        </div>
+        <p class="qr-form-status" role="status" aria-live="polite" data-contact-status></p>
+      </form>
     </section>
   </main>
 </body>

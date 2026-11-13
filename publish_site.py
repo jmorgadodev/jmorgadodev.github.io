@@ -33,6 +33,9 @@ shutil.copytree(ROOT / "assets", OUT / "assets", dirs_exist_ok=True)
 shutil.copy2(ROOT / "404.html", OUT / "404.html")
 ElementTree(urls).write(OUT / "sitemap.xml", encoding="utf-8", xml_declaration=True)
 (OUT / "robots.txt").write_text("User-agent: *\nAllow: /\nSitemap: https://jmorgado.pages.dev/sitemap.xml\n", encoding="utf-8")
-(OUT / "_routes.json").write_text('{"version":1,"include":["/api/tetris/ranking"],"exclude":[]}\n', encoding="utf-8")
+(OUT / "_routes.json").write_text(
+    '{"version":1,"include":["/api/tetris/ranking","/api/contacto"],"exclude":[]}\n',
+    encoding="utf-8",
+)
 (OUT / ".nojekyll").touch()
 print(f"Salida pública: _site/ ({len(canonical)} páginas canónicas, {len(redirects)} redirecciones y 1 página para el QR)")
